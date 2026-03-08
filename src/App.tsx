@@ -1,8 +1,23 @@
-import { RouterProvider } from 'react-router-dom'
-import { router } from './router/router'
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Dashboard from "./pages/client/Dashboard";
+import LeadRegister from "./pages/client/LeadRegister";
 
-function App() {
-  return <RouterProvider router={router} />
+export default function App() {
+
+  return (
+    <BrowserRouter>
+
+      <Routes>
+
+        <Route path="/" element={<Dashboard />} />
+
+        <Route
+          path="/lead"
+          element={<LeadRegister />}
+        />
+
+      </Routes>
+
+    </BrowserRouter>
+  );
 }
-
-export default App
