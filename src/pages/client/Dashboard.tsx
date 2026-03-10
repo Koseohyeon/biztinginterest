@@ -116,7 +116,7 @@ export default function Dashboard() {
           </h1>
 
           <p className="tw-text-slate-500 tw-mt-2">
-            서비스 가입자 현황 및 사용자 관리
+            서비스 가입자 현황 관리
           </p>
 
         </div>

@@ -1,6 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Dashboard from "./pages/client/Dashboard";
-import LeadRegister from "./pages/client/LeadRegister";
 import DashboardLogin from "./pages/client/DashboardLogin";
 import AttentionIndex from "./pages/client/AttentionIndex";
 
@@ -14,10 +13,6 @@ export default function App() {
 
         <Route path="/" element={<Dashboard />} />
 
-        <Route
-          path="/lead"
-          element={<LeadRegister />}
-        />
         <Route
           path="/Dashboard"
           element={<Dashboard />}

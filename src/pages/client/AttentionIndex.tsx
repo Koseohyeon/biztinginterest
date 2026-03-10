@@ -296,13 +296,13 @@ export default function AttentionIndex() {
         START NOW
       </div>
 
-      <h2 className="tw-text-4xl tw-font-bold tw-leading-tight">
+      <h2 className="tw-text-4xl tw-font-bold tw-leading-tight tw-text-white/90">
         광고 고객을 <br />
         <span className="tw-text-white/90">데이터로 전환하세요</span>
       </h2>
 
       <p className="tw-text-lg tw-opacity-90">
-        네이버 간편 동의만으로 고객 정보를 자동으로 수집합니다
+        네이버 회원가입으로 간편하게 고객데이터를 수집합니다
       </p>
 
       <div className="tw-flex tw-justify-center tw-pt-4">
@@ -312,7 +312,7 @@ export default function AttentionIndex() {
           className="tw-bg-white tw-text-[#4F46E5] tw-font-semibold tw-px-10 tw-py-4 tw-rounded-xl tw-shadow-lg hover:tw-scale-105 tw-transition tw-flex tw-items-center tw-gap-2"
         >
 
-          무료로 시작하기 →
+          바로 시작하기 →
 
         </button>
 
