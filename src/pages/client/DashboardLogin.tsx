@@ -13,7 +13,7 @@ export default function DashboardLogin() {
 
     // 임시 로그인 (아이디/비번 아무거나 입력하면 통과)
     if (id && pw) {
-      navigate("/dashboard");
+      navigate("/Dashboard");
     } else {
       alert("아이디와 비밀번호를 입력해주세요.");
     }

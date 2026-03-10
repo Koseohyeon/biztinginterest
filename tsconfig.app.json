@@ -8,6 +8,9 @@
     "types": ["vite/client", "react", "react-dom"],
     "skipLibCheck": true,
 
+    /* JS 파일 허용 */
+    "allowJs": true,
+
     /* Bundler mode */
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,

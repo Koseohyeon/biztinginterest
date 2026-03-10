@@ -204,17 +204,18 @@ export default function Dashboard() {
 
       {modal && (
 
-        <DownloadModal
-          onConfirm={(reason: string) => {
+  <DownloadModal
+    onClose={() => setModal(false)}
+    onConfirm={(reason: string) => {
 
-            saveDownloadLog(reason);
-            downloadExcel(users);
-            setModal(false);
+      saveDownloadLog(reason);
+      downloadExcel(users);
+      setModal(false);
 
-          }}
-        />
+    }}
+  />
 
-      )}
+)}
 
     </Layout>
   );

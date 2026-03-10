@@ -5,7 +5,6 @@ import { useNavigate } from "react-router-dom";
 import {
   Users,
   BarChart3,
-  ShieldCheck,
   Smartphone,
   TrendingUp,
   MessageCircle,
