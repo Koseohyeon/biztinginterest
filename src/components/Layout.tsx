@@ -14,10 +14,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <a className="tw-text-sm tw-font-semibold tw-text-[#5D87FF]">
                 사용자 관리
               </a>
-
-              <a className="tw-text-sm tw-text-slate-600 hover:tw-text-slate-900">
-                시스템 설정
-              </a>
             </nav>
 
           </div>
