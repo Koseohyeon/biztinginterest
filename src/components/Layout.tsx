@@ -30,7 +30,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       </main>
 
       <footer className="tw-text-center tw-text-sm tw-text-slate-400 tw-py-8">
-        © 2024 YourCompany
+        © 2026 bizting
       </footer>
 
     </div>

@@ -14,7 +14,7 @@ export default function DownloadModal({ onConfirm, onClose }: any) {
   const handleDownload = () => {
 
     if (reason.trim() === "") {
-      alert("다운로드 사유 입력");
+      alert("공백 입력 불가");
       return;
     }
 
