@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Layout from "../../components/Layout";
+import { Eye, EyeOff } from "lucide-react";
 export default function DashboardLogin() {
 
   const [id, setId] = useState("");
@@ -72,11 +73,12 @@ export default function DashboardLogin() {
             />
 
             <button
-              type="button"
-              onClick={() => setShowPw(!showPw)}
-              className="tw-absolute tw-right-3 tw-top-1/2 tw--translate-y-1/2 tw-text-sm tw-text-slate-500"
-            >
-            </button>
+  type="button"
+  onClick={() => setShowPw(!showPw)}
+  className="tw-absolute tw-right-3 tw-top-1/2 tw--translate-y-1/2 tw-text-slate-500"
+>
+  {showPw ? <EyeOff size={18} /> : <Eye size={18} />}
+</button>
 
           </div>
 
