@@ -96,7 +96,7 @@ export default function DashboardLogin() {
         {/* 안내문구 */}
 
         <p className="tw-text-xs tw-text-slate-400 tw-text-center">
-          비즈팅을 로그인한 아이디 및 패스워드로 로그인 진행해주세요
+          비즈팅에 로그인한 아이디 및 패스워드로 로그인 진행해주세요
         </p>
 
       </div>

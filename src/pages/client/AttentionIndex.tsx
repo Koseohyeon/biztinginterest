@@ -24,11 +24,11 @@ export default function AttentionIndex() {
 
         {/* HERO */}
 
-        <section className="tw-grid md:tw-grid-cols-2 tw-gap-16 tw-items-center">
+        <section className="tw-grid md:tw-grid-cols-2 tw-items-center">
 
-          <div className="tw-space-y-8">
+          <div className="tw-space-y-5">
 
-            <h1 className="tw-text-[56px] tw-font-extrabold tw-leading-[1.15] tw-tracking-tight">
+            <h1 className="tw-text-[51px] tw-font-extrabold tw-leading-[1.1] tw-tracking-tight">
 
   고객을{" "}
   <span className="tw-text-[#5D87FF]">

@@ -11,7 +11,7 @@ export default function App() {
 
       <Routes>
 
-        <Route path="/" element={<Dashboard />} />
+        <Route path="/" element={<AttentionIndex />} />
 
         <Route
           path="/Dashboard"
