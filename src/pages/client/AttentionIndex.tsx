@@ -19,15 +19,13 @@ export default function AttentionIndex() {
   return (
 
     <Layout>
-
       <div className="tw-max-w-7xl tw-mx-auto tw-px-6 tw-py-16 tw-space-y-28">
-
         {/* HERO */}
-
         <section className="tw-grid md:tw-grid-cols-2 tw-items-center">
-
           <div className="tw-space-y-5">
-
+<div className="tw-inline-block tw-bg-blue-100 tw-text-blue-600 tw-px-3 tw-py-1 tw-rounded-full tw-text-sm tw-font-bold">
+              단순 메시지 플랫폼을 넘어선 회원 확보 솔루션
+            </div>
             <h1 className="tw-text-[51px] tw-font-extrabold tw-leading-[1.1] tw-tracking-tight">
 
   고객을{" "}
@@ -63,43 +61,27 @@ export default function AttentionIndex() {
           {/* PHONE MOCKUP */}
 
           <div className="tw-flex tw-justify-center">
-
             <div className="tw-w-[300px] tw-h-[620px] tw-bg-black tw-rounded-[45px] tw-shadow-2xl tw-p-3">
-
               <div className="tw-bg-white tw-rounded-[32px] tw-h-full tw-flex tw-flex-col tw-overflow-hidden">
-
                 {/* NAVER HEADER */}
-
                 <div className="tw-bg-[#03C75A] tw-text-white tw-px-4 tw-py-3 tw-flex tw-justify-between tw-text-sm">
-
                   <div className="tw-font-bold">NAVER</div>
-
                 </div>
-
                 {/* CONTENT */}
-
                 <div className="tw-p-5 tw-text-xs tw-space-y-4 tw-text-slate-600">
-
                   <div className="tw-text-center">
-
                     <div className="tw-w-12 tw-h-12 tw-bg-[#03C75A] tw-text-white tw-rounded-md tw-flex tw-items-center tw-justify-center tw-mx-auto tw-font-bold">
                       N
                     </div>
-
                   </div>
-
                   <p>
                     Application에서 <b>비즈팅</b>에 개인정보에 접근하는 것에 동의하십니까?
                   </p>
-
                   <div className="tw-bg-slate-50 tw-rounded-md tw-p-3 tw-space-y-2">
-
                     <div className="tw-font-semibold tw-text-slate-700">
                       필수 제공 항목
                     </div>
-
                     <div className="tw-grid tw-grid-cols-2 tw-gap-2">
-
                       <Item text="이름" />
                       <Item text="휴대전화번호" />
                       <Item text="이메일" />
@@ -110,29 +92,21 @@ export default function AttentionIndex() {
                   <div className="tw-text-[11px] tw-text-slate-400">
                     동의 후 서비스 이용약관 및 개인정보처리방침에 따라 정보가 관리됩니다.
                   </div>
-
                 </div>
 
                 {/* BUTTON */}
 
                 <div className="tw-grid tw-grid-cols-2 tw-mt-auto">
-
                   <button className="tw-bg-gray-300 tw-py-3 tw-text-sm">
                     취소
                   </button>
-
                   <button className="tw-bg-[#03C75A] tw-text-white tw-py-3 tw-text-sm tw-font-semibold">
                     동의하기
                   </button>
-
                 </div>
-
               </div>
-
             </div>
-
           </div>
-
         </section>
 
 
@@ -190,10 +164,10 @@ export default function AttentionIndex() {
 
           <div className="tw-grid md:tw-grid-cols-4 tw-gap-10">
 
-            <Step icon={<Smartphone />} title="광고 유입" text="광고 클릭으로 고객 유입" />
-            <Step icon={<MessageCircle />} title="간편 동의" text="네이버 간편 동의" />
-            <Step icon={<Users />} title="관심고객 모집" text="고객 데이터 저장" />
-            <Step icon={<BarChart3 />} title="대시보드" text="가입자 분석 및 관리" />
+            <Step icon={<Smartphone />} title="광고 도달" text="광고 클릭으로 고객 유입" />
+            <Step icon={<MessageCircle />} title="3초 간편 가입" text="네이버 간편 로그인" />
+            <Step icon={<Users />} title="관심고객 확보" text="고객 데이터 저장" />
+            <Step icon={<Zap />} title="즉각적인 영업" text="관심고객 영업풀 확보" />
 
           </div>
 
@@ -202,7 +176,7 @@ export default function AttentionIndex() {
 
         {/* FEATURES */}
 
-        <section>
+{/*         <section>
 
           <h2 className="tw-text-3xl tw-font-bold tw-text-center tw-mb-12">
             서비스 활용 방법
@@ -230,7 +204,7 @@ export default function AttentionIndex() {
 
           </div>
 
-        </section>
+        </section> */}
 
 
         {/* BENEFITS */}
@@ -244,14 +218,14 @@ export default function AttentionIndex() {
     </div>
 
     <h2 className="tw-text-4xl tw-font-bold">
-      왜 이 서비스를 사용해야 할까요?
+      타 플랫폼과 완전히 다른 비즈팅의 특별 기능
     </h2>
 
     <p className="tw-text-lg tw-font-semibold tw-text-slate-700">
   <span className="tw-text-[#03C75A] tw-font-bold">
-    간편 동의 기반 고객 수집
+    실제 관심 고객 확보까지 연결되는 
   </span>
-  으로 광고 전환율을 높입니다
+  마케팅 데이터를 제공합니다.
 </p>
 
   </div>
@@ -260,20 +234,20 @@ export default function AttentionIndex() {
 
     <BenefitCard
       number="01"
-      title="회원가입 없이 고객 수집"
-      text="간편 동의만으로 고객 정보를 확보합니다."
+      title="실제 메시지 도달률"
+      text="단순 반응 지표를 넘어 실제 수신자에게 이 메시지가 도달했는지에 대한 지표를 제공합니다."
     />
 
     <BenefitCard
       number="02"
-      title="광고 전환율 상승"
-      text="신청 과정이 간단하여 이탈률이 줄어듭니다."
+      title="관심 고객 전환률"
+      text="실제 메시지 도달에서 진짜 회원으로 전환되는 진성 고객의 지표를 제공합니다."
     />
 
     <BenefitCard
       number="03"
-      title="영업 가능한 고객 DB 확보"
-      text="수집된 데이터를 대시보드에서 관리합니다."
+      title="고객 획득 비용 절감"
+      text="외주 렌딩페이지 없이 메시지 하나로 저렴하게 진성 고객 DB를 확보할 수 있습니다"
     />
 
   </div>
