@@ -2,9 +2,9 @@ import { NavLink } from "react-router-dom";
 
 const menus = [
   { name: "대시보드", path: "/admin", end: true },
-  { name: "기업 관리", path: "/admin/AdminCompanyList" },
-  { name: "사용자 관리", path: "/admin/AdminUserManagement" },
-  { name: "로그 관리", path: "/admin/AdminLogs" },
+  { name: "기업 관리", path: "/admin/logs" },
+  { name: "사용자 관리", path: "/admin/users" },
+  { name: "로그 관리", path: "/admin/logs" },
   { name: "약관 관리", path: "/admin/terms" },
 ];
 
