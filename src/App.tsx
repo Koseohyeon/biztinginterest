@@ -1,3 +1,4 @@
+
   import { BrowserRouter, Routes, Route } from "react-router-dom";
   import Dashboard from "./pages/client/Dashboard";
   import DashboardLogin from "./pages/client/DashboardLogin";
@@ -10,7 +11,6 @@ import AdminTermsManager from "./pages/admin/AdminTermsManager";
 import AdminLogs from "./pages/admin/AdminLogs";
 import AdminUserManagement from "./pages/admin/AdminUserManagement";
 
-
   export default function App() {
 
     return (
@@ -18,7 +18,17 @@ import AdminUserManagement from "./pages/admin/AdminUserManagement";
 
         <Routes>
 
-          <Route path="/" element={<AdminDashboard />} />
+        <Route path="/" element={<AttentionIndex />} />
+
+        <Route
+          path="/Dashboard"
+          element={<Dashboard />}
+        />
+
+        <Route
+          path="/DashboardLogin"
+          element={<DashboardLogin />}
+        />
 
           <Route
             path="/Dashboard"
@@ -68,11 +78,6 @@ import AdminUserManagement from "./pages/admin/AdminUserManagement";
         />
         
         </Routes>
-
-        
-
-        
-
       </BrowserRouter>
     );
   }

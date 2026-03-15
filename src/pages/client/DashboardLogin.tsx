@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Layout from "../../components/Layout";
+import { Eye, EyeOff } from "lucide-react";
 export default function DashboardLogin() {
 
   const [id, setId] = useState("");
@@ -72,11 +73,12 @@ export default function DashboardLogin() {
             />
 
             <button
-              type="button"
-              onClick={() => setShowPw(!showPw)}
-              className="tw-absolute tw-right-3 tw-top-1/2 tw--translate-y-1/2 tw-text-sm tw-text-slate-500"
-            >
-            </button>
+  type="button"
+  onClick={() => setShowPw(!showPw)}
+  className="tw-absolute tw-right-3 tw-top-1/2 tw--translate-y-1/2 tw-text-slate-500"
+>
+  {showPw ? <EyeOff size={18} /> : <Eye size={18} />}
+</button>
 
           </div>
 
@@ -96,7 +98,7 @@ export default function DashboardLogin() {
         {/* 안내문구 */}
 
         <p className="tw-text-xs tw-text-slate-400 tw-text-center">
-          비즈팅을 로그인한 아이디 및 패스워드로 로그인 진행해주세요
+          비즈팅에 로그인한 아이디 및 패스워드로 로그인 진행해주세요
         </p>
 
       </div>
