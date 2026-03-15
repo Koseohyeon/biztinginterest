@@ -10,3 +10,4 @@ export function maskEmail(email: string) {
   const [id, domain] = email.split("@");
   return id.slice(0, 2) + "***@" + domain;
 }
+
