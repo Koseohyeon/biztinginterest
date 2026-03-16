@@ -18,7 +18,7 @@ import AdminUserManagement from "./pages/admin/AdminUserManagement";
 
         <Routes>
 
-        <Route path="/" element={<AttentionIndex />} />
+        <Route path="/" element={<AdminDashboard />} />
 
         <Route
           path="/Dashboard"
@@ -54,12 +54,12 @@ import AdminUserManagement from "./pages/admin/AdminUserManagement";
         />
 
         <Route
-          path="/admin/dashboard"
+          path="/admin"
           element={<AdminDashboard />}
         />
 
         <Route
-          path="/admin/AdminCompanyList"
+          path="/admin/company"
           element={<AdminCompanyList />}
         />
 
@@ -69,11 +69,11 @@ import AdminUserManagement from "./pages/admin/AdminUserManagement";
           element={<AdminTermsManager />}
         />
           <Route
-          path="/admin/AdminLogs"
+          path="/admin/logs"
           element={<AdminLogs />}
         />
           <Route
-          path="/admin/AdminUserManagement"
+          path="/admin/users"
           element={<AdminUserManagement />}
         />
         
