@@ -1,8 +1,10 @@
-export default function Pagination({ page, total, setPage }: any) {
+export default function Pagination({ page, total, limit, setPage }: any) {
 
-  if (total <= 1) return null;
+  const totalPages = Math.ceil(total / limit);
 
-  const pages = Array.from({ length: total }, (_, i) => i + 1);
+  if (totalPages <= 1) return null;
+
+  const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
 
   return (
     <div className="tw-flex tw-gap-2 tw-mt-8 tw-justify-center">

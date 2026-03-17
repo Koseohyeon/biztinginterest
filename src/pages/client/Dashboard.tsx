@@ -18,6 +18,8 @@ export default function Dashboard() {
   const [range, setRange] = useState(7);
 
   const pageSize = 10;
+  //+ 페이지네이션 수정
+  const limit = 10;
 
   const today = new Date();
 
@@ -191,12 +193,13 @@ export default function Dashboard() {
           </div>
 
           <MaskedTable users={paged} />
-
+          {/* 페이지네이션 수정 */}
           <Pagination
-            page={page}
-            total={Math.ceil(filtered.length / pageSize)}
-            setPage={setPage}
-          />
+  page={page}
+  setPage={setPage}
+  total={filtered.length}
+  limit={limit} //  추가
+/>
 
         </div>
 

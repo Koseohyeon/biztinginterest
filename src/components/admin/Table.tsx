@@ -1,28 +1,29 @@
-interface Props {
-  columns: string[];
-  children: React.ReactNode;
-}
-
-export default function Table({ columns, children }: Props) {
+export default function Table({
+  columns,
+  children,
+  tbodyRef,
+  tbodyProps,
+}: any) {
   return (
-    <div className="tw-bg-white tw-border tw-rounded-xl tw-overflow-hidden">
-
+    <div className="tw-bg-white tw-rounded-2xl tw-shadow-sm tw-overflow-hidden">
       <table className="tw-w-full tw-text-sm">
-
-        <thead className="tw-bg-slate-50">
+        <thead className="tw-bg-gray-50">
           <tr>
-            {columns.map((c) => (
-              <th key={c} className="tw-p-3 tw-text-left">
-                {c}
+            {columns.map((col: string, i: number) => (
+              <th
+                key={i}
+                className="tw-text-left tw-p-3 tw-font-medium tw-text-gray-600"
+              >
+                {col}
               </th>
             ))}
           </tr>
         </thead>
 
-        <tbody>{children}</tbody>
-
+        <tbody ref={tbodyRef} {...tbodyProps}>
+          {children}
+        </tbody>
       </table>
-
     </div>
   );
 }

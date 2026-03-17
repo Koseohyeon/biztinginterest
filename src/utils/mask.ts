@@ -3,7 +3,12 @@ export function maskName(name: string) {
 }
 
 export function maskPhone(phone: string) {
-  return phone.replace(/(\d{3})(\d{4})(\d{4})/, "$1-****-$3");
+  const onlyNum = phone.replace(/[^0-9]/g, ""); // 숫자만 추출
+
+  return onlyNum.replace(
+    /(\d{3})(\d{4})(\d{4})/,
+    "$1-****-$3"
+  );
 }
 
 export function maskEmail(email: string) {

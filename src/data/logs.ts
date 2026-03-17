@@ -3,7 +3,6 @@ export interface AccessLog {
   userId: string;
   companyId: string;
   action: string;
-  target: string;
   createdAt: string;
   result: "success" | "fail";
 }
@@ -23,7 +22,6 @@ export const accessLogs: AccessLog[] = [
     userId: "admin01",
     companyId: "C1",
     action: "조회",
-    target: "USER123",
     createdAt: "2026-03-15",
     result: "success",
   },

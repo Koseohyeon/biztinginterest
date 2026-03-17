@@ -5,6 +5,7 @@ export interface AdminUser {
   email: string;
   company: string;
   createdAt: string;
+  withdrawAt: string;
 }
 
 export const AdminUsers: AdminUser[] = [
@@ -15,6 +16,7 @@ export const AdminUsers: AdminUser[] = [
     email: "minsu@naver.com",
     company: "ABC쇼핑몰",
     createdAt: "2026-03-01",
+    withdrawAt: "2026-03-10"
   },
   {
     id: "U2",
@@ -23,5 +25,87 @@ export const AdminUsers: AdminUser[] = [
     email: "seoyeon@naver.com",
     company: "벤츠 딜러",
     createdAt: "2026-03-02",
+    withdrawAt: "2026-03-10"
   },
+   {
+    id: "U3",
+    name: "이서연",
+    phone: "010-2222-3333",
+    email: "seoyeon@naver.com",
+    company: "벤츠 딜러",
+    createdAt: "2026-03-02",
+    withdrawAt: "2026-03-10"
+  },
+   {
+    id: "U4",
+    name: "이서연",
+    phone: "010-2222-3333",
+    email: "seoyeon@naver.com",
+    company: "벤츠 딜러",
+    createdAt: "2026-03-02",
+    withdrawAt: "2026-03-10"
+  },
+   {
+    id: "U5",
+    name: "이서연",
+    phone: "010-2222-3333",
+    email: "seoyeon@naver.com",
+    company: "벤츠 딜러",
+    createdAt: "2026-03-02",
+    withdrawAt: "2026-03-10"
+  },
+   {
+    id: "U6",
+    name: "이서연",
+    phone: "010-2222-3333",
+    email: "seoyeon@naver.com",
+    company: "벤츠 딜러",
+    createdAt: "2026-03-02",
+    withdrawAt: "2026-03-10"
+  },
+   {
+    id: "U7",
+    name: "이서연",
+    phone: "010-2222-3333",
+    email: "seoyeon@naver.com",
+    company: "벤츠 딜러",
+    createdAt: "2026-03-02",
+    withdrawAt: "2026-03-10"
+  },
+   {
+    id: "U8",
+    name: "이서연",
+    phone: "010-2222-3333",
+    email: "seoyeon@naver.com",
+    company: "벤츠 딜러",
+    createdAt: "2026-03-02",
+    withdrawAt: "2026-03-10"
+  }, {
+    id: "U9",
+    name: "이서연",
+    phone: "010-2222-3333",
+    email: "seoyeon@naver.com",
+    company: "벤츠 딜러",
+    createdAt: "2026-03-02",
+    withdrawAt: "2026-03-10"
+  },
+   {
+    id: "U10",
+    name: "이서연",
+    phone: "010-2222-3333",
+    email: "seoyeon@naver.com",
+    company: "벤츠 딜러",
+    createdAt: "2026-03-02",
+    withdrawAt: "2026-03-10"
+  },
+   {
+    id: "U11",
+    name: "이서연",
+    phone: "010-2222-3333",
+    email: "seoyeon@naver.com",
+    company: "벤츠 딜러",
+    createdAt: "2026-03-02",
+    withdrawAt: "2026-03-10"
+  },
+ 
 ];
