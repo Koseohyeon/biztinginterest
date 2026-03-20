@@ -11,6 +11,10 @@ import AdminTermsManager from "./pages/admin/AdminTermsManager";
 import AdminLogs from "./pages/admin/AdminLogs";
 import AdminUserManagement from "./pages/admin/AdminUserManagement";
 
+//moment pages
+import MomentIndex from "./pages/moment/MomentIndex"
+import MomentDescription from "./pages/moment/MomentDescription"
+
   export default function App() {
 
     return (
@@ -18,7 +22,7 @@ import AdminUserManagement from "./pages/admin/AdminUserManagement";
 
         <Routes>
 
-        <Route path="/" element={<AdminDashboard />} />
+        <Route path="/" element={<MomentIndex />} />
 
         <Route
           path="/Dashboard"
@@ -77,6 +81,12 @@ import AdminUserManagement from "./pages/admin/AdminUserManagement";
           element={<AdminUserManagement />}
         />
         
+        {/*모먼트  */}
+         <Route
+          path="moment/description"
+          element={<MomentDescription />}
+        />
+
         </Routes>
       </BrowserRouter>
     );
