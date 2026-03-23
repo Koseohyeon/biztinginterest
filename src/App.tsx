@@ -22,8 +22,12 @@ import MomentDescription from "./pages/moment/MomentDescription"
 
         <Routes>
 
-        <Route path="/" element={<MomentIndex />} />
+        <Route path="/" element={<AttentionIndex />} />
 
+        <Route
+          path="/MomentIndex"
+          element={<MomentIndex />}
+        />
         <Route
           path="/Dashboard"
           element={<Dashboard />}
