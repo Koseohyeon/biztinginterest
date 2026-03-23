@@ -83,7 +83,7 @@ import MomentDescription from "./pages/moment/MomentDescription"
         
         {/*모먼트  */}
          <Route
-          path="moment/description"
+          path="/moment/description"
           element={<MomentDescription />}
         />
 

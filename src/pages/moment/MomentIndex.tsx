@@ -1,8 +1,9 @@
 
 import Layout from "../../components/Layout";
+import { useNavigate } from 'react-router-dom';
 import type { ReactNode } from 'react';
 import { 
-  ChevronLeft, ChevronRight, ChevronDown, Search, Menu, Zap,ImageIcon, Users, Target, LayoutGrid,BarChart3,ListOrdered
+  ChevronLeft, ChevronRight, ChevronDown, Search, Menu, Zap,ImageIcon,BarChart3,ListOrdered
 } from 'lucide-react';
 interface PhoneMockupProps {
   children: ReactNode;
@@ -56,6 +57,10 @@ const PhoneMockup = ({ children, label, labelPosition }: PhoneMockupProps) => {
 };
 
 const MomentIndex = () => {
+  const navigate = useNavigate();
+  const goToMomentDescription = () => {
+    navigate('/moment/description');
+  };
   return (
     <Layout>
 
@@ -80,8 +85,8 @@ const MomentIndex = () => {
             </p>
 
             <div className="tw-flex tw-gap-4">
-              <button className="tw-px-8 tw-py-4 tw-bg-blue-600 tw-text-white tw-rounded-xl tw-font-bold tw-flex tw-items-center tw-gap-2 hover:tw-bg-blue-700">
-              모먼트 연동하기 <ChevronRight size={18} />
+              <button onClick={goToMomentDescription}className="tw-px-8 tw-py-4 tw-bg-blue-600 tw-text-white tw-rounded-xl tw-font-bold tw-flex tw-items-center tw-gap-2 hover:tw-bg-blue-700">
+              카카오 광고 메시지 보내기 <ChevronRight size={18} />
               </button>
 {/* 
               <button className="tw-px-8 tw-py-4 tw-bg-white tw-border tw-rounded-xl tw-font-bold tw-text-slate-700">
@@ -183,9 +188,9 @@ const MomentIndex = () => {
       <div className="tw-max-w-6xl tw-mx-auto tw-px-6">
         {/* 상단 헤더: 가독성을 위해 텍스트 농도 조절 */}
         <div className="tw-text-center tw-mb-16">
-          <h2 className="tw-text-blue-600 tw-font-bold tw-mb-3 tw-text-lg">Channel Message Formats</h2>
+          <h2 className="tw-text-blue-600 tw-font-bold tw-mb-3 tw-text-lg">Kakao Moment</h2>
           <p className="tw-text-4xl tw-font-black tw-text-slate-900 tw-tracking-tight">
-            우리나라의 약 98.9%가 사용하는 카카오톡으로 광고메시지 보내기!
+            우리나라의 약 98.9%가 사용하는 카카오톡으로 광고메시지 보내기
           </p>
           <p className="tw-mt-5 tw-text-slate-700 tw-text-lg tw-font-medium">
             카카오 모먼트 연동으로 비즈팅에서 보다 더 쉽게 카카오 광고메시지를 보내보세요!
@@ -201,7 +206,7 @@ const MomentIndex = () => {
             </div>
             <h3 className="tw-text-2xl tw-font-bold tw-text-slate-900 tw-mb-4">와이드 이미지형</h3>
             <p className="tw-text-slate-600 tw-leading-relaxed tw-mb-8 tw-font-medium">
-              신상품 출시나 프로모션 알림에 탁월합니다. 압도적인 이미지 크기로 브랜드 클릭률(CTR)을 확실하게 높입니다.
+              신상품 출시나 프로모션 알림에 탁월합니다. 큰 사이즈의 이미지를 활용해 주목도 높은 메시지를 구성할 수 있습니다.
             </p>
             {/* 시각적 목업: 실제 광고 느낌 */}
             <div className="tw-relative tw-rounded-2xl tw-overflow-hidden tw-border tw-border-slate-100 tw-aspect-video tw-bg-slate-900">
@@ -223,7 +228,7 @@ const MomentIndex = () => {
             </div>
             <h3 className="tw-text-2xl tw-font-bold tw-text-slate-900 tw-mb-4">와이드 리스트형</h3>
             <p className="tw-text-slate-600 tw-leading-relaxed tw-mb-8 tw-font-medium">
-              뉴스레터나 주간 베스트 등 여러 소식을 한 번에 전달하세요. 유저가 필요한 정보를 직접 선택하여 탐색할 수 있습니다.
+              다양한 주제의 메시지를 리스트 유형으로 구성해보세요. 유저가 필요한 정보를 직접 선택하여 탐색할 수 있습니다.
             </p>
             {/* 시각적 목업: 고대비 리스트 */}
             <div className="tw-space-y-3 tw-p-4 tw-bg-slate-50 tw-rounded-2xl tw-border tw-border-slate-200">
@@ -254,19 +259,17 @@ const MomentIndex = () => {
               메시지 발송 결과는 데이터로 받아보세요.
               읽음부터 클릭까지 총 4개의 지표에 대해서 확인 가능합니다.
             </p>
-            {/* 통계 위젯 목업 */}
 {/* 3. 성과 분석 카드: 지표별 개별 프로그레스 바 적용 */}
 <div className="tw-bg-[#1e293b] tw-rounded-[32px] tw-p-8 tw-shadow-2xl tw-relative tw-overflow-hidden">
   {/* 통계 위젯 영역 */}
   <div className="tw-bg-white/5 tw-backdrop-blur-sm tw-border tw-border-white/10 tw-rounded-2xl tw-p-6 tw-space-y-6">
     
-{/* 1. 발송수 (전체 기준 - 선명한 블루 레이어) */}
+{/* 1. 발송수 ) */}
 <div className="tw-space-y-2">
   <div className="tw-flex tw-justify-between tw-items-end">
     <p className="tw-text-slate-400 tw-text-xs font-bold">발송수</p>
     <p className="tw-text-xl tw-font-black tw-text-white">1,240<span className="tw-text-[10px] tw-ml-1 tw-text-slate-500 tw-font-normal">건</span></p>
   </div>
-  {/* 배경 바 위에 선명한 발송 완료 바 추가 */}
   <div className="tw-w-full tw-h-1.5 tw-bg-white/5 tw-rounded-full tw-overflow-hidden">
     <div className="tw-w-full tw-h-full tw-bg-gradient-to-r tw-from-blue-600 tw-to-blue-400 tw-rounded-full shadow-[0_0_10px_rgba(37,99,235,0.4)]" />
   </div>
@@ -279,7 +282,7 @@ const MomentIndex = () => {
         <p className="tw-text-xl tw-font-black tw-text-blue-400">600</p>
       </div>
       <div className="tw-w-full tw-h-1.5 tw-bg-white/10 tw-rounded-full overflow-hidden">
-        <div className="tw-w-[95%] tw-h-full tw-bg-blue-500 tw-rounded-full shadow-[0_0_8px_rgba(59,130,246,0.5)]" />
+        <div className="tw-w-[48%] tw-h-full tw-bg-blue-500 tw-rounded-full shadow-[0_0_8px_rgba(59,130,246,0.5)]" />
       </div>
     </div>
 
@@ -321,13 +324,13 @@ const MomentIndex = () => {
     </h2>
     
     <p className="tw-text-slate-700 tw-text-lg tw-mb-10 tw-leading-relaxed tw-font-medium">
-      여러 곳을 거칠 필요 없이 비즈팅 하나로 발송부터 성과 분석까지 한 번에! <br className="tw-hidden md:tw-block" />
-      비즈팅에서 <span className="tw-text-blue-600 tw-font-bold">바로 시작해보세요</span>
+      여러 곳을 거칠 필요 없이 비즈팅 하나로 발송부터 성과 분석까지 한번에! <br className="tw-hidden md:tw-block" />
+      <span className="tw-text-blue-600 tw-font-bold">비즈팅</span>에서 바로 시작해보세요
     </p>
 
     <div className="tw-flex tw-flex-col sm:tw-flex-row tw-gap-4 tw-justify-center">
-      <button className="tw-bg-blue-600 tw-text-white tw-px-10 tw-py-4 tw-rounded-xl tw-text-lg tw-font-bold hover:tw-bg-blue-700 tw-transition-all tw-shadow-xl tw-shadow-blue-200 tw-border-0">
-        지금 바로 통합 관리 시작하기
+      <button onClick={goToMomentDescription} className="tw-bg-blue-600 tw-text-white tw-px-10 tw-py-4 tw-rounded-xl tw-text-lg tw-font-bold hover:tw-bg-blue-700 tw-transition-all tw-shadow-xl tw-shadow-blue-200 tw-border-0">
+        카카오 광고 메시지 보내기
       </button>
     </div>
   </div>
