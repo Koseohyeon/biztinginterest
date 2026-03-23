@@ -95,8 +95,6 @@ export default function KakaoMomentGuide() {
               전송
             </button>
           </div>
-
-          {/* 제출 완료 상태 */}
           {submittedId && (
             <div className="tw-bg-green-50 tw-border-0 tw-border-green-200 tw-rounded-lg tw-p-4 tw-flex tw-justify-between tw-items-center">
               <span className="tw-text-sm">
@@ -174,8 +172,6 @@ export default function KakaoMomentGuide() {
           <p className="tw-mb-4 tw-text-gray-700">
             궁금한 사항이 있다면 아래 메일 혹은 1:1 문의를 남겨주시기 바랍니다.
           </p>
-
-          {/* 이메일 텍스트 */}
           <p className="tw-mb-4 tw-text-gray-800">
             tf@biztalk.co.kr
           </p>

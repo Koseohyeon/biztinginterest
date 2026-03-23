@@ -17,11 +17,7 @@ const PhoneMockup = ({ children, label, labelPosition }: PhoneMockupProps) => {
     <div className="tw-relative tw-w-[300px] tw-aspect-[9/19] tw-bg-slate-900 tw-rounded-[3rem] tw-border-[8px] tw-border-slate-900 tw-shadow-2xl tw-overflow-hidden">
 
       <div className="tw-w-full tw-h-full tw-bg-[#8AA7C1] tw-flex tw-flex-col tw-relative">
-
-        {/* ✨ 화면 내부 상단 바 UI (image_4.png 기반) ✨ */}
         <div className="tw-h-12 tw-w-full tw-flex tw-items-center tw-justify-between tw-px-5 tw-border-b tw-border-slate-100/50">
-
-          {/* 왼쪽: 뒤로 가기 */}
           <ChevronLeft size={20} className="tw-text-slate-900" />
 
           {/* 중앙: 텍스트 및 전화번호 */}
@@ -32,15 +28,11 @@ const PhoneMockup = ({ children, label, labelPosition }: PhoneMockupProps) => {
               <ChevronDown size={12} className="tw-opacity-60" />
             </div>
           </div>
-
-          {/* 오른쪽: 아이콘들 */}
           <div className="tw-flex tw-items-center tw-gap-4">
             <Search size={20} className="tw-text-slate-900" />
             <Menu size={20} className="tw-text-slate-900" />
           </div>
         </div>
-
-        {/* 내부 콘텐츠 영역 (상단 바 UI 아래에 위치) */}
         <div className="tw-px-4 tw-h-full tw-overflow-y-auto">
           {children}
         </div>
@@ -130,8 +122,6 @@ const MomentIndex = () => {
                   <div className="tw-text-center tw-text-sm tw-font-semibold tw-py-3">
                     회원님, 안녕하세요!
                   </div>
-
-                  {/* ✅ 배너 (이미지 → 아이콘) */}
                   <div className="tw-px-3">
                     <div className="tw-w-full tw-h-28 tw-bg-blue-400 tw-rounded-xl tw-flex tw-flex-col tw-items-center tw-justify-center tw-text-white">
                       <div className="tw-text-3xl">🛍️</div>
@@ -142,7 +132,6 @@ const MomentIndex = () => {
                     </div>
                   </div>
 
-                  {/* ✅ 리스트 (이미지 → 아이콘) */}
                   <div className="tw-p-3 tw-space-y-3">
 
                     {[
@@ -187,7 +176,6 @@ const MomentIndex = () => {
 
       <section className="tw-py-24 tw-bg-slate-50">
         <div className="tw-max-w-6xl tw-mx-auto tw-px-6">
-          {/* 상단 헤더: 가독성을 위해 텍스트 농도 조절 */}
           <div className="tw-text-center tw-mb-16">
             <h2 className="tw-text-blue-600 tw-font-bold tw-mb-3 tw-text-lg">Kakao Moment</h2>
             <p className="tw-text-4xl tw-font-black tw-text-slate-900 tw-tracking-tight">
@@ -199,8 +187,6 @@ const MomentIndex = () => {
           </div>
 
           <div className="tw-grid md:tw-grid-cols-3 tw-gap-8">
-
-            {/* 1. 와이드 이미지형: '브랜드 홍보' 목적을 명확히 함 */}
             <div className="tw-bg-white tw-rounded-[32px] tw-p-8 tw-border tw-border-slate-200 tw-shadow-sm hover:tw-shadow-xl tw-transition-all">
               <div className="tw-w-12 tw-h-12 tw-bg-blue-600 tw-rounded-xl tw-flex tw-items-center tw-justify-center tw-mb-6">
                 <ImageIcon className="tw-text-white" size={24} />
@@ -209,7 +195,6 @@ const MomentIndex = () => {
               <p className="tw-text-slate-600 tw-leading-relaxed tw-mb-8 tw-font-medium">
                 신상품 출시나 프로모션 알림에 탁월합니다. 큰 사이즈의 이미지를 활용해 주목도 높은 메시지를 구성할 수 있습니다.
               </p>
-              {/* 시각적 목업: 실제 광고 느낌 */}
               <div className="tw-relative tw-rounded-2xl tw-overflow-hidden tw-border tw-border-slate-100 tw-aspect-video tw-bg-slate-900">
                 <div className="tw-absolute tw-inset-0 tw-bg-gradient-to-t tw-from-black/80 tw-via-transparent tw-to-transparent tw-p-5 tw-flex tw-flex-col tw-justify-end">
                   <span className="tw-absolute tw-top-3 tw-right-3 tw-bg-black/40 tw-text-white tw-text-[10px] tw-px-2 tw-py-0.5 tw-rounded tw-backdrop-blur-sm">AD</span>
@@ -221,8 +206,6 @@ const MomentIndex = () => {
                 </div>
               </div>
             </div>
-
-            {/* 2. 와이드 리스트형: 선명도 개선 및 실제 컨텐츠 예시 */}
             <div className="tw-bg-white tw-rounded-[32px] tw-p-8 tw-border tw-border-slate-200 tw-shadow-sm hover:tw-shadow-xl tw-transition-all">
               <div className="tw-w-12 tw-h-12 tw-bg-purple-600 tw-rounded-xl tw-flex tw-items-center tw-justify-center tw-mb-6">
                 <ListOrdered className="tw-text-white" size={24} />
@@ -231,7 +214,6 @@ const MomentIndex = () => {
               <p className="tw-text-slate-600 tw-leading-relaxed tw-mb-8 tw-font-medium">
                 다양한 주제의 메시지를 리스트 유형으로 구성해보세요. 유저가 필요한 정보를 직접 선택하여 탐색할 수 있습니다.
               </p>
-              {/* 시각적 목업: 고대비 리스트 */}
               <div className="tw-space-y-3 tw-p-4 tw-bg-slate-50 tw-rounded-2xl tw-border tw-border-slate-200">
                 {[
                   { n: "1", t: "이번 주 가장 사랑받은 신상", c: "트렌드 리포트" },
@@ -249,8 +231,6 @@ const MomentIndex = () => {
                 ))}
               </div>
             </div>
-
-            {/* 3. 성과 분석: 너무 어둡지 않은 네이비 톤 + 선명한 블루 포인트 */}
             <div className="tw-bg-[#1e293b] tw-rounded-[32px] tw-p-8 tw-shadow-2xl tw-relative tw-overflow-hidden">
               <div className="tw-w-12 tw-h-12 tw-bg-blue-500 tw-rounded-xl tw-flex tw-items-center tw-justify-center tw-mb-6">
                 <BarChart3 className="tw-text-white" size={24} />
@@ -260,11 +240,9 @@ const MomentIndex = () => {
                 메시지 발송 결과는 데이터로 받아보세요.
                 읽음부터 클릭까지 총 4개의 지표에 대해서 확인 가능합니다.
               </p>
-              {/* 3. 성과 분석 카드: 지표별 개별 프로그레스 바 적용 */}
               <div className="tw-bg-[#1e293b] tw-rounded-[32px] tw-p-8 tw-shadow-2xl tw-relative tw-overflow-hidden">
                 {/* 통계 위젯 영역 */}
                 <div className="tw-bg-white/5 tw-backdrop-blur-sm tw-border tw-border-white/10 tw-rounded-2xl tw-p-6 tw-space-y-6">
-
                   {/* 1. 발송수 ) */}
                   <div className="tw-space-y-2">
                     <div className="tw-flex tw-justify-between tw-items-end">
