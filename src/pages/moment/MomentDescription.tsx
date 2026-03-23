@@ -5,7 +5,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 export default function KakaoMomentGuide() {
   const [channelId, setChannelId] = useState("");
- const [submittedId, setSubmittedId] = useState<string | null>(null);
+  const [submittedId, setSubmittedId] = useState<string | null>(null);
 
   const isSubmitted = submittedId !== null;
 
@@ -38,19 +38,19 @@ export default function KakaoMomentGuide() {
           </p>
         </div>
         {/* 안내 카드 */}
-<div className="tw-bg-blue-50 tw-border tw-border-blue-200 tw-rounded-2xl tw-p-5 tw-mb-6">
-  <div className="tw-flex tw-items-start tw-gap-3">
-    <div className="tw-text-[#5D87FF] tw-font-bold">ℹ️</div>
-    <div>
-      <p className="tw-text-sm tw-text-gray-800 tw-font-medium">
-        사전 안내
-      </p>
-      <p className="tw-text-sm tw-text-gray-700 tw-mt-1">
-        해당 기능은 <span className="tw-font-semibold">카카오 비즈니스 인증이 완료된 채널</span>이 있어야 이용할 수 있습니다.
-      </p>
-    </div>
-  </div>
-</div>
+        <div className="tw-bg-blue-50 tw-border tw-border-blue-200 tw-rounded-2xl tw-p-5 tw-mb-6">
+          <div className="tw-flex tw-items-start tw-gap-3">
+            <div className="tw-text-[#5D87FF] tw-font-bold">ℹ️</div>
+            <div>
+              <p className="tw-text-sm tw-text-gray-800 tw-font-medium">
+                사전 안내
+              </p>
+              <p className="tw-text-sm tw-text-gray-700 tw-mt-1">
+                해당 기능은 <span className="tw-font-semibold">카카오 비즈니스 인증이 완료된 채널</span>이 있어야 이용할 수 있습니다.
+              </p>
+            </div>
+          </div>
+        </div>
         {/* Step 1 */}
         <div className="tw-bg-white tw-rounded-2xl tw-shadow tw-p-6 tw-mb-6">
           <div className="tw-flex tw-items-center tw-gap-3 tw-mb-4">
@@ -71,7 +71,7 @@ export default function KakaoMomentGuide() {
           </div>
 
           {/* Input */}
-          <div className="tw-flex tw-gap-2 tw-mb-4">
+          <div className="tw-flex tw-border-0 tw-gap-2 tw-mb-4">
             <input
               type="text"
               value={channelId}
@@ -86,11 +86,10 @@ export default function KakaoMomentGuide() {
             <button
               onClick={handleSubmit}
               disabled={isSubmitted || !channelId.trim()}
-              className={`tw-px-4 tw-py-2 tw-rounded-lg tw-text-white
-                ${
-                  isSubmitted || !channelId.trim()
-                    ? "tw-bg-gray-400 tw-cursor-not-allowed"
-                    : "tw-bg-[#5D87FF] hover:tw-opacity-80"
+              className={`tw-border-0 tw-px-4 tw-py-2 tw-rounded-lg tw-text-white
+                ${isSubmitted || !channelId.trim()
+                  ? "tw-bg-gray-400 tw-cursor-not-allowed"
+                  : "tw-bg-[#5D87FF] hover:tw-opacity-80"
                 }`}
             >
               전송
@@ -99,14 +98,14 @@ export default function KakaoMomentGuide() {
 
           {/* 제출 완료 상태 */}
           {submittedId && (
-            <div className="tw-bg-green-50 tw-border tw-border-green-200 tw-rounded-lg tw-p-4 tw-flex tw-justify-between tw-items-center">
+            <div className="tw-bg-green-50 tw-border-0 tw-border-green-200 tw-rounded-lg tw-p-4 tw-flex tw-justify-between tw-items-center">
               <span className="tw-text-sm">
                 입력된 아이디: <b>{submittedId}</b>
               </span>
 
               <button
                 onClick={handleReset}
-                className="tw-text-sm tw-text-[#5D87FF] hover:tw-underline"
+                className="tw-border-0 tw-text-sm tw-text-[#5D87FF] hover:tw-underline"
               >
                 수정하기
               </button>
@@ -117,7 +116,7 @@ export default function KakaoMomentGuide() {
             href="https://business.kakao.com/_jxcupG/dashboard"
             target="_blank"
             rel="noopener noreferrer"
-            className="tw-inline-block tw-mt-4 tw-bg-[#5D87FF] tw-text-white tw-px-4 tw-py-2 tw-rounded-lg hover:tw-opacity-80 tw-no-underline"
+            className="tw-border-0 tw-inline-block tw-mt-4 tw-bg-[#5D87FF] tw-text-white tw-px-4 tw-py-2 tw-rounded-lg hover:tw-opacity-80 tw-no-underline"
           >
             카카오 비즈니스 바로가기
           </a>
@@ -146,7 +145,7 @@ export default function KakaoMomentGuide() {
             href="https://business.kakao.com/_jxcupG/dashboard"
             target="_blank"
             rel="noopener noreferrer"
-            className="tw-inline-block tw-bg-[#5D87FF] tw-text-white tw-px-4 tw-py-2 tw-rounded-lg hover:tw-opacity-80 tw-no-underline"
+            className="tw-border-0 tw-inline-block tw-bg-[#5D87FF] tw-text-white tw-px-4 tw-py-2 tw-rounded-lg hover:tw-opacity-80 tw-no-underline"
           >
             관리자 초대하러 가기
           </a>
@@ -170,28 +169,28 @@ export default function KakaoMomentGuide() {
           </div>
         </div>
 
-      {/* Footer */}
-<div className="tw-bg-gray-100 tw-rounded-2xl tw-p-6 tw-text-center">
-  <p className="tw-mb-4 tw-text-gray-700">
-    궁금한 사항이 있다면 아래 메일 혹은 1:1 문의를 남겨주시기 바랍니다.
-  </p>
+        {/* Footer */}
+        <div className="tw-bg-gray-100 tw-rounded-2xl tw-p-6 tw-text-center">
+          <p className="tw-mb-4 tw-text-gray-700">
+            궁금한 사항이 있다면 아래 메일 혹은 1:1 문의를 남겨주시기 바랍니다.
+          </p>
 
-  {/* 이메일 텍스트 */}
-  <p className="tw-mb-4 tw-text-gray-800">
-    tf@biztalk.co.kr
-  </p>
+          {/* 이메일 텍스트 */}
+          <p className="tw-mb-4 tw-text-gray-800">
+            tf@biztalk.co.kr
+          </p>
 
-  <div className="tw-flex tw-justify-center">
-    <a
-      href="1:1문의 경로"
-      target="_blank"
-      rel="noopener noreferrer"
-      className="tw-bg-[#5D87FF] tw-text-white tw-px-4 tw-py-2 tw-rounded-lg hover:tw-opacity-80 tw-no-underline"
-    >
-      1:1 문의
-    </a>
-  </div>
-</div>
+          <div className="tw-flex tw-justify-center">
+            <a
+              href="1:1문의 경로"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="tw-border-0 tw-bg-[#5D87FF] tw-text-white tw-px-4 tw-py-2 tw-rounded-lg hover:tw-opacity-80 tw-no-underline"
+            >
+              1:1 문의
+            </a>
+          </div>
+        </div>
         {/* Toast 위치 */}
         <ToastContainer
           position="top-right"
