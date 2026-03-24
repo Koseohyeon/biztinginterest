@@ -51,17 +51,17 @@ export default function AttentionIndex() {
               신규 고객 확보 솔루션
             </div>
             <h1 className="tw-text-4xl md:tw-text-6xl tw-font-extrabold tw-tracking-tight tw-text-slate-900">
-              광고 클릭을 <span className="tw-text-blue-600">진성 고객</span>으로<br />
-              전환하는 가장 확실한 방법
+              관심고객을 <span className="tw-text-blue-600">진성고객</span>으로<br />
+              전환하는 방법
             </h1>
             <p className="tw-mt-6 tw-max-w-2xl tw-mx-auto tw-text-lg tw-text-slate-600 tw-leading-8">
               복잡한 개발이나 비싼 랜딩페이지 없이, 네이버 간편동의 하나로
-              광고에 반응한 잠재고객의 DB를 합법적으로 수집하고 즉시 영업에 활용하세요.
+              광고에 반응한 잠재고객의 DB를 수집하고 즉시 영업에 활용하세요.
             </p>
             <div className="tw-mt-10">
               <button
                 onClick={handleStart}
-                className="tw-bg-blue-600 tw-text-white tw-px-8 tw-py-4 tw-rounded-lg tw-font-semibold tw-text-lg tw-shadow-lg hover:tw-bg-blue-700 tw-transition-transform hover:tw-scale-105"
+                className="tw-border-0 tw-bg-blue-600 tw-text-white tw-px-8 tw-py-4 tw-rounded-lg tw-font-semibold tw-text-lg tw-shadow-lg hover:tw-bg-blue-700 tw-transition-transform hover:tw-scale-105"
               >
                 지금 바로 진성고객 확보하기
               </button>
@@ -74,10 +74,10 @@ export default function AttentionIndex() {
             <div className="tw-max-w-7xl tw-mx-auto tw-px-6">
                 <div className="tw-text-center tw-mb-20">
                     <h2 className="tw-text-3xl md:tw-text-4xl tw-font-bold tw-text-slate-900">
-                        광고부터 <span className="tw-text-blue-600">매출</span>까지, 이렇게 자동화됩니다
+                        광고부터 <span className="tw-text-blue-600">고객수집</span>까지, 이렇게 됩니다.
                     </h2>
                     <p className="tw-mt-4 tw-text-lg tw-text-slate-500">
-                        고객의 단 한 번의 클릭이 광고주의 데이터가 되기까지의 과정
+                        잠재고객에서 진성고객이 되기까지의 과정
                     </p>
                 </div>
                 <ProcessDiagram />
@@ -92,7 +92,7 @@ export default function AttentionIndex() {
                         실시간으로 쌓이는 <span className="tw-text-blue-600">'진성 고객'</span>을 직접 확인하세요
                     </h2>
                     <p className="tw-mt-4 tw-text-lg tw-text-slate-500">
-                       대시보드를 통해 캠페인 성과를 직관적으로 분석하고, 고객 데이터를 즉시 활용할 수 있습니다.
+                       대시보드를 통해 캠페인 성과를 직관적으로 확인하고, 고객 데이터를 즉시 활용할 수 있습니다.
                     </p>
                 </div>
                 <DashboardPreview />
@@ -115,7 +115,7 @@ export default function AttentionIndex() {
               />
               <BenefitCard
                 icon={<TrendingUp className="tw-w-8 tw-h-8" />}
-                title="압도적인 전환율"
+                title="간편한 회원전환"
                 text="개발이 필요없는 '3초 네이버 동의'로 회원가입 과정의 이탈률을 줄일 수 있습니다."
               />
                <BenefitCard
@@ -139,7 +139,7 @@ export default function AttentionIndex() {
                 <div className="tw-mt-10">
                     <button
                     onClick={handleStart}
-                    className="tw-bg-white tw-text-blue-600 tw-px-10 tw-py-4 tw-rounded-lg tw-font-bold tw-text-lg tw-shadow-xl hover:tw-bg-slate-100 tw-transition-transform hover:tw-scale-105"
+                    className="tw-border-0 tw-bg-white tw-text-blue-600 tw-px-10 tw-py-4 tw-rounded-lg tw-font-bold tw-text-lg tw-shadow-xl hover:tw-bg-slate-100 tw-transition-transform hover:tw-scale-105"
                     >
                     서비스 시작하기
                     </button>
@@ -162,9 +162,6 @@ export default function AttentionIndex() {
 
 const ProcessDiagram = () => (
     <div className="tw-relative tw-flex tw-flex-col md:tw-flex-row tw-items-center tw-justify-around tw-gap-y-12 md:tw-gap-x-8">
-        {/* Connecting Line */}
-        <div className="tw-absolute tw-top-0 md:tw-top-1/2 tw-left-1/2 md:tw-left-0 tw-w-px md:tw-w-full tw-h-full md:tw-h-px tw-bg-slate-300 -tw-translate-x-1/2 md:-tw-translate-y-1/2 -tw-z-0"></div>
-
         <ProcessStep
             icon={<Smartphone className="tw-w-10 tw-h-10"/>}
             step="Step 1"
@@ -210,14 +207,14 @@ const DashboardPreview = () => (
         <div className="tw-bg-white tw-px-6 tw-py-4 tw-border-b tw-border-slate-200">
             <div className="tw-flex tw-flex-col md:tw-flex-row tw-justify-between tw-items-center tw-gap-4">
                 <h2 className="tw-text-xl tw-font-bold tw-text-slate-800">
-                  진성고객 대시보드
+                  대시보드
                 </h2>
                 <div className="tw-flex tw-items-center tw-gap-3">
                     <div className="tw-relative">
-                        <input type="text" placeholder="이름, 연락처, 이메일 검색" className="tw-border tw-border-slate-300 tw-rounded-lg tw-pl-9 tw-pr-3 tw-py-2 tw-w-full md:tw-w-60 tw-text-sm focus:tw-ring-2 focus:tw-ring-blue-500 focus:tw-border-blue-500"/>
+                        <input type="text" placeholder="이름, 연락처, 이메일 검색" className="tw-border-0 tw-border-slate-300 tw-rounded-lg tw-pl-9 tw-pr-3 tw-py-2 tw-w-full md:tw-w-60 tw-text-sm focus:tw-ring-2 focus:tw-ring-blue-500 focus:tw-border-blue-500"/>
                         <Users className="tw-absolute tw-left-2.5 tw-top-1/2 -tw-translate-y-1/2 tw-w-4 tw-h-4 tw-text-slate-400"/>
                     </div>
-                    <button className="tw-bg-blue-600 tw-text-white tw-px-4 tw-py-2 tw-rounded-lg tw-font-semibold tw-text-sm tw-shadow hover:tw-bg-blue-700 tw-flex tw-items-center tw-gap-2 tw-flex-shrink-0">
+                    <button className="tw-border-0 tw-bg-blue-600 tw-text-white tw-px-4 tw-py-2 tw-rounded-lg tw-font-semibold tw-text-sm tw-shadow hover:tw-bg-blue-700 tw-flex tw-items-center tw-gap-2 tw-flex-shrink-0">
                         <FileText className="tw-w-4 tw-h-4"/>
                         엑셀 다운로드
                     </button>
@@ -231,7 +228,7 @@ const DashboardPreview = () => (
             <div className="tw-grid tw-grid-cols-5 md:tw-grid-cols-4 tw-gap-10 tw-mb-6 tw-w-full">
                 <KpiCard title="관심고객 수" value="105명" color="tw-text-blue-600" />
                  <KpiCard title="오늘 가입 수" value="25명" />
-                <KpiCard title="7일 내가입 수" value="42명"  />
+                <KpiCard title="7일 내 가입 수" value="42명"  />
             </div>
 
             {/* Chart */}
@@ -249,7 +246,7 @@ const DashboardPreview = () => (
             <div className="tw-bg-white tw-border tw-border-slate-200 tw-rounded-xl tw-p-6">
                  <div className="tw-flex tw-justify-between tw-items-center tw-mb-4">
                     <h3 className="tw-font-semibold tw-text-slate-800">최근 확보된 진성 고객 목록</h3>
-                    <button className="tw-text-sm tw-font-semibold tw-text-blue-600 hover:tw-underline">전체 목록 보기 →</button>
+                    <button className="tw-border-0 tw-text-sm tw-font-semibold tw-text-blue-600 hover:tw-underline">전체 목록 보기 →</button>
                 </div>
                 <MaskedTable users={sampleUsers} />
             </div>
