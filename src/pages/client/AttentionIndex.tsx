@@ -30,7 +30,7 @@ const sampleUsers = [
   { id: 2, name: '이민서', phone: '010-5678-5678', email: 'leems@gmail.com', createdAt: '2024-03-22 11:34' },
   { id: 3, name: '박서준', phone: '010-9012-9012', email: 'parksj@nate.com', createdAt: '2024-03-21 18:22' },
   { id: 4, name: '최지윤', phone: '010-3456-3456', email: 'choijy@daum.net', createdAt: '2024-03-21 16:48' },
-  { id: 5, name: '정우진', phone: '010-7890-7890', email: 'jungwj@naver.com', createdAt: '2024-03-20 20:15' },
+  { id: 5, name: '정우진', phone: '010-7890-7890', email: 'jungwj@naver.com', createdAt: '2024-03-20 20:15'},
 ];
 // --- END: Sample Data ---
 
@@ -51,7 +51,7 @@ export default function AttentionIndex() {
               신규 고객 확보 솔루션
             </div>
             <h1 className="tw-text-4xl md:tw-text-6xl tw-font-extrabold tw-tracking-tight tw-text-slate-900">
-              관심고객을 <span className="tw-text-blue-600">진성고객</span>으로<br />
+               <span className="tw-text-blue-600">N-pass</span> 관심고객을 <span className="tw-text-blue-600">진성고객</span>으로<br />
               전환하는 방법
             </h1>
             <p className="tw-mt-6 tw-max-w-2xl tw-mx-auto tw-text-lg tw-text-slate-600 tw-leading-8">
@@ -63,7 +63,7 @@ export default function AttentionIndex() {
                 onClick={handleStart}
                 className="tw-border-0 tw-bg-blue-600 tw-text-white tw-px-8 tw-py-4 tw-rounded-lg tw-font-semibold tw-text-lg tw-shadow-lg hover:tw-bg-blue-700 tw-transition-transform hover:tw-scale-105"
               >
-                지금 바로 진성고객 확보하기
+                N-pass 시작하기
               </button>
             </div>
           </div>
@@ -141,7 +141,7 @@ export default function AttentionIndex() {
                     onClick={handleStart}
                     className="tw-border-0 tw-bg-white tw-text-blue-600 tw-px-10 tw-py-4 tw-rounded-lg tw-font-bold tw-text-lg tw-shadow-xl hover:tw-bg-slate-100 tw-transition-transform hover:tw-scale-105"
                     >
-                    서비스 시작하기
+                    N-pass 시작하기
                     </button>
                 </div>
             </div>

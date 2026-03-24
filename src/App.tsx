@@ -1,5 +1,5 @@
 
-  import { BrowserRouter, Routes, Route } from "react-router-dom";
+  import { HashRouter, Routes, Route } from "react-router-dom";
   import Dashboard from "./pages/client/Dashboard";
   import DashboardLogin from "./pages/client/DashboardLogin";
   import AttentionIndex from "./pages/client/AttentionIndex";
@@ -16,82 +16,29 @@ import MomentIndex from "./pages/moment/MomentIndex"
 import MomentDescription from "./pages/moment/MomentDescription"
 
   export default function App() {
-
-    return (
-      <BrowserRouter>
-
-        <Routes>
+  return (
+    <HashRouter>
+      <Routes>
 
         <Route path="/" element={<AttentionIndex />} />
+        <Route path="*" element={<AttentionIndex />} />
 
-        <Route
-          path="/MomentIndex"
-          element={<MomentIndex />}
-        />
-        <Route
-          path="/Dashboard"
-          element={<Dashboard />}
-        />
+        <Route path="/MomentIndex" element={<MomentIndex />} />
+        <Route path="/Dashboard" element={<Dashboard />} />
+        <Route path="/DashboardLogin" element={<DashboardLogin />} />
+        <Route path="/AttentionIndex" element={<AttentionIndex />} />
 
-        <Route
-          path="/DashboardLogin"
-          element={<DashboardLogin />}
-        />
+        {/* admin */}
+        <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/admin/company" element={<AdminCompanyList />} />
+        <Route path="/admin/terms" element={<AdminTermsManager />} />
+        <Route path="/admin/logs" element={<AdminLogs />} />
+        <Route path="/admin/users" element={<AdminUserManagement />} />
 
-          <Route
-            path="/Dashboard"
-            element={<Dashboard />}
-          />
+        {/* moment */}
+        <Route path="/moment/description" element={<MomentDescription />} />
 
-          <Route
-            path="/DashboardLogin"
-            element={<DashboardLogin />}
-          />
-
-            <Route
-            path="/AttentionIndex"
-            element={<AttentionIndex />}
-          />
-
-
-           {/* admin */}
-
-        <Route
-          path="/admin"
-          element={<AdminDashboard />}
-        />
-
-        <Route
-          path="/admin"
-          element={<AdminDashboard />}
-        />
-
-        <Route
-          path="/admin/company"
-          element={<AdminCompanyList />}
-        />
-
-
-        <Route
-          path="/admin/terms"
-          element={<AdminTermsManager />}
-        />
-          <Route
-          path="/admin/logs"
-          element={<AdminLogs />}
-        />
-          <Route
-          path="/admin/users"
-          element={<AdminUserManagement />}
-        />
-        
-        {/*모먼트  */}
-         <Route
-          path="/moment/description"
-          element={<MomentDescription />}
-        />
-
-        </Routes>
-      </BrowserRouter>
-    );
-  }
+      </Routes>
+    </HashRouter>
+  );
+}
