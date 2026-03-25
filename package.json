@@ -2,7 +2,7 @@
   "name": "biztinginterest",
   "private": true,
   "version": "0.0.0",
-   "homepage": "https://koseohyeon.github.io/biztinginterest",
+   "homepage": "https://koseohyeon.github.io/biztinginterest/",
   "type": "module",
   "scripts": {
   "dev": "vite",
