@@ -37,7 +37,7 @@ import MomentDescription from "./pages/moment/MomentDescription"
 
         {/* moment */}
         <Route path="/moment/description" element={<MomentDescription />} />
-
+        <Route path="/moment/momentindex" element={<MomentIndex />} />
       </Routes>
     </HashRouter>
   );
