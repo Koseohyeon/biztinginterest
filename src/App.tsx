@@ -15,6 +15,8 @@ import AdminUserManagement from "./pages/admin/AdminUserManagement";
 import MomentIndex from "./pages/moment/MomentIndex"
 import MomentDescription from "./pages/moment/MomentDescription"
 
+//privacy
+
   export default function App() {
   return (
     <HashRouter>
