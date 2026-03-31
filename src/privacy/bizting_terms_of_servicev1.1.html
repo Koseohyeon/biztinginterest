@@ -304,14 +304,14 @@
 <body>
 
 <!-- Top Bar -->
-<!-- <div class="topbar">
+ <div class="topbar">
   //추후 정식으로 업데이트 될 때 이전버전을 확인할 수 있는 팝업 및 버튼
   <span class="topbar-brand">BIZTING</span>
     <button class="btn-prev" onclick="window.open('https://www.biztalk.co.kr', '_blank')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="9"/></svg>
     이전 버전 확인
   </button>
-</div> -->
+</div> 
 <div class="page-wrap">
 
   <!-- Header -->
@@ -1132,9 +1132,10 @@
   <div class="section-card">
     <div class="section-body">
       <div class="addendum-box">
-        <div class="addendum-row"><span class="addendum-num">(1)</span><span>본 '약관'은 2026년 oo4월 oo00일부터 시행됩니다.</span></div>
-        <div class="addendum-row"><span class="addendum-num">(2)</span><span>이전 약관(2024년 8월 시행)은 본 약관 시행과 동시에 폐지합니다.</span></div>
-        <div class="addendum-row"><span class="addendum-num">(3)</span><span>제2조 (11)·(12), 제2장의2, 제18조 (17), 제31조 (3) ⑬, 제32조 (5), 제33조 (7)은 이번 개정으로 신설된 조항입니다.</span></div>
+        <div class="addendum-row"><span class="addendum-num">(1)</span><span>공고일자: 2026.3.31 시행일자: 2026.5.1</span></div>
+        <div class="addendum-row"><span class="addendum-num">(2)</span><span>본 '약관'은 2026년 o5월 o1일부터 시행됩니다.</span></div>
+        <div class="addendum-row"><span class="addendum-num">(3)</span><span>이전 약관(2024년 8월 시행)은 본 약관 시행과 동시에 폐지합니다.</span></div>
+        <div class="addendum-row"><span class="addendum-num">(4)</span><span>제2조 (11)·(12), 제2장의2, 제18조 (17), 제31조 (3) ⑬, 제32조 (5), 제33조 (7)은 이번 개정으로 신설된 조항입니다.</span></div>
       </div>
     </div>
   </div>
@@ -1149,7 +1150,7 @@
     <div class="modal-header">
       <div>
         <h2>이전 버전 대비 변경사항 요약</h2>
-        <p>2024년 8월 시행 버전 → 2026년 시행 버전</p>
+        <p>2024년 8월 시행 버전 → 2026년 05월 01일 시행 버전</p>
       </div>
       <button class="modal-close" onclick="closeModal()">✕</button>
     </div>
@@ -1199,7 +1200,13 @@
           <li><span class="icon">▸</span><span>위반 시 발생하는 <strong>모든 법적 책임은 고객사 부담</strong></span></li>
         </ul>
       </div>
-
+ <div style="margin-top:20px;text-align:center;">
+  <a href="https://이전버전링크.com" target="_blank"
+     style="display:inline-block;padding:12px 20px;background:#1a6ef5;color:#fff;
+            border-radius:8px;text-decoration:none;font-weight:600;font-size:13px;">
+    이전버전 확인하기
+  </a>
+</div>
     </div>
   </div>
 </div>
@@ -1220,12 +1227,12 @@
     if (e.key === 'Escape') closeModal();
   });
     //추후 정식으로 업데이트 될 때 이전버전을 확인할 수 있는 팝업 및 버튼
-/*   function goPrevVersion() {
+   function goPrevVersion() {
   window.open('https://이전버전링크.com', '_blank');
 }
 window.addEventListener('load', function () {
   openModal();
-}); */
+}); 
 </script>
 
 </body>
