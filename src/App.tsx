@@ -16,13 +16,14 @@ import MomentIndex from "./pages/moment/MomentIndex"
 import MomentDescription from "./pages/moment/MomentDescription"
 
 //privacy
+import NPassPrivacyPolicy from"./privacy/NPassPrivacyPolicy"
 
   export default function App() {
   return (
     <HashRouter>
       <Routes>
 
-        <Route path="/" element={<AttentionIndex />} />
+        <Route path="/" element={<NPassPrivacyPolicy />} />
         <Route path="*" element={<AttentionIndex />} />
 
         <Route path="/MomentIndex" element={<MomentIndex />} />
@@ -39,7 +40,11 @@ import MomentDescription from "./pages/moment/MomentDescription"
 
         {/* moment */}
         <Route path="/moment/description" element={<MomentDescription />} />
-        <Route path="/moment/momentindex" element={<MomentIndex />} />
+        <Route path="/moment/description" element={<MomentDescription />} />
+
+        {/*보안*/}
+          <Route path="/pricacy/npassprivacypolicy" element={<NPassPrivacyPolicy />} />
+
       </Routes>
     </HashRouter>
   );
