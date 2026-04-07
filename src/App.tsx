@@ -19,12 +19,15 @@ import KakaoMomentTermsModal from"./pages/moment/KakaoMomentTermsModal"
 //privacy
 import NPassPrivacyPolicy from"./privacy/NPassPrivacyPolicy"
 
+//Latte
+import LatteEventPage from"./pages/client/LatteEventPage"
+
   export default function App() {
   return (
     <HashRouter>
       <Routes>
 
-        <Route path="/" element={<KakaoMomentTermsModal />} />
+        <Route path="/" element={<LatteEventPage />} />
         <Route path="*" element={<AttentionIndex />} />
 
         <Route path="/MomentIndex" element={<MomentIndex />} />
@@ -45,7 +48,6 @@ import NPassPrivacyPolicy from"./privacy/NPassPrivacyPolicy"
 
         {/*보안*/}
           <Route path="/pricacy/npassprivacypolicy" element={<NPassPrivacyPolicy />} />
-
       </Routes>
     </HashRouter>
   );
