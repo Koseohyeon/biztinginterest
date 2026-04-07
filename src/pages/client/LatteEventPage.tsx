@@ -17,7 +17,6 @@ interface Review {
 interface Step {
   title: string;
   desc: string;
-  imgSrc: string;
 }
 
 // --- [데이터 모음] ---
@@ -29,10 +28,10 @@ const REVIEWS: Review[] = [
 ];
 
 const N_PASS_STEPS: Step[] = [
-  { title: 'Step 1. 비즈팅 광고 접근', desc: '비즈팅을 통해 집행한 광고 메시지를 받은 수신자는 해당 URL을 통해 N-Pass에 진입합니다.', imgSrc: '/images/npass-step1.png' },
-  { title: 'Step 2. 네이버 3초 회원가입', desc: 'URL 유입 후 네이버 로그인을 클릭하면 간편 회원가입 동의창이 노출됩니다. 동의 즉시 관심고객으로 확보됩니다.', imgSrc: '/images/npass-step2.png' },
-  { title: 'Step 3. 대시보드 확인', desc: '캠페인 집행 완료 후, 대시보드에서 총 가입자, 금일 가입자 등 관심고객 지표를 한눈에 확인합니다.', imgSrc: '/images/npass-step3.png' },
-  { title: 'Step 4. 마케팅 활용', desc: '확보된 정보를 기반으로 아웃바운드 마케팅 등 자유로운 2차 마케팅 활용이 가능합니다.', imgSrc: '/images/npass-step4.png' },
+  { title: 'Step 1. 비즈팅 광고 접근', desc: '비즈팅을 통해 집행한 광고 메시지를 받은 수신자는 해당 URL을 통해 N-Pass에 진입합니다.', },
+  { title: 'Step 2. 네이버 3초 회원가입', desc: 'URL 유입 후 네이버 로그인을 클릭하면 간편 회원가입 동의창이 노출됩니다. 동의 즉시 관심고객으로 확보됩니다.'},
+  { title: 'Step 3. 대시보드 확인', desc: '캠페인 집행 완료 후, 대시보드에서 총 가입자, 금일 가입자 등 관심고객 지표를 한눈에 확인합니다.' },
+  { title: 'Step 4. 마케팅 활용', desc: '확보된 정보를 기반으로 아웃바운드 마케팅 등 자유로운 2차 마케팅 활용이 가능합니다.' },
 ];
 
 export default function BiztingIndexPage() {
