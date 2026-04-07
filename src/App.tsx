@@ -14,6 +14,7 @@ import AdminUserManagement from "./pages/admin/AdminUserManagement";
 //moment pages
 import MomentIndex from "./pages/moment/MomentIndex"
 import MomentDescription from "./pages/moment/MomentDescription"
+import KakaoMomentTermsModal from"./pages/moment/KakaoMomentTermsModal"
 
 //privacy
 import NPassPrivacyPolicy from"./privacy/NPassPrivacyPolicy"
@@ -23,7 +24,7 @@ import NPassPrivacyPolicy from"./privacy/NPassPrivacyPolicy"
     <HashRouter>
       <Routes>
 
-        <Route path="/" element={<NPassPrivacyPolicy />} />
+        <Route path="/" element={<KakaoMomentTermsModal />} />
         <Route path="*" element={<AttentionIndex />} />
 
         <Route path="/MomentIndex" element={<MomentIndex />} />
@@ -40,7 +41,7 @@ import NPassPrivacyPolicy from"./privacy/NPassPrivacyPolicy"
 
         {/* moment */}
         <Route path="/moment/description" element={<MomentDescription />} />
-        <Route path="/moment/description" element={<MomentDescription />} />
+        <Route path="/moment/KMTermsModal" element={<KakaoMomentTermsModal />} />
 
         {/*보안*/}
           <Route path="/pricacy/npassprivacypolicy" element={<NPassPrivacyPolicy />} />
