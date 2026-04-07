@@ -1,0 +1,197 @@
+/* 전체 레이아웃 */
+body {
+  font-family: 'Pretendard', sans-serif;
+  background: #f8f9fb;
+  color: #333;
+  line-height: 1.6;
+}
+
+main {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+/* 타이틀 */
+.title-contents {
+  margin-bottom: 40px;
+}
+
+.title-contents h1 {
+  font-size: 32px;
+  font-weight: 700;
+  margin-top: 10px;
+}
+
+.subscript {
+  font-size: 13px;
+  color: #888;
+  letter-spacing: 1px;
+}
+
+/* 카드형 컨텐츠 */
+.terms {
+  background: #fff;
+  border-radius: 16px;
+  padding: 30px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+}
+
+/* 헤더 */
+.header-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.header-title span {
+  font-size: 14px;
+  color: #666;
+}
+
+.btn_link {
+  font-size: 13px;
+  color: #6c5ce7;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+/* 본문 */
+.content p {
+  margin-bottom: 16px;
+  font-size: 14px;
+}
+
+/* 목차 */
+.table_privacy {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 30px;
+  background: #fafafa;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.table_privacy th {
+  background: #f1f3f5;
+  padding: 12px;
+  font-size: 14px;
+}
+
+.table_privacy td {
+  padding: 12px;
+  font-size: 13px;
+  border-top: 1px solid #eee;
+}
+
+/* dl 구조 */
+dl.main {
+  margin-top: 40px;
+}
+
+dl.main dt {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #eee;
+}
+
+dl.item {
+  margin-top: 15px;
+}
+
+dl.item dd {
+  font-size: 14px;
+  margin-bottom: 10px;
+  color: #555;
+}
+
+/* 내부 표 */
+.item-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.item-table th {
+  background: #f8f9fa;
+  padding: 10px;
+  font-size: 13px;
+  text-align: left;
+}
+
+.item-table td {
+  padding: 10px;
+  font-size: 13px;
+  border-top: 1px solid #eee;
+}
+
+/* 리스트 */
+ul {
+  padding-left: 18px;
+}
+
+ul li {
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+
+/* TOP 버튼 */
+.toTop {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background: #6c5ce7;
+  color: #fff;
+  padding: 10px 12px;
+  border-radius: 50%;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+/* 모바일 */
+@media (max-width: 768px) {
+  main {
+    padding: 20px;
+  }
+
+  .terms {
+    padding: 20px;
+  }
+
+  .title-contents h1 {
+    font-size: 24px;
+  }
+
+ /* --- 주요 개인정보 처리 표시(라벨링) 이미지/텍스트 정렬 --- */
+
+/* 1. 이미지 크기 통일 및 가운데 정렬 */
+.table_privacy td img {
+  display: block;
+  width: 70px; /* 원하는 아이콘 크기로 조절해 주세요 (예: 60px ~ 80px) */
+  height: auto;
+  margin: 0 auto 12px auto; /* 가로 중앙 정렬 및 텍스트와의 하단 간격 */
+}
+
+/* 2. 아이콘 아래 라벨 텍스트 가운데 정렬 */
+.table_privacy td p {
+  text-align: center;
+  margin: 0;
+  font-weight: 600; /* 제목처럼 약간 굵게 */
+  color: #333;
+  word-break: keep-all; /* 단어 단위로 줄바꿈되도록 설정 */
+}
+
+/* 3. 셀 안의 내용 수직 중앙/상단 정렬 및 여백 조정 */
+.table_privacy td {
+  vertical-align: middle; /* rowspan된 셀 등의 균형을 위해 수직 중앙 정렬 */
+}
+
+/* 4. 리스트(ul)는 텍스트 가운데 정렬의 영향을 받지 않도록 좌측 정렬 고정 */
+.table_privacy td ul {
+  text-align: left;
+  margin-top: 0;
+  margin-bottom: 0;
+} 
+}

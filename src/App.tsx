@@ -1,5 +1,5 @@
 
-  import { BrowserRouter, Routes, Route } from "react-router-dom";
+  import { HashRouter, Routes, Route } from "react-router-dom";
   import Dashboard from "./pages/client/Dashboard";
   import DashboardLogin from "./pages/client/DashboardLogin";
   import AttentionIndex from "./pages/client/AttentionIndex";
@@ -14,84 +14,41 @@ import AdminUserManagement from "./pages/admin/AdminUserManagement";
 //moment pages
 import MomentIndex from "./pages/moment/MomentIndex"
 import MomentDescription from "./pages/moment/MomentDescription"
+import KakaoMomentTermsModal from"./pages/moment/KakaoMomentTermsModal"
+
+//privacy
+import NPassPrivacyPolicy from"./privacy/NPassPrivacyPolicy"
+
+//Latte
+import LatteEventPage from"./pages/client/LatteEventPage"
 
   export default function App() {
+  return (
+    <HashRouter>
+      <Routes>
 
-    return (
-      <BrowserRouter>
+        <Route path="/" element={<LatteEventPage />} />
+        <Route path="*" element={<AttentionIndex />} />
 
-        <Routes>
+        <Route path="/MomentIndex" element={<MomentIndex />} />
+        <Route path="/Dashboard" element={<Dashboard />} />
+        <Route path="/DashboardLogin" element={<DashboardLogin />} />
+        <Route path="/AttentionIndex" element={<AttentionIndex />} />
 
-        <Route path="/" element={<AttentionIndex />} />
+        {/* admin */}
+        <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/admin/company" element={<AdminCompanyList />} />
+        <Route path="/admin/terms" element={<AdminTermsManager />} />
+        <Route path="/admin/logs" element={<AdminLogs />} />
+        <Route path="/admin/users" element={<AdminUserManagement />} />
 
-        <Route
-          path="/MomentIndex"
-          element={<MomentIndex />}
-        />
-        <Route
-          path="/Dashboard"
-          element={<Dashboard />}
-        />
+        {/* moment */}
+        <Route path="/moment/description" element={<MomentDescription />} />
+        <Route path="/moment/KMTermsModal" element={<KakaoMomentTermsModal />} />
 
-        <Route
-          path="/DashboardLogin"
-          element={<DashboardLogin />}
-        />
-
-          <Route
-            path="/Dashboard"
-            element={<Dashboard />}
-          />
-
-          <Route
-            path="/DashboardLogin"
-            element={<DashboardLogin />}
-          />
-
-            <Route
-            path="/AttentionIndex"
-            element={<AttentionIndex />}
-          />
-
-
-           {/* admin */}
-
-        <Route
-          path="/admin"
-          element={<AdminDashboard />}
-        />
-
-        <Route
-          path="/admin"
-          element={<AdminDashboard />}
-        />
-
-        <Route
-          path="/admin/company"
-          element={<AdminCompanyList />}
-        />
-
-
-        <Route
-          path="/admin/terms"
-          element={<AdminTermsManager />}
-        />
-          <Route
-          path="/admin/logs"
-          element={<AdminLogs />}
-        />
-          <Route
-          path="/admin/users"
-          element={<AdminUserManagement />}
-        />
-        
-        {/*모먼트  */}
-         <Route
-          path="/moment/description"
-          element={<MomentDescription />}
-        />
-
-        </Routes>
-      </BrowserRouter>
-    );
-  }
+        {/*보안*/}
+          <Route path="/pricacy/npassprivacypolicy" element={<NPassPrivacyPolicy />} />
+      </Routes>
+    </HashRouter>
+  );
+}

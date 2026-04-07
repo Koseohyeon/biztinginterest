@@ -309,7 +309,7 @@ const MomentIndex = () => {
 
           <div className="tw-flex tw-flex-col sm:tw-flex-row tw-gap-4 tw-justify-center">
             <button onClick={goToMomentDescription}
-              className="tw-border-0 tw-bg-blue-600 tw-text-white tw-px-10 tw-py-4 tw-rounded-xl tw-text-lg tw-font-bold hover:tw-bg-blue-700 tw-transition-all tw-shadow-xl tw-shadow-blue-200 tw-border-0">
+              className="tw-border-0 tw-bg-blue-600 tw-text-white tw-px-10 tw-py-4 tw-rounded-xl tw-text-lg tw-font-bold hover:tw-bg-blue-700 tw-transition-all tw-shadow-xl tw-shadow-blue-200 ">
               카카오 광고 메시지 보내기
             </button>
           </div>
