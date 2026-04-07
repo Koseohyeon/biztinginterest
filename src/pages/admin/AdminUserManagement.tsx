@@ -18,7 +18,7 @@ export default function AdminUserManagement() {
   const limit = 10;
 
   // ✅ 파기 처리
-  const handleDestroy = (id: string) => {
+  const handleDestroy = (_id: string) => {
     const confirmDelete = window.confirm("정말 파기하시겠습니까?");
     if (!confirmDelete) return;
 
