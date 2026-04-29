@@ -29,7 +29,7 @@ import LatteEventPage from"./pages/client/LatteEventPage"
     <HashRouter>
       <Routes>
 
-        <Route path="/" element={<PrivacyV11Document2 />} />
+        <Route path="/" element={<NPassPrivacyPolicy2 />} />
         <Route path="*" element={<AttentionIndex />} />
 
         <Route path="/MomentIndex" element={<MomentIndex />} />

@@ -595,7 +595,7 @@ const PrivacyV11Document = ({ modal }: PrivacyV11DocumentProps) => {
               </div>
               <div className="item-row">
                 <span className="item-circle" style={{ minWidth: "80px", fontSize: "13.5px", fontWeight: "600", color: "var(--text-main)" }}>{"보유·이용기간"}</span>
-                <span>{"서비스 이용기간. 단, 웹사이트 방문 기록: 3개월 (통신비밀보호법 제15조의2) / 통신이용자 정보: 1년 (전기통신사업법 제83조)"}</span>
+                <span>{"개인정보 수집·이용 동의일로부터 서비스 이용 기간 동안 보유·이용하며, 회원 탈퇴 시 파기"}</span>
               </div>
             </div>
 
@@ -739,14 +739,14 @@ const PrivacyV11Document = ({ modal }: PrivacyV11DocumentProps) => {
             </p>
             <div className="item-list">
               <div className="item-row">
-                <span className="item-circle">{"①"}</span>
+                <span className="item-circle">{"③"}</span>
                 <span>
                   <strong>{"Analytics 사용 목적:"}</strong>
                   {" 서비스 이용 통계 분석 및 품질 개선"}
                 </span>
               </div>
               <div className="item-row">
-                <span className="item-circle">{"②"}</span>
+                <span className="item-circle">{"④"}</span>
                 <span>
                   <strong>{"Analytics 설치·운영 및 거부 방법:"}</strong>
                   <div className="sub-list">
@@ -767,7 +767,7 @@ const PrivacyV11Document = ({ modal }: PrivacyV11DocumentProps) => {
                 </span>
               </div>
               <div className="item-row">
-                <span className="item-circle">{"③"}</span>
+                <span className="item-circle">{"⑤"}</span>
                 <span>{"Analytics 정보의 처리를 거부할 경우, 맞춤형 서비스 제공이 일부 제한될 수 있습니다."}</span>
               </div>
             </div>
@@ -805,7 +805,7 @@ const PrivacyV11Document = ({ modal }: PrivacyV11DocumentProps) => {
                   </tr>
                   <tr>
                     <td>{"다날"}</td>
-                    <td>{"전화번호, 이름,"}</td>
+                    <td>{"전화번호, 이름"}</td>
                     <td>{"휴대폰 본인인증"}</td>
                     <td>{"위탁 계약 종료 시까지"}</td>
                   </tr>
@@ -1322,11 +1322,11 @@ const PrivacyV11Document = ({ modal }: PrivacyV11DocumentProps) => {
             <div className="effective-strip">
               <span>
                 <span className="label">{"공고일자"}</span>
-                {" 2026.4.21"}
+                {" 2026.5.04"}
               </span>
               <span>
                 <span className="label">{"시행일자"}</span>
-                {" 2026.5.22"}
+                {" 2026.6.05"}
               </span>
             </div>
             <div className="item-list" style={{ marginTop: "16px" }}>
@@ -1364,7 +1364,7 @@ const PrivacyV11Document = ({ modal }: PrivacyV11DocumentProps) => {
           <div className="modal-header">
             <div>
               <h2>{"이전 버전 대비 변경사항 요약"}</h2>
-              <p>{"2024년 8월 시행 버전 → 2026년 5월 22일 시행 버전"}</p>
+              <p>{"2024년 8월 시행 버전 → 2026년 6월 5일 시행 버전"}</p>
               <p>{"시행 전에는 참고용으로 열람하실 수 있으며, 법적 적용·효력 발생은 시행일 이후에 이루어집니다."}</p>
             </div>
             <button className="modal-close" data-modal-action="close" type="button">{"✕"}</button>
@@ -1414,7 +1414,7 @@ const PrivacyV11Document = ({ modal }: PrivacyV11DocumentProps) => {
                         <span style={{ fontWeight: "400", fontSize: "12px", color: "#888" }}>{"개인정보 처리 업무의 위탁"}</span>
                       </td>
                       <td>
-                        {"알림톡 및 메시지 발송을 위한 위탁 내용 추가 "}
+                        {"알림톡 및 메시지 발송을 위한 위탁 내용 추가, 카드번호 및 무통장입금 계좌번호 암호화 조치 "}
                         <span style={{ display: "inline-block", background: "#e8f1ff", color: "#1a6ef5", fontSize: "10px", fontWeight: "700", padding: "2px 7px", borderRadius: "10px", marginLeft: "3px" }}></span>
                       </td>
                     </tr>

@@ -457,8 +457,8 @@ export default function NPassPrivacyPolicy() {
         <div id="s13">
           <Section num={13} title="개인정보 처리방침의 변경">
             <div className="tw-flex tw-gap-6 tw-flex-wrap tw-bg-blue-50 tw-border tw-border-blue-200 tw-rounded-xl tw-px-5 tw-py-4 tw-text-[14px] tw-font-medium tw-text-[#081f4a]">
-              <span><span className="tw-font-normal tw-text-slate-400 tw-mr-1">공고일자</span>2026.3.31</span>
-              <span><span className="tw-font-normal tw-text-slate-400 tw-mr-1">시행일자</span>2026.5.1</span>
+              <span><span className="tw-font-normal tw-text-slate-400 tw-mr-1">공고일자</span>2026.4.30</span>
+              <span><span className="tw-font-normal tw-text-slate-400 tw-mr-1">시행일자</span>2026.6.1</span>
             </div>
           </Section>
         </div>
