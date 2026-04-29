@@ -739,14 +739,14 @@ const PrivacyV11Document = ({ modal }: PrivacyV11DocumentProps) => {
             </p>
             <div className="item-list">
               <div className="item-row">
-                <span className="item-circle">{"③"}</span>
+                <span className="item-circle">{"①"}</span>
                 <span>
                   <strong>{"Analytics 사용 목적:"}</strong>
                   {" 서비스 이용 통계 분석 및 품질 개선"}
                 </span>
               </div>
               <div className="item-row">
-                <span className="item-circle">{"④"}</span>
+                <span className="item-circle">{"②"}</span>
                 <span>
                   <strong>{"Analytics 설치·운영 및 거부 방법:"}</strong>
                   <div className="sub-list">
@@ -767,7 +767,7 @@ const PrivacyV11Document = ({ modal }: PrivacyV11DocumentProps) => {
                 </span>
               </div>
               <div className="item-row">
-                <span className="item-circle">{"⑤"}</span>
+                <span className="item-circle">{"③"}</span>
                 <span>{"Analytics 정보의 처리를 거부할 경우, 맞춤형 서비스 제공이 일부 제한될 수 있습니다."}</span>
               </div>
             </div>

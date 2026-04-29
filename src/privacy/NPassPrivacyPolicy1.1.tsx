@@ -620,8 +620,8 @@ export default function NPassPrivacyPolicy() {
             <p className="tw-text-[14.5px] tw-text-slate-600 tw-leading-relaxed tw-mt-4 tw-mb-3">
               회사는 구글(Google)에서 제공하는 Google Analytics를 사용하여 웹사이트 이용 통계를 분석하고 서비스 개선에 활용하고 있습니다. Google Analytics를 통해 개인을 식별할 수 있는 정보는 수집되지 않습니다.
             </p>
-            <ItemRow circle="③"><span><strong>Analytics 사용 목적:</strong> 서비스 이용 통계 분석 및 품질 개선</span></ItemRow>
-            <ItemRow circle="④">
+            <ItemRow circle="①"><span><strong>Analytics 사용 목적:</strong> 서비스 이용 통계 분석 및 품질 개선</span></ItemRow>
+            <ItemRow circle="②">
               <span>
                 <strong>Analytics 설치·운영 및 거부 방법:</strong>
                 <div className="tw-mt-2 tw-space-y-1">
@@ -636,7 +636,7 @@ export default function NPassPrivacyPolicy() {
                 </div>
               </span>
             </ItemRow>
-            <ItemRow circle="⑤"><span>Analytics 정보의 처리를 거부할 경우, 맞춤형 서비스 제공이 일부 제한될 수 있습니다.</span></ItemRow>
+            <ItemRow circle="③"><span>Analytics 정보의 처리를 거부할 경우, 맞춤형 서비스 제공이 일부 제한될 수 있습니다.</span></ItemRow>
           </Section>
         </div>
 
