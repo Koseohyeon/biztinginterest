@@ -24,13 +24,16 @@ import ClauseStaticDocument from "./privacy/ClauseStaticDocument";
 //Latte
 import LatteEventPage from"./pages/client/LatteEventPage"
 
+//JungKwangJang
+import JUNGKWANJANG_6eventPage from "./pages/eventpage/JUNGKWANJANG_6eventPage"
+
   export default function App() {
   return (
     <HashRouter>
       <Routes>
 
-        <Route path="/" element={<NPassPrivacyPolicy2 />} />
-        <Route path="*" element={<AttentionIndex />} />
+        <Route path="/" element={<JUNGKWANJANG_6eventPage />} />
+        <Route path="*" element={<JUNGKWANJANG_6eventPage />} />
 
         <Route path="/MomentIndex" element={<MomentIndex />} />
         <Route path="/Dashboard" element={<Dashboard />} />
@@ -56,6 +59,9 @@ import LatteEventPage from"./pages/client/LatteEventPage"
           <Route path="/pricacy/NPassPrivacyPolicy2" element={<NPassPrivacyPolicy2 />} />
           <Route path="/pricacy/PrivacyV11Document2" element={<PrivacyV11Document2 />} />
           <Route path="/pricacy/ClauseStaticDocument" element={<ClauseStaticDocument />} />
+        
+        {/*정관장*/}
+        <Route path="/eventpage/JUNGKWANJANG_6eventPage" element={<JUNGKWANJANG_6eventPage />} />
       </Routes>
     </HashRouter>
   );
