@@ -1,10 +1,9 @@
+import { HashRouter, Routes, Route } from "react-router-dom";
+import Dashboard from "./pages/client/Dashboard";
+import DashboardLogin from "./pages/client/DashboardLogin";
+import AttentionIndex from "./pages/client/AttentionIndex";
 
-  import { HashRouter, Routes, Route } from "react-router-dom";
-  import Dashboard from "./pages/client/Dashboard";
-  import DashboardLogin from "./pages/client/DashboardLogin";
-  import AttentionIndex from "./pages/client/AttentionIndex";
-
-  // admin pages
+// admin pages
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminCompanyList from "./pages/admin/AdminCompanyList";
 import AdminTermsManager from "./pages/admin/AdminTermsManager";
@@ -14,25 +13,26 @@ import AdminUserManagement from "./pages/admin/AdminUserManagement";
 //moment pages
 import MomentIndex from "./pages/moment/MomentIndex"
 import MomentDescription from "./pages/moment/MomentDescription"
-import KakaoMomentTermsModal from"./pages/moment/KakaoMomentTermsModal"
+import KakaoMomentTermsModal from "./pages/moment/KakaoMomentTermsModal"
 
 //privacy
-import NPassPrivacyPolicy from"./privacy/NPassPrivacyPolicy"
+import NPassPrivacyPolicy from "./privacy/NPassPrivacyPolicy"
 import NPassPrivacyPolicy2 from "./privacy/NPassPrivacyPolicy1.1";
 import PrivacyV11Document2 from "./privacy/PrivacyV11Document1.1";
 import ClauseStaticDocument from "./privacy/ClauseStaticDocument";
+
 //Latte
-import LatteEventPage from"./pages/client/LatteEventPage"
+import LatteEventPage from "./pages/client/LatteEventPage"
 
 //JungKwangJang
 import JUNGKWANJANG_6eventPage from "./pages/eventpage/JUNGKWANJANG_6eventPage"
 
-  export default function App() {
+export default function App() {
   return (
     <HashRouter>
       <Routes>
 
-        <Route path="/" element={<JUNGKWANJANG_6eventPage />} />
+        <Route index element={<JUNGKWANJANG_6eventPage />} />
         <Route path="*" element={<JUNGKWANJANG_6eventPage />} />
 
         <Route path="/MomentIndex" element={<MomentIndex />} />
@@ -54,14 +54,15 @@ import JUNGKWANJANG_6eventPage from "./pages/eventpage/JUNGKWANJANG_6eventPage"
         {/* Latte */}
         <Route path="/moment/LatteEventPage" element={<LatteEventPage />} />
 
-        {/*보안*/}
-          <Route path="/pricacy/npassprivacypolicy" element={<NPassPrivacyPolicy />} />
-          <Route path="/pricacy/NPassPrivacyPolicy2" element={<NPassPrivacyPolicy2 />} />
-          <Route path="/pricacy/PrivacyV11Document2" element={<PrivacyV11Document2 />} />
-          <Route path="/pricacy/ClauseStaticDocument" element={<ClauseStaticDocument />} />
-        
-        {/*정관장*/}
+        {/* 보안 */}
+        <Route path="/pricacy/npassprivacypolicy" element={<NPassPrivacyPolicy />} />
+        <Route path="/pricacy/NPassPrivacyPolicy2" element={<NPassPrivacyPolicy2 />} />
+        <Route path="/pricacy/PrivacyV11Document2" element={<PrivacyV11Document2 />} />
+        <Route path="/pricacy/ClauseStaticDocument" element={<ClauseStaticDocument />} />
+
+        {/* 정관장 */}
         <Route path="/eventpage/JUNGKWANJANG_6eventPage" element={<JUNGKWANJANG_6eventPage />} />
+
       </Routes>
     </HashRouter>
   );
