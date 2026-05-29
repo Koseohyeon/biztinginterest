@@ -224,7 +224,7 @@ export default function JKJEventPage(){
 
         {/* Badge */}
         <div className="jkj-anim-down d1 tw-inline-block tw-bg-[#D4A843] tw-text-[#8B0008] tw-text-[10px] tw-font-bold tw-tracking-[2px] tw-px-4 tw-py-1.5 tw-rounded-full tw-mb-4">
-          JUNE 2025 · SPECIAL EVENT
+          JUNE 2026 · SPECIAL EVENT
         </div>
 
         {/* Title */}
@@ -341,7 +341,7 @@ export default function JKJEventPage(){
                   <span className="tw-text-[#D4A843]"><IconCalendar/></span>
                   <p className="tw-text-[10px] tw-text-[#D4A843] tw-tracking-[1.5px] tw-uppercase tw-font-semibold">행사 기간</p>
                 </div>
-                <p className="tw-text-[14px] tw-font-bold tw-text-white" style={{fontFamily:"'Noto Serif KR',serif"}}>2025. 06. 01 — 06. 30</p>
+                <p className="tw-text-[14px] tw-font-bold tw-text-white" style={{fontFamily:"'Noto Serif KR',serif"}}>2026. 06. 01 — 06. 30</p>
               </div>
               <div className="tw-text-right">
                 <p className="tw-text-[10px] tw-text-white/40 tw-mb-0.5">기간 한정</p>
@@ -415,7 +415,7 @@ export default function JKJEventPage(){
               <div className="tw-w-px tw-h-3 tw-bg-[#DDDDDD]"/>
               <div className="tw-flex tw-items-center tw-gap-1 tw-text-[#AAAAAA]">
                 <IconCalendar/>
-                <span className="tw-text-[10.5px]">2025.06.01 ~ 06.30</span>
+                <span className="tw-text-[10.5px]">2026.06.01 ~ 06.30</span>
               </div>
               <div className="tw-w-px tw-h-3 tw-bg-[#DDDDDD]"/>
               <span className="tw-text-[10.5px] tw-text-[#AAAAAA]">중복 불가</span>
@@ -429,7 +429,7 @@ export default function JKJEventPage(){
         <div className="tw-w-8 tw-h-px tw-bg-[#DDDDDD] tw-mx-auto tw-mb-4"/>
         <p className="tw-text-[10.5px] tw-text-[#BBBBBB] tw-leading-relaxed">
           ㈜한국인삼공사 정관장<br/>
-          고객센터 1800-3848 · www.jungkwanjang.co.kr<br/>
+          고객센터 02-2189-3900 · www.kgcshop.co.kr<br/>
           본 이벤트는 사전 예고 없이 변경 또는 종료될 수 있습니다.
         </p>
       </div>

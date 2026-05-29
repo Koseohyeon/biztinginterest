@@ -26,6 +26,7 @@ import LatteEventPage from "./pages/client/LatteEventPage"
 
 //JungKwangJang
 import JUNGKWANJANG_6eventPage from "./pages/eventpage/JUNGKWANJANG_6eventPage"
+import JKJEventPage from "./pages/eventpage/JUNGKWANJANG_6eventPage";
 
 export default function App() {
   return (
@@ -62,6 +63,7 @@ export default function App() {
 
         {/* 정관장 */}
         <Route path="/eventpage/JUNGKWANJANG_6eventPage" element={<JUNGKWANJANG_6eventPage />} />
+        <Route path="/eventpage/JKJEventPage" element={<JKJEventPage />} />
 
       </Routes>
     </HashRouter>
