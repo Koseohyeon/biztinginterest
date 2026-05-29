@@ -36,8 +36,8 @@ const N_PASS_STEPS: Step[] = [
 
 export default function BiztingIndexPage() {
   const [activeStep, setActiveStep] = useState<number>(0);
-  const [slideIdx, setSlideIdx] = useState<number>(0);
-  const [isScrolled, setIsScrolled] = useState(false);
+const [_slideIdx, setSlideIdx] = useState<number>(0);
+const [_isScrolled, setIsScrolled] = useState(false);
   useEffect(() => {
     const timer = setInterval(() => {
       setSlideIdx((prev) => (prev + 1) % 4);
