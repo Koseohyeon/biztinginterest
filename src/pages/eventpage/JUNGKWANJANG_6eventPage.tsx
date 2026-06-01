@@ -311,7 +311,7 @@ export default function JKJEventPage(){
               <p className="tw-text-[11px] tw-text-[#999] tw-mb-1 tw-mt-1">신규가입 + 10만원 이상 구매 시</p>
               <p className="tw-text-[21px] tw-font-black tw-text-[#C8000F] tw-leading-tight" style={{fontFamily:"'Noto Serif KR',serif"}}>에브리타임 오리지널</p>
               <p className="tw-text-[19px] tw-font-black tw-text-[#C8000F] tw-leading-tight tw-mb-1.5" style={{fontFamily:"'Noto Serif KR',serif"}}>
-                <span className="tw-text-[#D4A843]">20포</span> 추가 증정
+                <span className="tw-text-[#D4A843]">20포</span> 추가 증정!
               </p>
               <div className="tw-flex tw-items-center tw-justify-center tw-gap-1.5">
                 <div className="tw-w-4 tw-h-4 tw-rounded-full tw-flex tw-items-center tw-justify-center tw-text-[#C8000F]"
