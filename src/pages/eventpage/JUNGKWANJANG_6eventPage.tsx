@@ -401,7 +401,7 @@ export default function JKJEventPage(){
           <div className="tw-px-6 tw-py-5 tw-text-center">
             <div className="tw-rounded-xl tw-py-3 tw-px-4 tw-mb-4 tw-border-2 tw-border-dashed tw-border-[#D4C5A0] tw-bg-[#F5F0E8]">
               <p className="tw-text-[10px] tw-text-[#B0A080] tw-tracking-[1.5px] tw-mb-1 tw-uppercase">Coupon Code</p>
-              <p className="tw-font-mono tw-text-[22px] tw-font-bold tw-text-[#8B0008] tw-tracking-[2px] tw-break-all tw-overflow-hidden">{couponCode}</p>
+              <p className="tw-font-mono tw-text-[20px] tw-font-bold tw-text-[#8B0008] tw-tracking-[2px] tw-break-all tw-overflow-hidden">{couponCode}</p>
             </div>
             <div className="tw-bg-white tw-border tw-border-[#EEE] tw-rounded-xl tw-p-3 tw-mb-3.5">
               <canvas ref={canvasRef} width={340} height={80} className="tw-w-full tw-h-[60px]"/>
