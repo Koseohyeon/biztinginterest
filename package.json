@@ -2,16 +2,16 @@
   "name": "biztinginterest",
   "private": true,
   "version": "0.0.0",
-   "homepage": "https://koseohyeon.github.io/biztinginterest/",
+  "homepage": "https://koseohyeon.github.io/biztinginterest/",
   "type": "module",
   "scripts": {
-  "dev": "vite",
-  "build": "tsc -b && vite build",
-  "lint": "eslint .",
-  "preview": "vite preview",
-  "predeploy": "npm run build",
-  "deploy": "gh-pages -d dist"
-},
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "eslint .",
+    "preview": "vite preview",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist"
+  },
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
@@ -20,6 +20,7 @@
     "bootstrap": "^5.3.8",
     "file-saver": "^2.0.5",
     "framer-motion": "^12.35.2",
+    "jsbarcode": "^3.12.3",
     "lucide-react": "^0.577.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
@@ -49,6 +50,4 @@
     "typescript-eslint": "^8.48.0",
     "vite": "^7.3.1"
   }
-  
-
 }
