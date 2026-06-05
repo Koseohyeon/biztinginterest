@@ -1,8 +1,9 @@
 import { useEffect, useRef, useMemo } from "react";
 import JsBarcode from 'jsbarcode';
 import IMG_BOX from '../../assets/IMG_BOX.png'
-import IMG_HERO from '../../assets/IMG_HERO.png'
+import IMG_HERO from '../../assets/IMG_HERO.jpg'
 import IMG_STICK from '../../assets/IMG_STICK.png'
+import IMG_COUPON from '../../assets/IMG_COUPON.png'
 
 // ─── Inline SVG Icons ───
 const IconStore = () => (
@@ -168,7 +169,7 @@ export default function JKJEventPage() {
         </div>
 
         <h1 className="jkj-anim-down d2 tw-text-[30px] tw-font-black tw-text-white tw-leading-[1.25] tw-mb-2" style={{fontFamily:"'Noto Serif KR',serif"}}>
-          정관장 <span className="tw-text-[#D4A843]">6월</span> 프로모션
+          정관장 <span className="tw-text-[#D4A843]">6월</span> EVENT
         </h1>
         <p className="jkj-anim-down d3 tw-text-[13px] tw-text-white/75 tw-leading-relaxed tw-mb-8">
           2026.06.11(목) ~ 06.30(화)<br/>특별한 혜택을 지금 만나보세요
@@ -204,7 +205,7 @@ export default function JKJEventPage() {
             </div>
             <div>
               <p className="tw-text-[10px] tw-text-white/55 tw-tracking-[1.5px] tw-uppercase tw-mb-0.5">ONLINE EVENT</p>
-              <p className="tw-text-[17px] tw-font-bold tw-text-white tw-leading-tight" style={{fontFamily:"'Noto Serif KR',serif"}}>온라인 6월 행사</p>
+              <p className="tw-text-[17px] tw-font-bold tw-text-white tw-leading-tight" style={{fontFamily:"'Noto Serif KR',serif"}}>EVENT 1.전국 온/오프라인 프로모션</p>
             </div>
           </div>
 
@@ -317,7 +318,7 @@ export default function JKJEventPage() {
             </div>
             <div>
               <p className="tw-text-[10px] tw-text-white/60 tw-tracking-[1.5px] tw-uppercase tw-mb-0.5">OFFLINE EVENT</p>
-              <p className="tw-text-[17px] tw-font-bold tw-text-white tw-leading-tight" style={{fontFamily:"'Noto Serif KR',serif"}}>사직구장 직관 고객 전용</p>
+              <p className="tw-text-[17px] tw-font-bold tw-text-white tw-leading-tight" style={{fontFamily:"'Noto Serif KR',serif"}}>EVENT 2.사직구장 직관 고객 전용</p>
             </div>
           </div>
 
@@ -331,6 +332,7 @@ export default function JKJEventPage() {
               <p className="tw-text-[19px] tw-font-black tw-text-[#C8000F] tw-leading-tight tw-mb-1.5" style={{fontFamily:"'Noto Serif KR',serif"}}>
                 <span className="tw-text-[#D4A843]">20포</span> 추가 증정!
               </p>
+              <img src={IMG_COUPON} alt="쿠폰 이미지" className="tw-w-[60%] tw-mt-2 tw-rounded-lg tw-mx-auto tw-block" />
             </div>
 
             {/* 혜택 수령 방법 */}
