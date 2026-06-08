@@ -148,7 +148,7 @@ export default function JKJEventPage() {
         .brand-chip{display:inline-flex;align-items:center;background:#fff;border:1.5px solid #D4B89A;border-radius:999px;padding:4px 12px;font-size:12px;font-weight:500;color:#5A3A1A;margin:3px 3px 3px 0;line-height:1.4;}
       `}</style>
 
-      {/* ── HERO ── */}
+      {/*[최종수정] ── HERO ── */}
       <div className="tw-relative tw-overflow-hidden tw-pt-10 tw-pb-16 tw-px-5 tw-text-center"
         style={{background:"linear-gradient(160deg,#8B0008 0%,#C8000F 55%,#E01020 100%)"}}>
         <div className="tw-absolute tw-top-0 tw-left-0 tw-right-0 tw-h-[5px]"
@@ -192,11 +192,11 @@ export default function JKJEventPage() {
       <div className="tw-w-full tw-h-12 tw-bg-[#F8F4EE]"
         style={{clipPath:"ellipse(56% 100% at 50% 100%)",marginTop:"-2px"}}/>
 
-      {/* ── ONLINE EVENT ── */}
+      {/*[최종수정] ── ONLINE EVENT ── */}
       <div className="jkj-anim-up d3 tw-px-4 tw-mb-5 tw--mt-4">
         <div className="tw-bg-white tw-rounded-2xl tw-overflow-hidden tw-shadow-[0_3px_20px_rgba(0,0,0,0.07)]">
 
-          {/* Online Header */}
+          {/*[최종수정] Online Header */}
           <div className="tw-flex tw-items-center tw-gap-3.5 tw-px-5 tw-py-4"
             style={{background:"linear-gradient(135deg,#2C2C2C 0%,#3D3D3D 100%)"}}>
             <div className="tw-w-9 tw-h-9 tw-rounded-full tw-flex tw-items-center tw-justify-center tw-text-white tw-flex-shrink-0"
@@ -211,7 +211,7 @@ export default function JKJEventPage() {
 
           <div className="tw-px-5 tw-pt-5 tw-pb-6">
 
-            {/* 행사 1: 브랜드 할인 */}
+            {/* [최종수정]행사 1: 브랜드 할인 */}
             <div className="tw-mb-5">
               <EventBadge num={1} title="브랜드 할인 10~20%" />
               <div className="tw-bg-white tw-rounded-xl tw-p-4 tw-border tw-border-[#EAD8C8]">
@@ -273,7 +273,7 @@ export default function JKJEventPage() {
 
             <div className="event-divider"/>
 
-            {/* 행사 3: 구매 금액별 포인트 적립 */}
+            {/*행사 3: 구매 금액별 포인트 적립 */}
             <div className="tw-mb-5">
               <EventBadge num={3} title="구매 금액별 포인트 적립" />
               <div className="tw-bg-white tw-rounded-xl tw-overflow-hidden tw-border tw-border-[#EAD8C8]">
@@ -287,7 +287,7 @@ export default function JKJEventPage() {
               </div>
             </div>
 
-            {/* Period bar */}
+            {/*[최종수정] Period bar 삭제*/}
           {/*   <div className="tw-flex tw-items-center tw-justify-between tw-rounded-xl tw-px-4 tw-py-3.5 tw-bg-[#1A1208]">
               <div>
                 <div className="tw-flex tw-items-center tw-gap-1.5 tw-mb-1">
@@ -305,11 +305,11 @@ export default function JKJEventPage() {
         </div>
       </div>
 
-      {/* ── OFFLINE EVENT (사직구장 직관 고객 전용) ── */}
+      {/* [최종수정]── OFFLINE EVENT (사직구장 직관 고객 전용) ── */}
       <div className="jkj-anim-up d4 tw-px-4 tw-mb-5">
         <div className="tw-bg-white tw-rounded-2xl tw-overflow-hidden tw-shadow-[0_3px_20px_rgba(200,0,15,0.10)]">
 
-          {/* Offline Header */}
+          {/* [최종수정]Offline Header */}
           <div className="tw-flex tw-items-center tw-gap-3.5 tw-px-5 tw-py-4"
             style={{background:"linear-gradient(135deg,#C8000F 0%,#8B0008 100%)"}}>
             <div className="tw-w-9 tw-h-9 tw-rounded-full tw-flex tw-items-center tw-justify-center tw-text-white tw-flex-shrink-0"
@@ -324,7 +324,7 @@ export default function JKJEventPage() {
 
           <div className="tw-px-5 tw-pt-5 tw-pb-6">
 
-            {/* Gift highlight */}
+            {/*이미지 추가 Gift highlight */}
             <div className="tw-rounded-xl tw-px-5 tw-py-4 tw-text-center tw-mb-5 tw-border tw-border-[#F5D0D2]"
               style={{background:"linear-gradient(135deg,#FFF8F2 0%,#FFF0F0 100%)"}}>
               <p className="tw-text-[11px] tw-text-[#999] tw-mb-1">신규가입 후 10만원 이상 구매 시</p>
@@ -335,7 +335,7 @@ export default function JKJEventPage() {
               <img src={IMG_COUPON} alt="쿠폰 이미지" className="tw-w-[60%] tw-mt-2 tw-rounded-lg tw-mx-auto tw-block" />
             </div>
 
-            {/* 혜택 수령 방법 */}
+            {/*혜택 수령 방법 */}
             <p className="tw-text-[11px] tw-font-bold tw-text-[#8B0008] tw-tracking-[1.5px] tw-uppercase tw-mb-3.5">혜택 수령 방법</p>
             <div className="tw-flex tw-flex-col tw-gap-3 tw-mb-5">
               <StepItem num={1} label="메시지 내 쿠폰번호 확인" sub={null} icon={<IconTag/>}/>
@@ -370,7 +370,7 @@ export default function JKJEventPage() {
               </ul>
             </div>
 
-            {/* Period bar */}
+            {/* [최종수정] Period bar 삭제*/}
 {/*             <div className="tw-flex tw-items-center tw-justify-between tw-rounded-xl tw-px-4 tw-py-3.5 tw-bg-[#1A1208]">
               <div>
                 <div className="tw-flex tw-items-center tw-gap-1.5 tw-mb-1">
@@ -433,11 +433,12 @@ export default function JKJEventPage() {
         </div>
       </div>
 
-      {/* ── FOOTER ── */}
+      {/*[최종수정] ── FOOTER ── */}
       <div className="tw-text-center tw-px-6 tw-pb-10">
         <div className="tw-w-8 tw-h-px tw-bg-[#DDDDDD] tw-mx-auto tw-mb-4"/>
         <div className="tw-flex tw-items-center tw-justify-center tw-gap-1.5 tw-text-[#BBBBBB] tw-mb-2">
           <IconPhone/>
+          {/*정관장 고객센터 번호 수정*/}
           <span className="tw-text-[10.5px]">문의: 정관장 고객센터 1588-2304</span>
         </div>
         <p className="tw-text-[10.5px] tw-text-[#BBBBBB] tw-leading-relaxed">
