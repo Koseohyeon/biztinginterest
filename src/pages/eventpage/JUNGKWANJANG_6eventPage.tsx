@@ -402,12 +402,7 @@ export default function JKJEventPage() {
             style={{background:"linear-gradient(135deg,#C8000F 0%,#8B0008 100%)"}}>
             <div className="tw-absolute tw-bottom-0 tw-left-[10%] tw-right-[10%] tw-h-px"
               style={{background:"repeating-linear-gradient(90deg,rgba(255,255,255,0.25) 0,rgba(255,255,255,0.25) 5px,transparent 5px,transparent 11px)"}}/>
-            <div className="tw-flex tw-items-center tw-justify-center tw-mb-3">
-              <div className="tw-bg-white tw-rounded-md tw-px-4 tw-py-2"
-                style={{boxShadow:"0 3px 10px rgba(0,0,0,0.18)"}}>
-                <img src={IMG_CI} alt="Jung Kwan Jang 정관장" className="tw-h-6 tw-w-auto tw-object-contain tw-block"/>
-              </div>
-            </div>
+            <div className="tw-flex tw-items-center tw-justify-center tw-mb-3"></div>
             <p className="tw-text-[19px] tw-font-black tw-text-white tw-leading-tight" style={{fontFamily:"'Noto Serif KR',serif"}}>
               에브리타임 <span className="tw-text-[#D4A843]">20포</span> 증정
             </p>
