@@ -4,6 +4,7 @@ import IMG_BOX from '../../assets/IMG_BOX.png'
 import IMG_HERO from '../../assets/IMG_HERO.jpg'
 import IMG_STICK from '../../assets/IMG_STICK.png'
 import IMG_COUPON from '../../assets/IMG_COUPON.png'
+import IMG_CI from '../../assets/JKJ_CI.png'
 
 // ─── Inline SVG Icons ───
 const IconStore = () => (
@@ -156,12 +157,12 @@ export default function JKJEventPage() {
         <div className="tw-absolute tw-inset-0 tw-pointer-events-none"
           style={{background:"radial-gradient(ellipse 60% 50% at 18% 28%,rgba(255,255,255,0.07) 0%,transparent 70%),radial-gradient(ellipse 45% 40% at 85% 72%,rgba(212,168,67,0.09) 0%,transparent 70%)"}}/>
 
-        <div className="tw-relative jkj-anim-down tw-flex tw-items-center tw-justify-center tw-gap-2.5 tw-mb-5">
-          <div className="tw-w-1 tw-h-1 tw-rounded-full tw-bg-[#D4A843]"/>
-          <span className="tw-text-[13px] tw-font-bold tw-text-white/90 tw-tracking-[3px]" style={{fontFamily:"'Noto Serif KR',serif"}}>
-            CHEONG KWAN JANG · 정관장
-          </span>
-          <div className="tw-w-1 tw-h-1 tw-rounded-full tw-bg-[#D4A843]"/>
+        <div className="tw-relative jkj-anim-down tw-flex tw-items-center tw-justify-center tw-mb-5">
+          {/* CI 로고 이미지 */}
+          <div className="tw-bg-white tw-rounded-lg tw-px-5 tw-py-1.5"
+            style={{boxShadow:"0 4px 16px rgba(0,0,0,0.22)"}}>
+            <img src={IMG_CI} alt="Jung Kwan Jang 정관장" className="tw-h-5 tw-w-auto tw-object-contain tw-block"/>
+          </div>
         </div>
 
         <div className="jkj-anim-down d1 tw-inline-block tw-bg-[#D4A843] tw-text-[#8B0008] tw-text-[10px] tw-font-bold tw-tracking-[2px] tw-px-4 tw-py-1.5 tw-rounded-full tw-mb-4">
@@ -401,7 +402,12 @@ export default function JKJEventPage() {
             style={{background:"linear-gradient(135deg,#C8000F 0%,#8B0008 100%)"}}>
             <div className="tw-absolute tw-bottom-0 tw-left-[10%] tw-right-[10%] tw-h-px"
               style={{background:"repeating-linear-gradient(90deg,rgba(255,255,255,0.25) 0,rgba(255,255,255,0.25) 5px,transparent 5px,transparent 11px)"}}/>
-            <p className="tw-text-[10px] tw-text-white/60 tw-tracking-[2px] tw-uppercase tw-mb-1.5">CHEONG KWAN JANG</p>
+            <div className="tw-flex tw-items-center tw-justify-center tw-mb-3">
+              <div className="tw-bg-white tw-rounded-md tw-px-4 tw-py-2"
+                style={{boxShadow:"0 3px 10px rgba(0,0,0,0.18)"}}>
+                <img src={IMG_CI} alt="Jung Kwan Jang 정관장" className="tw-h-6 tw-w-auto tw-object-contain tw-block"/>
+              </div>
+            </div>
             <p className="tw-text-[19px] tw-font-black tw-text-white tw-leading-tight" style={{fontFamily:"'Noto Serif KR',serif"}}>
               에브리타임 <span className="tw-text-[#D4A843]">20포</span> 증정
             </p>
