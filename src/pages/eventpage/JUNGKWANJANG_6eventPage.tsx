@@ -173,7 +173,7 @@ export default function JKJEventPage() {
           정관장 <span className="tw-text-[#D4A843]">6월</span> EVENT
         </h1>
         <p className="jkj-anim-down d3 tw-text-[13px] tw-text-white/75 tw-leading-relaxed tw-mb-8">
-          2026.06.10(수) ~ 06.30(화)<br/>특별한 혜택을 지금 만나보세요
+          2026.06.11(목) ~ 06.30(화)<br/>특별한 혜택을 지금 만나보세요
         </p>
 
         <div className="jkj-anim-up d4 tw-relative tw-flex tw-items-end tw-justify-center">
