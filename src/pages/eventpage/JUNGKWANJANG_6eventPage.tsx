@@ -220,7 +220,8 @@ export default function JKJEventPage() {
                 <div className="tw-mb-4">
                   <p className="tw-text-[12px] tw-text-[#8B5E3C] tw-font-bold tw-mb-2">에브리타임</p>
                   <div className="tw-flex tw-flex-wrap">
-                    {["일반 (120g/240g)", "리미티드 (1병/세트)", "필름", "아웃도어"].map(b => (
+                    {/*[최최종]이벤트 내용 수정*/}
+                    {["일반 (20/30/50/100포)", "리미티드 (30/50포)", "필름", "아웃도어"].map(b => (
                       <span key={b} className="brand-chip">{b}</span>
                     ))}
                   </div>
@@ -242,16 +243,18 @@ export default function JKJEventPage() {
                 <div>
                   <p className="tw-text-[12px] tw-text-[#8B5E3C] tw-font-bold tw-mb-2">그 외 브랜드</p>
                   <div className="tw-flex tw-flex-wrap tw-mb-3">
-                    {["천녹", "화애락", "홍이장군", "RXGIN"].map(b => (
+                    {/*[최최종] 상품 삭제 및 추가*/}
+                    {["홍이장군", "RXGIN", "아이패스","GLPro","아이키커 점프"].map(b => (
                       <span key={b} className="brand-chip">{b}</span>
                     ))}
                   </div>
-                  <div className="tw-flex tw-flex-col tw-gap-1.5" style={{fontFamily:"'Noto Sans KR',sans-serif"}}>
+                  {/*[최최종] 하기 주석 부분 삭제*/}
+{/*                   <div className="tw-flex tw-flex-col tw-gap-1.5" style={{fontFamily:"'Noto Sans KR',sans-serif"}}>
                     <p className="tw-text-[12px] tw-text-[#444] tw-leading-relaxed"><span className="tw-font-bold tw-text-[#8B0008]">천녹</span> — 우먼시니어 30/60포 · 강환 · 그로잉 · 부스팅</p>
                     <p className="tw-text-[12px] tw-text-[#444] tw-leading-relaxed"><span className="tw-font-bold tw-text-[#8B0008]">화애락</span> — 진 · 본 · 후</p>
                     <p className="tw-text-[12px] tw-text-[#444] tw-leading-relaxed"><span className="tw-font-bold tw-text-[#8B0008]">홍이장군</span> — 1/2/3단계 30/90포 · 면역젤리 · 파워스틱</p>
                     <p className="tw-text-[12px] tw-text-[#444] tw-leading-relaxed"><span className="tw-font-bold tw-text-[#8B0008]">RXGIN</span></p>
-                  </div>
+                  </div> */}
                 </div>
               </div>
             </div>
@@ -279,8 +282,9 @@ export default function JKJEventPage() {
               <EventBadge num={3} title="구매 금액별 포인트 적립" />
               <div className="tw-bg-white tw-rounded-xl tw-overflow-hidden tw-border tw-border-[#EAD8C8]">
                 <div className="tw-px-4">
-                  <RowItem label="30만원 이상 구매 시" value="1만원 적립"/>
-                  <RowItem label="50만원 이상 구매 시" value="2만원 적립"/>
+                  <RowItem label="30만원 이상 구매 시" value="1만 포인트 적립"/>
+                  <RowItem label="50만원 이상 구매 시" value="2만 포인트 적립"/>
+                  <RowItem label="70만원 이상 구매 시" value="3만 포인트 적립"/>
                 </div>
                 <div className="tw-px-4 tw-pb-3 tw-pt-1">
                   <p className="tw-text-[10.5px] tw-text-[#AAAAAA]">※ 멤버스 한정 · 1인 1회 · 비연속 적용</p>
