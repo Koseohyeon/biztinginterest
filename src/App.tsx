@@ -28,13 +28,20 @@ import LatteEventPage from "./pages/client/LatteEventPage"
 import JUNGKWANJANG_6eventPage from "./pages/eventpage/JUNGKWANJANG_6eventPage"
 import JKJEventPage from "./pages/eventpage/JUNGKWANJANG_6eventPage";
 
+//Mart
+import Mart_example from "./pages/eventpage/Mart_example"
+import Mart_example2 from "./pages/eventpage/Mart_example2"
+import Mart_example3 from "./pages/eventpage/Mart_example3"
+
+//Main
+import Main from "./pages/main/main"
+
 export default function App() {
   return (
     <HashRouter>
       <Routes>
 
-        <Route index element={<JUNGKWANJANG_6eventPage />} />
-        <Route path="*" element={<JUNGKWANJANG_6eventPage />} />
+        <Route path="*" element={<Main />} />
 
         <Route path="/MomentIndex" element={<MomentIndex />} />
         <Route path="/Dashboard" element={<Dashboard />} />
@@ -65,6 +72,11 @@ export default function App() {
         <Route path="/eventpage/JUNGKWANJANG_6eventPage" element={<JUNGKWANJANG_6eventPage />} />
         <Route path="/eventpage/JKJEventPage" element={<JKJEventPage />} />
 
+        {/* 마트 */}
+        <Route path="/eventpage/Mart_example" element={<Mart_example />} />
+        <Route path="/eventpage/Mart_example2" element={<Mart_example2 />} />
+        <Route path="/eventpage/Mart_example3" element={<Mart_example3 />} />
+        
       </Routes>
     </HashRouter>
   );

@@ -248,13 +248,6 @@ export default function JKJEventPage() {
                       <span key={b} className="brand-chip">{b}</span>
                     ))}
                   </div>
-                  {/*[최최종] 하기 주석 부분 삭제*/}
-{/*                   <div className="tw-flex tw-flex-col tw-gap-1.5" style={{fontFamily:"'Noto Sans KR',sans-serif"}}>
-                    <p className="tw-text-[12px] tw-text-[#444] tw-leading-relaxed"><span className="tw-font-bold tw-text-[#8B0008]">천녹</span> — 우먼시니어 30/60포 · 강환 · 그로잉 · 부스팅</p>
-                    <p className="tw-text-[12px] tw-text-[#444] tw-leading-relaxed"><span className="tw-font-bold tw-text-[#8B0008]">화애락</span> — 진 · 본 · 후</p>
-                    <p className="tw-text-[12px] tw-text-[#444] tw-leading-relaxed"><span className="tw-font-bold tw-text-[#8B0008]">홍이장군</span> — 1/2/3단계 30/90포 · 면역젤리 · 파워스틱</p>
-                    <p className="tw-text-[12px] tw-text-[#444] tw-leading-relaxed"><span className="tw-font-bold tw-text-[#8B0008]">RXGIN</span></p>
-                  </div> */}
                 </div>
               </div>
             </div>
@@ -291,21 +284,6 @@ export default function JKJEventPage() {
                 </div>
               </div>
             </div>
-
-            {/*[최종수정] Period bar 삭제*/}
-          {/*   <div className="tw-flex tw-items-center tw-justify-between tw-rounded-xl tw-px-4 tw-py-3.5 tw-bg-[#1A1208]">
-              <div>
-                <div className="tw-flex tw-items-center tw-gap-1.5 tw-mb-1">
-                  <span className="tw-text-[#D4A843]"><IconCalendar/></span>
-                  <p className="tw-text-[10px] tw-text-[#D4A843] tw-tracking-[1.5px] tw-uppercase tw-font-semibold">행사 기간</p>
-                </div>
-                <p className="tw-text-[14px] tw-font-bold tw-text-white" style={{fontFamily:"'Noto Serif KR',serif"}}>2026. 06. 11 — 06. 30</p>
-              </div>
-              <div className="tw-text-right">
-                <p className="tw-text-[10px] tw-text-white/40 tw-mb-0.5">기간 한정</p>
-                <p className="tw-text-[12px] tw-text-white/65 tw-font-semibold" style={{fontFamily:"'Noto Serif KR',serif"}}>목 — 화</p>
-              </div>
-            </div> */}
           </div>
         </div>
       </div>
@@ -374,21 +352,6 @@ export default function JKJEventPage() {
                 ))}
               </ul>
             </div>
-
-            {/* [최종수정] Period bar 삭제*/}
-{/*             <div className="tw-flex tw-items-center tw-justify-between tw-rounded-xl tw-px-4 tw-py-3.5 tw-bg-[#1A1208]">
-              <div>
-                <div className="tw-flex tw-items-center tw-gap-1.5 tw-mb-1">
-                  <span className="tw-text-[#D4A843]"><IconCalendar/></span>
-                  <p className="tw-text-[10px] tw-text-[#D4A843] tw-tracking-[1.5px] tw-uppercase tw-font-semibold">혜택 기간</p>
-                </div>
-                <p className="tw-text-[14px] tw-font-bold tw-text-white" style={{fontFamily:"'Noto Serif KR',serif"}}>2026. 06. 01 — 06. 30</p>
-              </div>
-              <div className="tw-text-right">
-                <p className="tw-text-[10px] tw-text-white/40 tw-mb-0.5">기간 한정</p>
-                <p className="tw-text-[12px] tw-text-white/65 tw-font-semibold" style={{fontFamily:"'Noto Serif KR',serif"}}>한 달간</p>
-              </div>
-            </div> */}
           </div>
         </div>
       </div>
