@@ -212,7 +212,7 @@ export default function FreshMartOrganicApp() {
                         {/* 금주 추천 그리드 */}
                         {weeklyProducts.length > 0 && (
                             <div className="tw-mb-8">
-                                <h2 className="tw-text-[18px] tw-font-extrabold tw-text-gray-900 tw-mb-3">금주 강력 추천 행사</h2>
+                                <h2 className="tw-text-[18px] tw-font-extrabold tw-text-gray-900 tw-mb-3">금주 특별 할인 행사</h2>
                                 <div className="tw-grid tw-grid-cols-2 tw-gap-3">
                                     {weeklyProducts.map(item => (
                                         <div key={item.id} onClick={() => openCoupon(item)}
