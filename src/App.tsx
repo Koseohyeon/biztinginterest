@@ -32,6 +32,7 @@ import JKJEventPage from "./pages/eventpage/JUNGKWANJANG_6eventPage";
 import Mart_example from "./pages/eventpage/Mart_example"
 import Mart_example2 from "./pages/eventpage/Mart_example2"
 import Mart_example3 from "./pages/eventpage/Mart_example3"
+import Mart_example4 from "./pages/eventpage/Mart_example_3"
 
 //Main
 import MainPage from "./pages/main/MainPage"
@@ -75,6 +76,7 @@ export default function App() {
         <Route path="/eventpage/Mart_example" element={<Mart_example />} />
         <Route path="/eventpage/Mart_example2" element={<Mart_example2 />} />
         <Route path="/eventpage/Mart_example3" element={<Mart_example3 />} />
+        <Route path="/eventpage/Mart_example4" element={<Mart_example4 />} />
         
       </Routes>
     </HashRouter>
