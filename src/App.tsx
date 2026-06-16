@@ -34,14 +34,13 @@ import Mart_example2 from "./pages/eventpage/Mart_example2"
 import Mart_example3 from "./pages/eventpage/Mart_example3"
 
 //Main
-import Main from "./pages/main/main"
-
+import MainPage from "./pages/main/MainPage"
 export default function App() {
   return (
     <HashRouter>
       <Routes>
 
-        <Route path="*" element={<Main />} />
+        <Route path="*" element={<MainPage />} />
 
         <Route path="/MomentIndex" element={<MomentIndex />} />
         <Route path="/Dashboard" element={<Dashboard />} />
