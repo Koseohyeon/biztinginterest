@@ -1,5 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
+import { useNaverLogin } from "./../../hooks/useNaverLogin";
+import { NAVER_LOGIN } from "./../../config/naverLogin";
 
 /* ══ 상품 이미지 (Unsplash) ══ */
 const IMG = {
@@ -123,18 +125,13 @@ function LoginAlert({ onConfirm, onCancel }: { onConfirm: () => void; onCancel: 
         className="tw-w-full tw-rounded-3xl tw-overflow-hidden tw-bg-white"
         style={{ maxWidth: 340, boxShadow: "0 20px 60px rgba(0,0,0,0.18)" }}
       >
-        {/* 상단 컬러 배너 */}
         <div className="tw-px-6 tw-pt-7 tw-pb-5 tw-text-center" style={{ background: C.heroGrad }}>
           <div className="tw-text-[44px] tw-mb-2">🎁</div>
-          <p className="tw-text-white tw-font-black tw-text-[18px] tw-leading-snug">
-            쿠폰을 받으시겠어요?
-          </p>
+          <p className="tw-text-white tw-font-black tw-text-[18px] tw-leading-snug">쿠폰을 받으시겠어요?</p>
           <p className="tw-text-[12px] tw-mt-1.5" style={{ color: "rgba(255,255,255,0.75)" }}>
             회원가입하고 쿠폰과 마트 소식을 한번에!
           </p>
         </div>
-
-        {/* 본문 */}
         <div className="tw-px-6 tw-pt-5 tw-pb-2">
           <div className="tw-space-y-2.5">
             {[
@@ -144,15 +141,11 @@ function LoginAlert({ onConfirm, onCancel }: { onConfirm: () => void; onCancel: 
             ].map((item) => (
               <div key={item.text} className="tw-flex tw-items-center tw-gap-3">
                 <span className="tw-text-[16px]">{item.icon}</span>
-                <span className="tw-text-[12.5px] tw-font-medium" style={{ color: C.textDark }}>
-                  {item.text}
-                </span>
+                <span className="tw-text-[12.5px] tw-font-medium" style={{ color: C.textDark }}>{item.text}</span>
               </div>
             ))}
           </div>
         </div>
-
-        {/* 버튼 */}
         <div className="tw-px-6 tw-py-5 tw-flex tw-flex-col tw-gap-2.5">
           <button
             onClick={onConfirm}
@@ -174,39 +167,14 @@ function LoginAlert({ onConfirm, onCancel }: { onConfirm: () => void; onCancel: 
   );
 }
 
-/* ══ 쿠폰 카드 (심플) ══ */
+/* ══ 쿠폰 카드 ══ */
 function CouponCard({ c, onDownload, unlocked }: { c: typeof COUPONS[0]; onDownload: () => void; unlocked: boolean }) {
   return (
     <div
-      className="tw-relative tw-rounded-2xl tw-overflow-hidden tw-mb-4"
+      className="tw-rounded-2xl tw-overflow-hidden tw-mb-4"
       style={{ border: `1px solid ${C.border}`, background: "#fff", boxShadow: "0 2px 12px rgba(255,111,97,0.08)" }}
     >
-      {/* 블러 오버레이 — 미로그인 시만 표시 */}
-      {!unlocked && (
-      <div
-        className="tw-absolute tw-inset-0 tw-z-10 tw-flex tw-flex-col tw-items-center tw-justify-center tw-gap-3"
-        style={{ backdropFilter: "blur(10px)", background: "rgba(255,248,243,0.55)" }}
-      >
-        <div
-          className="tw-w-10 tw-h-10 tw-rounded-full tw-flex tw-items-center tw-justify-center"
-          style={{ background: C.light }}
-        >
-          <span className="tw-text-[20px]">🔒</span>
-        </div>
-        <p className="tw-text-[12px] tw-font-bold" style={{ color: C.textMid }}>
-          회원가입 후 쿠폰을 받아보세요
-        </p>
-        <button
-          onClick={onDownload}
-          className="tw-px-5 tw-py-2.5 tw-rounded-xl tw-text-[13px] tw-font-bold tw-text-white"
-          style={{ background: C.bannerGrad, boxShadow: `0 4px 12px rgba(255,111,97,0.28)` }}
-        >
-          쿠폰 다운받기
-        </button>
-      </div>
-      )}
-
-      {/* 카드 본문 */}
+      {/* 카드 상단 — 쿠폰 정보 */}
       <div className="tw-flex tw-items-center tw-gap-4 tw-px-5 tw-py-5" style={{ background: c.heroBg }}>
         <span className="tw-text-[36px]">{c.emoji}</span>
         <div>
@@ -220,21 +188,65 @@ function CouponCard({ c, onDownload, unlocked }: { c: typeof COUPONS[0]; onDownl
           <p className="tw-text-[11px] tw-mt-1" style={{ color: "rgba(255,255,255,0.65)" }}>{c.sub}</p>
         </div>
       </div>
+
+      {/* 유효기간 */}
       <div className="tw-px-5 tw-py-3 tw-flex tw-justify-between tw-items-center">
         <span className="tw-text-[10.5px]" style={{ color: C.textLight }}>📅 ~{c.expire}</span>
         <span className="tw-text-[10.5px]" style={{ color: C.textLight }}>{c.note}</span>
       </div>
-      {/* 로그인 후 — 쿠폰 다운 완료 표시 */}
-      {unlocked && (
-        <div className="tw-px-5 tw-pb-5">
+
+      {/* 바코드 영역 — 미로그인 시 블러 */}
+      <div className="tw-relative tw-mx-5 tw-mb-3 tw-rounded-xl tw-overflow-hidden"
+        style={{ background: C.lighter, border: `1px dashed ${C.borderMid}` }}>
+        {!unlocked && (
+          <div
+            className="tw-absolute tw-inset-0 tw-z-10 tw-rounded-xl tw-flex tw-flex-col tw-items-center tw-justify-center tw-gap-2"
+            style={{ backdropFilter: "blur(8px)", background: "rgba(255,248,243,0.55)" }}
+          >
+            <span className="tw-text-[18px]">🔒</span>
+            <p className="tw-text-[11px] tw-font-bold" style={{ color: C.textMid }}>회원가입 후 사용 가능</p>
+          </div>
+        )}
+        <div className="tw-py-4 tw-px-4 tw-text-center">
+          {/* 바코드 시각화 (실제 바코드 대체용 줄무늬) */}
+          <div className="tw-flex tw-justify-center tw-items-end tw-gap-[2px] tw-mb-2" style={{ height: 48 }}>
+            {Array.from({ length: 40 }).map((_, i) => (
+              <div
+                key={i}
+                style={{
+                  width: i % 3 === 0 ? 3 : 1.5,
+                  height: i % 5 === 0 ? 48 : i % 3 === 0 ? 40 : 36,
+                  background: C.textDark,
+                  borderRadius: 1,
+                }}
+              />
+            ))}
+          </div>
+          <p className="tw-font-mono tw-text-[11px] tw-font-bold tw-tracking-widest" style={{ color: C.textLight }}>
+            {c.id}-2026
+          </p>
+        </div>
+      </div>
+
+      {/* 버튼 영역 */}
+      <div className="tw-px-5 tw-pb-5">
+        {!unlocked ? (
+          <button
+            onClick={onDownload}
+            className="tw-w-full tw-py-3 tw-rounded-xl tw-text-[13px] tw-font-bold tw-text-white"
+            style={{ background: C.bannerGrad, boxShadow: `0 4px 12px rgba(255,111,97,0.28)` }}
+          >
+            쿠폰 다운받기
+          </button>
+        ) : (
           <div
             className="tw-w-full tw-py-3 tw-rounded-xl tw-text-center tw-text-[13px] tw-font-bold"
             style={{ background: C.light, color: C.deep }}
           >
             ✅ 쿠폰이 발급되었습니다
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }
@@ -282,9 +294,7 @@ function SecHead({ title, sub }: { title: string; sub?: string }) {
       <div className="tw-flex tw-items-center tw-justify-between">
         <div className="tw-flex tw-items-center tw-gap-2">
           <div className="tw-w-[3px] tw-h-[20px] tw-rounded-full" style={{ background: C.primary }} />
-          <span className="tw-text-[16px] tw-font-black tw-tracking-tight" style={{ color: C.textDark }}>
-            {title}
-          </span>
+          <span className="tw-text-[16px] tw-font-black tw-tracking-tight" style={{ color: C.textDark }}>{title}</span>
         </div>
         {sub && <span className="tw-text-[10.5px]" style={{ color: C.textLight }}>{sub}</span>}
       </div>
@@ -301,10 +311,8 @@ function WeekCard({ item }: { item: typeof WEEK_DEALS[0] }) {
       className="tw-relative tw-bg-white tw-rounded-3xl tw-overflow-hidden tw-flex tw-flex-col"
       style={{ border: `1px solid ${C.border}`, boxShadow: `0 4px 10px rgba(255,111,97,0.10)` }}
     >
-      <div
-        className="tw-absolute tw-top-2 tw-left-2 tw-z-10 tw-rounded-lg tw-text-white"
-        style={{ background: C.accent, padding: "4px 7px" }}
-      >
+      <div className="tw-absolute tw-top-2 tw-left-2 tw-z-10 tw-rounded-lg tw-text-white"
+        style={{ background: C.accent, padding: "4px 7px" }}>
         <span className="tw-text-[11px] tw-font-black tw-leading-none">{disc}% OFF</span>
       </div>
       <div className="tw-w-full tw-aspect-square tw-overflow-hidden" style={{ background: `linear-gradient(145deg,${C.lighter},${C.light})` }}>
@@ -393,7 +401,6 @@ export default function FreshMartLanding() {
   const [tab, setTab] = useState(0);
   const [activeCat, setActiveCat] = useState<Category>("전체");
   const [showLoginAlert, setShowLoginAlert] = useState(false);
-  const [couponUnlocked, setCouponUnlocked] = useState(false);
 
   useEffect(() => {
     const el = document.createElement("style");
@@ -402,27 +409,13 @@ export default function FreshMartLanding() {
     return () => { document.head.removeChild(el); };
   }, []);
 
-  // 팝업에서 로그인 완료 신호 수신
-  useEffect(() => {
-    const onMessage = (e: MessageEvent) => {
-      if (e.data?.type === "NAVER_LOGIN_SUCCESS") {
-        setCouponUnlocked(true);
-      }
-    };
-    window.addEventListener("message", onMessage);
-    return () => window.removeEventListener("message", onMessage);
-  }, []);
+  const { unlocked: couponUnlocked, openLogin } = useNaverLogin(
+    NAVER_LOGIN.freshmart.code,
+    NAVER_LOGIN.freshmart.pageId
+  );
 
   const handleDownload = () => setShowLoginAlert(true);
-  const handleConfirm = () => {
-    setShowLoginAlert(false);
-    // 새 탭이 아닌 팝업 창으로 열기
-    window.open(
-      "https://www.bizting.co.kr/naver/DQrTZu",
-      "naverLogin",
-      "width=500,height=700,left=200,top=100"
-    );
-  };
+  const handleConfirm = () => { setShowLoginAlert(false); openLogin(); };
   const handleCancel = () => setShowLoginAlert(false);
 
   const filterCat = (cat: Category) => activeCat === "전체" || cat === activeCat;
@@ -505,11 +498,8 @@ export default function FreshMartLanding() {
                 <div className="tw-mt-5 tw-pb-1 tw-overflow-hidden">
                   <div style={{ display: "flex", gap: 8, width: "max-content", animation: "slideLoop 16s linear infinite" }}>
                     {slideItems.map((item, i) => (
-                      <div
-                        key={i}
-                        className="tw-flex-shrink-0 tw-rounded-2xl tw-flex tw-items-center tw-gap-2"
-                        style={{ background: "#fff", minWidth: 120, padding: "6px 10px", boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}
-                      >
+                      <div key={i} className="tw-flex-shrink-0 tw-rounded-2xl tw-flex tw-items-center tw-gap-2"
+                        style={{ background: "#fff", minWidth: 120, padding: "6px 10px", boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}>
                         <div className="tw-w-8 tw-h-8 tw-rounded-xl tw-overflow-hidden tw-flex-shrink-0" style={{ background: C.light }}>
                           <img src={item.img} alt={item.name} className="tw-w-full tw-h-full tw-object-cover" />
                         </div>
@@ -619,10 +609,8 @@ export default function FreshMartLanding() {
                     { badge: "주차",  text: "건물 지하 1~3층 · 3시간 무료" },
                   ].map((r) => (
                     <div key={r.badge} className="tw-flex tw-items-center tw-gap-3">
-                      <span
-                        className="tw-text-white tw-text-[10px] tw-font-bold tw-rounded-lg tw-flex-shrink-0"
-                        style={{ background: C.primary, minWidth: 44, width: 44, height: 25, display: "flex", alignItems: "center", justifyContent: "center" }}
-                      >
+                      <span className="tw-text-white tw-text-[10px] tw-font-bold tw-rounded-lg tw-flex-shrink-0"
+                        style={{ background: C.primary, minWidth: 44, width: 44, height: 25, display: "flex", alignItems: "center", justifyContent: "center" }}>
                         {r.badge}
                       </span>
                       <p className="tw-text-[12px]" style={{ color: C.textMid }}>{r.text}</p>
@@ -648,7 +636,6 @@ export default function FreshMartLanding() {
         {/* TAB 2: 쿠폰 */}
         {tab === 2 && (
           <div style={{ paddingBottom: 100 }}>
-            {/* 쿠폰 탭 헤더 */}
             <div className="tw-px-5 tw-pt-7 tw-pb-6" style={{ background: `linear-gradient(160deg,${C.heroDark} 0%,${C.heroDark2} 100%)` }}>
               <p className="tw-text-[10px] tw-font-bold tw-tracking-[3px] tw-uppercase tw-mb-2 tw-text-white tw-text-center">Coupon Center</p>
               <h2 className="tw-text-[22px] tw-font-black tw-text-white tw-mb-1 tw-text-center">할인 쿠폰</h2>
@@ -657,24 +644,24 @@ export default function FreshMartLanding() {
               </p>
             </div>
 
-            {/* 잠금 안내 배너 — 미로그인 시만 표시 */}
+            {/* 안내 배너 */}
             {!couponUnlocked && (
-            <div className="tw-mx-4 tw-mt-5 tw-mb-4 tw-rounded-2xl tw-p-4 tw-flex tw-items-center tw-gap-3" style={{ background: C.yellow }}>
-              <span className="tw-text-[22px]">🔐</span>
-              <div>
-                <p className="tw-text-[12px] tw-font-bold" style={{ color: C.yellowText }}>회원 전용 쿠폰입니다</p>
-                <p className="tw-text-[10.5px] tw-mt-0.5" style={{ color: "#9A7A3A" }}>네이버 회원가입 후 쿠폰을 다운받아 보세요</p>
+              <div className="tw-mx-4 tw-mt-5 tw-mb-4 tw-rounded-2xl tw-p-4 tw-flex tw-items-center tw-gap-3" style={{ background: C.yellow }}>
+                <span className="tw-text-[22px]">🔐</span>
+                <div>
+                  <p className="tw-text-[12px] tw-font-bold" style={{ color: C.yellowText }}>회원 전용 쿠폰입니다</p>
+                  <p className="tw-text-[10.5px] tw-mt-0.5" style={{ color: "#9A7A3A" }}>네이버 회원가입 후 쿠폰을 다운받아 보세요</p>
+                </div>
               </div>
-            </div>
             )}
             {couponUnlocked && (
-            <div className="tw-mx-4 tw-mt-5 tw-mb-4 tw-rounded-2xl tw-p-4 tw-flex tw-items-center tw-gap-3" style={{ background: "#E8F5E9" }}>
-              <span className="tw-text-[22px]">🎉</span>
-              <div>
-                <p className="tw-text-[12px] tw-font-bold" style={{ color: "#2E7D32" }}>로그인 완료! 쿠폰이 활성화됐어요</p>
-                <p className="tw-text-[10.5px] tw-mt-0.5" style={{ color: "#4CAF50" }}>아래 쿠폰을 매장 직원에게 제시해 주세요</p>
+              <div className="tw-mx-4 tw-mt-5 tw-mb-4 tw-rounded-2xl tw-p-4 tw-flex tw-items-center tw-gap-3" style={{ background: "#E8F5E9" }}>
+                <span className="tw-text-[22px]">🎉</span>
+                <div>
+                  <p className="tw-text-[12px] tw-font-bold" style={{ color: "#2E7D32" }}>로그인 완료! 쿠폰이 활성화됐어요</p>
+                  <p className="tw-text-[10.5px] tw-mt-0.5" style={{ color: "#4CAF50" }}>아래 쿠폰을 매장 직원에게 제시해 주세요</p>
+                </div>
               </div>
-            </div>
             )}
 
             {/* 쿠폰 카드 목록 */}
@@ -693,10 +680,8 @@ export default function FreshMartLanding() {
                   "이벤트 종료 시 예고 없이 조기 마감될 수 있습니다.",
                 ].map((txt, i) => (
                   <li key={i} className="tw-flex tw-gap-2.5 tw-items-start">
-                    <span
-                      className="tw-w-4 tw-h-4 tw-rounded-full tw-flex tw-items-center tw-justify-center tw-text-[9px] tw-font-black tw-text-white tw-flex-shrink-0 tw-mt-0.5"
-                      style={{ background: C.primary }}
-                    >
+                    <span className="tw-w-4 tw-h-4 tw-rounded-full tw-flex tw-items-center tw-justify-center tw-text-[9px] tw-font-black tw-text-white tw-flex-shrink-0 tw-mt-0.5"
+                      style={{ background: C.primary }}>
                       {i + 1}
                     </span>
                     <span className="tw-text-[11.5px] tw-leading-snug" style={{ color: C.textLight }}>{txt}</span>
