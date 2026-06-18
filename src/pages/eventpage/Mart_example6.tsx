@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import JsBarcode from 'jsbarcode';
 import { MapPin, Map, Ticket, X, Clock, Tag, Gift, Truck } from 'lucide-react';
 import { useNaverLogin } from '../../hooks/useNaverLogin';
+import { NAVER_LOGIN } from "./../../config/naverLogin";
 
 /* ══ 상품 이미지 (Unsplash) ══ */
 const IMG = {
@@ -134,7 +135,10 @@ export default function FreshMartOrganicApp() {
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
     const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
     const [showLoginAlert, setShowLoginAlert] = useState(false);
-    const { unlocked: couponUnlocked, openLogin } = useNaverLogin('DQrTZu', 'freshmart');
+    const { unlocked: couponUnlocked, openLogin } = useNaverLogin(
+        NAVER_LOGIN.freshmart2.code,
+        NAVER_LOGIN.freshmart2.pageId
+      );
 
     const sheetCanvasRef = useRef<HTMLCanvasElement>(null);
     useBarcode(selectedProduct?.couponCode || '', sheetCanvasRef);

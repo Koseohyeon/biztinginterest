@@ -410,8 +410,8 @@ export default function FreshMartLanding() {
   }, []);
 
   const { unlocked: couponUnlocked, openLogin } = useNaverLogin(
-    NAVER_LOGIN.freshmart.code,
-    NAVER_LOGIN.freshmart.pageId
+    NAVER_LOGIN.freshmart1.code,
+    NAVER_LOGIN.freshmart1.pageId
   );
 
   const handleDownload = () => setShowLoginAlert(true);
