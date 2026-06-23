@@ -35,9 +35,15 @@ import Mart_example3 from "./pages/eventpage/Mart_example3"
 import Mart_example4 from "./pages/eventpage/Mart_example_3"
 import Mart_example5 from "./pages/eventpage/Mart_example5"
 import Mart_example6 from "./pages/eventpage/Mart_example6"
+import Mart_policy from "./privacy/Mart_marketingv1.1"
 
 //Main
 import MainPage from "./pages/main/MainPage"
+
+//Chabio
+import Cha_example from "./pages/eventpage/Cha_example"
+
+
 export default function App() {
   return (
     <HashRouter>
@@ -81,6 +87,12 @@ export default function App() {
         <Route path="/eventpage/Mart_example4" element={<Mart_example4 />} />
         <Route path="/eventpage/Mart_example5" element={<Mart_example5 />} />
         <Route path="/eventpage/Mart_example6" element={<Mart_example6 />} />
+        <Route path="/eventpage/Mart_policy" element={<Mart_policy />} />
+    
+
+        {/* 차바이오텍 */}
+        <Route path="/eventpage/Cha_example" element={<Cha_example />} />
+
         
       </Routes>
     </HashRouter>
