@@ -1,12 +1,12 @@
 import { useSearchParams } from "react-router-dom";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import logoImg from "../../assets/icodelogo.png";
 
 const LOGO_SRC = logoImg;
 const BRAND = "#E75480";
-
 const GOOGLE_FORM_URL =
   "https://docs.google.com/forms/d/e/1FAIpQLSdqbbHhJ37jHwMZuWprMLYnY-yTpwwf2WCpqoubEueqMKhdpg/viewform";
+const SESSION_KEY = "icord_form_opened";
 
 function IconDrop() {
   return (
@@ -168,48 +168,64 @@ export default function IcordEvent() {
 
   const [toast, setToast] = useState(false);
   const [participated, setParticipated] = useState(false);
-  const popupRef = useRef<Window | null>(null);
-  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [formOpened, setFormOpened] = useState(false);
 
   const handleComplete = () => {
+    sessionStorage.removeItem(SESSION_KEY);
     setParticipated(true);
+    setFormOpened(false);
     setToast(true);
     console.log("📤 이벤트 참여 완료 — campaignId:", campaignId);
     setTimeout(() => setToast(false), 3500);
   };
 
-  const openForm = () => {
-    const popup = window.open(
-      GOOGLE_FORM_URL,
-      "googleForm",
-      "width=600,height=750,left=100,top=80"
-    );
-    popupRef.current = popup;
-
-    pollRef.current = setInterval(() => {
-      try {
-        if (!popup || popup.closed) {
-          clearInterval(pollRef.current!);
-          return;
-        }
-        const href = popup.location.href;
-        if (href.includes("formResponse")) {
-          clearInterval(pollRef.current!);
-          popup.close();
-          window.focus();
+  useEffect(() => {
+    // ── 핵심: 페이지가 다시 보일 때마다 sessionStorage 확인 ──
+    // PC: 새 탭 닫고 돌아올 때 / 모바일: 뒤로가기 or 탭 전환으로 돌아올 때 모두 발동
+    const onVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        const flag = sessionStorage.getItem(SESSION_KEY);
+        if (flag === "1") {
           handleComplete();
         }
-      } catch {
-        // cross-origin 에러 무시 (폼 작성 중 정상)
       }
-    }, 500);
-  };
+    };
 
-  useEffect(() => {
+    // 페이지 포커스 감지 (PC 보조)
+    const onFocus = () => {
+      const flag = sessionStorage.getItem(SESSION_KEY);
+      if (flag === "1") {
+        handleComplete();
+      }
+    };
+
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    window.addEventListener("focus", onFocus);
+
+    // 마운트 시점에도 한 번 체크 (뒤로가기로 돌아온 경우)
+    if (sessionStorage.getItem(SESSION_KEY) === "1") {
+      handleComplete();
+    }
+
     return () => {
-      if (pollRef.current) clearInterval(pollRef.current);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+      window.removeEventListener("focus", onFocus);
     };
   }, []);
+
+  const openForm = () => {
+    // 플래그 저장
+    sessionStorage.setItem(SESSION_KEY, "1");
+    setFormOpened(true);
+
+    // PC: 새 탭으로 열기 시도
+    const popup = window.open(GOOGLE_FORM_URL, "_blank");
+
+    // 모바일 팝업 차단 or 실패 시 → 현재 탭에서 열기
+    if (!popup) {
+      window.location.href = GOOGLE_FORM_URL;
+    }
+  };
 
   return (
     <div
@@ -338,7 +354,7 @@ export default function IcordEvent() {
 
           {/* 스텝 */}
           <div className="tw-flex tw-items-center tw-justify-center tw-gap-1.5 tw-mb-6">
-            {[["1", "폼 작성"], ["2", "제출 완료"], ["3", "선물 받기 🎁"]].map(([num, lbl], i) => (
+            {[["1", "폼 작성"], ["2", "제출 후 복귀"], ["3", "선물 받기 🎁"]].map(([num, lbl], i) => (
               <div key={num} className="tw-flex tw-items-center tw-gap-1.5">
                 <div className="tw-text-center">
                   <div
@@ -356,6 +372,19 @@ export default function IcordEvent() {
               </div>
             ))}
           </div>
+
+          {/* 폼 열린 상태 안내 배너 */}
+          {formOpened && !participated && (
+            <div
+              className="tw-flex tw-items-center tw-gap-2 tw-rounded-2xl tw-px-4 tw-py-3 tw-mb-5"
+              style={{ background: "#fff9ec", border: "1.5px solid #ffcc80" }}
+            >
+              <span className="tw-text-base">📋</span>
+              <span className="tw-text-xs tw-font-bold" style={{ color: "#e65100" }}>
+                폼 제출 후 이 화면으로 돌아오면 자동 완료돼요!
+              </span>
+            </div>
+          )}
 
           {/* 완료 배지 */}
           {participated && (
@@ -377,8 +406,8 @@ export default function IcordEvent() {
           >
             <div className="tw-space-y-2">
               {[
-                { icon: "📋", text: "간단한 정보 입력으로 이벤트 참여" },
-                { icon: "🎁", text: "참여 시 혜택 상품 중 하나를 증정해 드려요" },
+                { icon: "📋", text: "버튼을 누르면 구글 폼이 열려요" },
+                { icon: "✅", text: "폼 제출 후 돌아오면 자동으로 완료돼요 (PC·모바일 모두)" },
                 { icon: "💬", text: "담당자가 1~2 영업일 내 연락드려요" },
               ].map((item) => (
                 <div key={item.text} className="tw-flex tw-items-center tw-gap-2.5">
@@ -395,24 +424,25 @@ export default function IcordEvent() {
               onClick={openForm}
               className="tw-w-full tw-py-4 tw-rounded-2xl tw-text-white tw-font-black tw-text-base tw-flex tw-items-center tw-justify-center tw-gap-2"
               style={{
-                background: `linear-gradient(135deg, ${BRAND}, #e91e63)`,
+                background: formOpened
+                  ? "linear-gradient(135deg, #f06292, #e91e63)"
+                  : `linear-gradient(135deg, ${BRAND}, #e91e63)`,
                 boxShadow: "0 8px 32px rgba(231,84,128,0.38)",
+                border: "none",
+                cursor: "pointer",
                 transition: "transform 0.15s, box-shadow 0.15s",
               }}
-              onMouseOver={(e) => { e.currentTarget.style.transform = "scale(1.03)"; e.currentTarget.style.boxShadow = "0 12px 40px rgba(231,84,128,0.5)"; }}
-              onMouseOut={(e) => { e.currentTarget.style.transform = "scale(1)"; e.currentTarget.style.boxShadow = "0 8px 32px rgba(231,84,128,0.38)"; }}
+              onMouseOver={(e) => { e.currentTarget.style.transform = "scale(1.03)"; }}
+              onMouseOut={(e) => { e.currentTarget.style.transform = "scale(1)"; }}
               onMouseDown={(e) => { e.currentTarget.style.transform = "scale(0.97)"; }}
               onMouseUp={(e) => { e.currentTarget.style.transform = "scale(1.03)"; }}
             >
-              🎉 이벤트 참여하기
+              {formOpened ? "📋 폼 다시 열기" : "🎉 이벤트 참여하기"}
             </button>
           ) : (
             <div
               className="tw-w-full tw-py-4 tw-rounded-2xl tw-text-white tw-font-black tw-text-base tw-flex tw-items-center tw-justify-center tw-gap-2"
-              style={{
-                background: `linear-gradient(135deg, ${BRAND}, #e91e63)`,
-                opacity: 0.6,
-              }}
+              style={{ background: `linear-gradient(135deg, ${BRAND}, #e91e63)`, opacity: 0.6 }}
             >
               ✅ 이벤트 참여 완료!
             </div>
@@ -421,7 +451,9 @@ export default function IcordEvent() {
           <p className="tw-text-center tw-text-xs tw-mt-2" style={{ color: "#f48fb1" }}>
             {participated
               ? "* 담당자가 1~2 영업일 내 연락드려요 🌸"
-              : "* 구글 폼 제출 완료 후 자동으로 돌아와요 🌸"}
+              : formOpened
+              ? "* 폼 제출 후  이벤트 참여가 완료됩니다. 🌸"
+              : "* 이벤트 참여하기 버튼을 눌러주세요! 🌸"}
           </p>
         </div>
       </section>
