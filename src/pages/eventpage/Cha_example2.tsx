@@ -1,9 +1,13 @@
 import { useSearchParams } from "react-router-dom";
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import logoImg from "../../assets/icodelogo.png";
+import { useNaverLogin } from "./../../hooks/useNaverLogin";
 
 const LOGO_SRC = logoImg;
 const BRAND = "#E75480";
+
+const NAVER_CODE = "6qfrvN";
+const NAVER_PAGE_ID = "Chabio";
 
 function IconDrop() {
   return (
@@ -84,6 +88,14 @@ function IconSparks() {
   );
 }
 
+function IconNaver() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+      <path d="M13.5 12.3L10.2 7H7v10h3.5v-5.3L14 17H17V7h-3.5v5.3z" fill="white" />
+    </svg>
+  );
+}
+
 function Blob({ style }: { style: React.CSSProperties }) {
   return (
     <div
@@ -142,52 +154,6 @@ function GiftCard({ emoji, label, sub, color }: GiftCardProps) {
   );
 }
 
-function PrivacyModal({ onClose }: { onClose: () => void }) {
-  return (
-    <div className="tw-fixed tw-inset-0 tw-z-50 tw-flex tw-items-center tw-justify-center tw-p-4">
-      <div
-        className="tw-absolute tw-inset-0"
-        style={{ background: "rgba(0,0,0,0.3)", backdropFilter: "blur(8px)" }}
-        onClick={onClose}
-      />
-      <div
-        className="tw-relative tw-rounded-3xl tw-p-6 tw-max-w-sm tw-w-full tw-max-h-[80vh] tw-overflow-y-auto"
-        style={{ background: "white", boxShadow: "0 20px 60px rgba(0,0,0,0.15)" }}
-      >
-        <div className="tw-text-center tw-mb-5">
-          <div
-            className="tw-w-12 tw-h-12 tw-rounded-2xl tw-flex tw-items-center tw-justify-center tw-mx-auto tw-mb-2"
-            style={{ background: "#fce4ec" }}
-          >
-            <IconShield />
-          </div>
-          <h3 className="tw-text-sm tw-font-bold" style={{ color: BRAND }}>마케팅 정보 수신 동의 전문</h3>
-        </div>
-        <div className="tw-space-y-3 tw-text-xs tw-leading-relaxed" style={{ color: "#9e3a5a" }}>
-          {[
-            ["수신 동의 목적", "이벤트 정보, 이벤트 참여 안내 및 맞춤형 혜택 안내를 위해 마케팅 정보를 발송합니다."],
-            ["수신 채널", "SMS, 이메일, 앱 푸시 알림"],
-            ["보유 기간", "동의 철회 시까지 또는 회원 탈퇴 시"],
-            ["동의 철회", "고객센터(1588-0000) 또는 수신거부를 통해 언제든 철회 가능합니다. 거부 시 기본 상담은 정상 이용 가능합니다."],
-          ].map(([title, body]) => (
-            <div key={title} className="tw-rounded-xl tw-p-3" style={{ background: "#fff5f8" }}>
-              <div className="tw-font-bold tw-mb-0.5" style={{ color: "#c2185b" }}>{title}</div>
-              <div>{body}</div>
-            </div>
-          ))}
-        </div>
-        <button
-          onClick={onClose}
-          className="tw-w-full tw-mt-5 tw-py-3 tw-rounded-2xl tw-text-white tw-font-bold tw-text-sm"
-          style={{ background: `linear-gradient(135deg, ${BRAND}, #e91e63)` }}
-        >
-          확인했어요 ✓
-        </button>
-      </div>
-    </div>
-  );
-}
-
 function Toast({ show }: { show: boolean }) {
   return (
     <div
@@ -208,7 +174,6 @@ function Toast({ show }: { show: boolean }) {
 function SecretCouponSection({ revealed }: { revealed: boolean }) {
   return (
     <section className="tw-px-4 tw-mb-5">
-      {/* 안내 배너 */}
       <div
         className="tw-rounded-3xl tw-p-6 tw-text-center tw-relative tw-overflow-hidden tw-mb-4"
         style={{ background: "linear-gradient(135deg,#fff0f5,#fce4ec)", border: "2px dashed #f48fb1" }}
@@ -227,7 +192,7 @@ function SecretCouponSection({ revealed }: { revealed: boolean }) {
           </div>
           <div className="tw-text-xs tw-leading-relaxed tw-mb-3" style={{ color: "#ad1457" }}>
             상담 신청 고객님께 <strong>약 10만원 상당</strong>의 추가 상품 혜택을 드려요 💕<br />
-            상담 신청을 완료하시면 시크릿 혜택이 공개됩니다!
+            네이버 간편가입 후 신청하시면 시크릿 혜택이 공개됩니다!
           </div>
           <div
             className="tw-inline-flex tw-items-center tw-gap-1.5 tw-px-4 tw-py-1.5 tw-rounded-full tw-text-xs tw-font-bold tw-text-white"
@@ -239,13 +204,11 @@ function SecretCouponSection({ revealed }: { revealed: boolean }) {
         </div>
       </div>
 
-      {/* 쿠폰 카드 */}
       <div
         className="tw-rounded-3xl tw-p-5"
         style={{ background: "white", border: "1px solid #fce4ec", boxShadow: "0 4px 24px rgba(231,84,128,0.07)" }}
       >
         {!revealed ? (
-          /* 잠금 상태 */
           <div>
             <div
               className="tw-relative tw-rounded-2xl tw-overflow-hidden tw-mb-3"
@@ -256,9 +219,7 @@ function SecretCouponSection({ revealed }: { revealed: boolean }) {
                 style={{ filter: "blur(8px)", userSelect: "none", pointerEvents: "none" }}
               >
                 <div className="tw-text-2xl tw-mb-1">🏷️</div>
-                <div className="tw-text-xs tw-font-bold tw-mb-1" style={{ color: "#ad1457" }}>
-                  차 헬스앤뷰티 상품권
-                </div>
+                <div className="tw-text-xs tw-font-bold tw-mb-1" style={{ color: "#ad1457" }}>차 헬스앤뷰티 상품권</div>
                 <div className="tw-text-lg tw-font-black" style={{ color: BRAND }}>100,000원</div>
                 <div className="tw-text-xs tw-mt-1" style={{ color: "#e91e8c" }}>쿠폰 코드: CHA-XXXX-XXXX-XXXX</div>
               </div>
@@ -273,11 +234,10 @@ function SecretCouponSection({ revealed }: { revealed: boolean }) {
               </div>
             </div>
             <p className="tw-text-center tw-text-xs" style={{ color: "#f48fb1" }}>
-              아래 상담 신청을 완료하면 쿠폰이 공개돼요 🌸
+              아래 버튼을 눌러 상담 신청을 완료하면 쿠폰이 공개돼요 🌸
             </p>
           </div>
         ) : (
-          /* 공개 상태 */
           <div>
             <div className="tw-text-center tw-mb-4">
               <div className="tw-text-2xl tw-mb-1">🎉</div>
@@ -294,26 +254,23 @@ function SecretCouponSection({ revealed }: { revealed: boolean }) {
               }}
             >
               <div className="tw-text-3xl tw-mb-2">🏷️</div>
-              <div className="tw-text-xs tw-font-bold tw-mb-0.5" style={{ color: "#c2185b" }}>
-                차 헬스앤뷰티 상품권
-              </div>
-              <div className="tw-text-2xl tw-font-black tw-mb-3" style={{ color: BRAND }}>
-                100,000원
-              </div>
+              <div className="tw-text-xs tw-font-bold tw-mb-0.5" style={{ color: "#c2185b" }}>차 헬스앤뷰티 상품권</div>
+              <div className="tw-text-2xl tw-font-black tw-mb-3" style={{ color: BRAND }}>100,000원</div>
               <div
                 className="tw-rounded-xl tw-px-4 tw-py-3"
                 style={{ background: "white", border: `1.5px dashed ${BRAND}` }}
               >
                 <div className="tw-text-xs tw-mb-1" style={{ color: "#9e3a5a" }}>쿠폰 코드</div>
-                <div
-                  className="tw-font-black"
-                  style={{ color: BRAND, fontSize: "15px", letterSpacing: "0.15em" }}
-                >
+                <div className="tw-font-black" style={{ color: BRAND, fontSize: "15px", letterSpacing: "0.15em" }}>
                   CHA-HLTH-BTY-2025
                 </div>
                 <div className="tw-text-xs tw-mt-1.5" style={{ color: "#c2185b" }}>
-                  · 차 헬스앤뷰티 앱/홈페이지에서 사용 가능
+                  · 차 헬스앤뷰티 앱/홈페이지에서 사용 가능<br />
+                  · 계약 완료 후 코드 최종 발송
                 </div>
+              </div>
+              <div className="tw-text-xs tw-mt-3" style={{ color: "#ad1457" }}>
+                상담 완료 후 담당자가 코드를 안내해 드려요 🌸
               </div>
             </div>
           </div>
@@ -327,55 +284,23 @@ export default function IcordEvent() {
   const [searchParams] = useSearchParams();
   const campaignId = searchParams.get("cmpn-id") ?? "";
 
-  const [form, setForm] = useState({
-    name: "",
-    phone: "",
-    address: "",
-    dueDate: "",
-    route: "",
-  });
-  const [agree1, setAgree1] = useState(false);
-  const [agree2, setAgree2] = useState(false);
-  const [modal, setModal] = useState(false);
+  const { unlocked: naverUnlocked, openLogin } = useNaverLogin(NAVER_CODE, NAVER_PAGE_ID);
+
   const [toast, setToast] = useState(false);
   const [couponRevealed, setCouponRevealed] = useState(false);
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  useEffect(() => () => { if (timerRef.current) clearTimeout(timerRef.current); }, []);
+  useEffect(() => {
+    if (naverUnlocked && !couponRevealed) {
+      setCouponRevealed(true);
+      setToast(true);
+      const t = setTimeout(() => setToast(false), 3500);
+      return () => clearTimeout(t);
+    }
+  }, [naverUnlocked]);
 
   const handleSubmit = () => {
-    if (!form.name.trim())    { alert("이름을 입력해 주세요 😊"); return; }
-    if (!form.phone.trim())   { alert("연락처를 입력해 주세요 📱"); return; }
-    if (!form.address.trim()) { alert("주소를 입력해 주세요 🏠"); return; }
-    if (!form.dueDate)        { alert("출산 예정일을 선택해 주세요 🗓️"); return; }
-    if (!agree1)              { alert("개인정보 수집·이용에 동의해 주세요 🔒"); return; }
-
-    const payload = { ...form, agree1, agree2, campaignId };
-    console.log("📤 상담 신청 데이터:", payload);
-
-    setCouponRevealed(true);
-    setToast(true);
-    timerRef.current = setTimeout(() => setToast(false), 3500);
-  };
-
-  const inputBase: React.CSSProperties = {
-    border: "1.5px solid #fce4ec",
-    color: "#880e4f",
-    background: "white",
-    fontFamily: "inherit",
-    outline: "none",
-    width: "100%",
-    borderRadius: "14px",
-    padding: "10px 16px",
-    fontSize: "13px",
-    transition: "border-color 0.2s",
-  };
-
-  const onFocus = (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement>) => {
-    e.currentTarget.style.borderColor = BRAND;
-  };
-  const onBlur = (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement>) => {
-    e.currentTarget.style.borderColor = "#fce4ec";
+    console.log("📤 상담 신청 — campaignId:", campaignId);
+    openLogin();
   };
 
   return (
@@ -491,7 +416,7 @@ export default function IcordEvent() {
       {/* 시크릿 쿠폰 섹션 */}
       <SecretCouponSection revealed={couponRevealed} />
 
-      {/* 상담 신청 폼 */}
+      {/* 상담 신청 — 네이버 버튼만 */}
       <section className="tw-px-4 tw-pb-12">
         <div
           className="tw-rounded-3xl tw-p-5"
@@ -507,15 +432,21 @@ export default function IcordEvent() {
             <h2 className="tw-text-base tw-font-bold" style={{ color: "#c2185b" }}>상담 신청하기</h2>
           </div>
 
-          <div className="tw-flex tw-items-center tw-justify-center tw-gap-1.5 tw-mb-5">
-            {[["1", "정보 입력"], ["2", "상담 신청"], ["3", "선물 받기 🎁"]].map(([num, lbl], i) => (
+          {/* 스텝 */}
+          <div className="tw-flex tw-items-center tw-justify-center tw-gap-1.5 tw-mb-6">
+            {[["1", "네이버 가입"], ["2", "상담 신청"], ["3", "선물 받기 🎁"]].map(([num, lbl], i) => (
               <div key={num} className="tw-flex tw-items-center tw-gap-1.5">
                 <div className="tw-text-center">
                   <div
                     className="tw-w-7 tw-h-7 tw-rounded-full tw-flex tw-items-center tw-justify-center tw-text-xs tw-font-bold tw-mx-auto tw-mb-1"
-                    style={{ background: i === 0 ? BRAND : "#fce4ec", color: i === 0 ? "white" : BRAND }}
+                    style={{
+                      background: i === 0 && naverUnlocked ? "#fce4ec"
+                        : i === 1 && naverUnlocked ? BRAND
+                        : i === 0 ? BRAND : "#fce4ec",
+                      color: (i === 0 && !naverUnlocked) || (i === 1 && naverUnlocked) ? "white" : BRAND,
+                    }}
                   >
-                    {num}
+                    {i === 0 && naverUnlocked ? "✓" : num}
                   </div>
                   <div className="tw-font-semibold tw-whitespace-nowrap" style={{ color: "#c2185b", fontSize: "10px" }}>{lbl}</div>
                 </div>
@@ -524,110 +455,71 @@ export default function IcordEvent() {
             ))}
           </div>
 
-          <div className="tw-space-y-3 tw-mb-4">
-            {[
-              { label: "이름",   key: "name",    type: "text", placeholder: "홍길동",                         req: true },
-              { label: "연락처", key: "phone",   type: "tel",  placeholder: "010-0000-0000",                  req: true },
-              { label: "주소",   key: "address", type: "text", placeholder: "oo시 oo구 oo로 ooo, oo동 oo호", req: true },
-            ].map((f) => (
-              <div key={f.key}>
-                <label className="tw-block tw-text-xs tw-font-bold tw-mb-1.5" style={{ color: "#ad1457" }}>
-                  {f.label} {f.req && <span style={{ color: BRAND }}>*</span>}
-                </label>
-                <input
-                  type={f.type}
-                  placeholder={f.placeholder}
-                  value={form[f.key as keyof typeof form]}
-                  onChange={(e) => setForm({ ...form, [f.key]: e.target.value })}
-                  style={inputBase}
-                  onFocus={onFocus}
-                  onBlur={onBlur}
-                />
-              </div>
-            ))}
-
-            <div>
-              <label className="tw-block tw-text-xs tw-font-bold tw-mb-1.5" style={{ color: "#ad1457" }}>
-                출산 예정일 <span style={{ color: BRAND }}>*</span>
-              </label>
-              <input
-                type="month"
-                value={form.dueDate}
-                onChange={(e) => setForm({ ...form, dueDate: e.target.value })}
-                style={inputBase}
-                onFocus={onFocus}
-                onBlur={onBlur}
-              />
-            </div>
-
-            <div>
-              <label className="tw-block tw-text-xs tw-font-bold tw-mb-1.5" style={{ color: "#ad1457" }}>
-                문의 경로
-              </label>
-              <select
-                value={form.route}
-                onChange={(e) => setForm({ ...form, route: e.target.value })}
-                style={{ ...inputBase, color: form.route ? "#880e4f" : "#f48fb1", appearance: "none" }}
-                onFocus={onFocus}
-                onBlur={onBlur}
-              >
-                <option value="">선택해 주세요</option>
-                {["인스타그램", "네이버 검색", "병원 소개", "지인 추천", "문자메시지", "기타"].map((o) => (
-                  <option key={o}>{o}</option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          <div className="tw-rounded-2xl tw-p-4 tw-mb-4" style={{ background: "#fff5f8", border: "1.5px solid #fce4ec" }}>
-            <div className="tw-flex tw-items-center tw-gap-1.5 tw-text-xs tw-font-bold tw-mb-3" style={{ color: "#c2185b" }}>
-              <IconShield />
-              개인정보 수집 및 이용 동의
-            </div>
-            <div className="tw-text-xs tw-leading-loose tw-overflow-y-auto tw-max-h-20" style={{ color: "#ad1457" }}>
-              <strong>수집 항목:</strong> 이름, 연락처, 출산 예정일, 주소<br />
-              <strong>수집 목적:</strong> 제대혈 보관 서비스 상담 및 안내, 이벤트 혜택 제공<br />
-              <strong>보유 기간:</strong> 상담 종료 후 3년 / 계약 체결 시 계약 종료 후 5년<br />
-              <strong>제3자 제공:</strong> 원칙적으로 외부 제공 없음. 단, 법령에 의한 경우 예외
-            </div>
-            <label className="tw-flex tw-items-center tw-gap-2 tw-mt-3 tw-cursor-pointer">
-              <input type="checkbox" checked={agree1} onChange={(e) => setAgree1(e.target.checked)} className="tw-w-4 tw-h-4" style={{ accentColor: BRAND }} />
-              <span className="tw-text-xs tw-font-semibold" style={{ color: "#c2185b" }}>
-                개인정보 수집·이용에 동의합니다 <span style={{ color: BRAND }}>*</span>
+          {/* 네이버 완료 배지 */}
+          {naverUnlocked && (
+            <div
+              className="tw-flex tw-items-center tw-gap-2 tw-rounded-2xl tw-px-4 tw-py-3 tw-mb-5"
+              style={{ background: "#fff0f5", border: `1.5px solid ${BRAND}` }}
+            >
+              <span className="tw-text-base">✅</span>
+              <span className="tw-text-xs tw-font-bold" style={{ color: BRAND }}>
+                네이버 간편가입 완료! 상담이 신청되었어요 💖
               </span>
-            </label>
-            <label className="tw-flex tw-items-center tw-gap-2 tw-mt-2 tw-cursor-pointer">
-              <input type="checkbox" checked={agree2} onChange={(e) => setAgree2(e.target.checked)} className="tw-w-4 tw-h-4" style={{ accentColor: BRAND }} />
-              <span className="tw-text-xs tw-font-semibold" style={{ color: "#c2185b" }}>
-                마케팅 정보 수신 동의 (선택) —{" "}
-                <span
-                  className="tw-underline tw-cursor-pointer"
-                  style={{ color: BRAND }}
-                  onClick={(e) => { e.preventDefault(); setModal(true); }}
-                >
-                  전문 보기
-                </span>
-              </span>
-            </label>
-          </div>
+            </div>
+          )}
 
-          <button
-            onClick={handleSubmit}
-            className="tw-w-full tw-py-4 tw-rounded-2xl tw-text-white tw-font-black tw-text-base tw-relative tw-overflow-hidden"
-            style={{
-              background: `linear-gradient(135deg, ${BRAND}, #e91e63)`,
-              boxShadow: "0 8px 32px rgba(231,84,128,0.38)",
-              transition: "transform 0.15s, box-shadow 0.15s",
-            }}
-            onMouseOver={(e) => { e.currentTarget.style.transform = "scale(1.03)"; e.currentTarget.style.boxShadow = "0 12px 40px rgba(231,84,128,0.5)"; }}
-            onMouseOut={(e) => { e.currentTarget.style.transform = "scale(1)"; e.currentTarget.style.boxShadow = "0 8px 32px rgba(231,84,128,0.38)"; }}
-            onMouseDown={(e) => { e.currentTarget.style.transform = "scale(0.97)"; }}
-            onMouseUp={(e) => { e.currentTarget.style.transform = "scale(1.03)"; }}
+          {/* 안내 문구 */}
+          <div
+            className="tw-rounded-2xl tw-p-4 tw-mb-5"
+            style={{ background: "#fff5f8", border: "1.5px solid #fce4ec" }}
           >
-            💌 지금 바로 상담 신청하기!
-          </button>
+            <div className="tw-space-y-2">
+              {[
+                { icon: "✅", text: "네이버 아이디로 1초 간편 가입" },
+                { icon: "🎁", text: "가입 즉시 차 헬스앤뷰티 10만원 쿠폰 자동 공개" },
+                { icon: "💬", text: "담당자가 1~2 영업일 내 연락드려요" },
+              ].map((item) => (
+                <div key={item.text} className="tw-flex tw-items-center tw-gap-2.5">
+                  <span className="tw-text-sm">{item.icon}</span>
+                  <span className="tw-text-xs tw-font-medium" style={{ color: "#9e3a5a" }}>{item.text}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* CTA 버튼 */}
+          {!naverUnlocked ? (
+            <button
+              onClick={handleSubmit}
+              className="tw-w-full tw-py-4 tw-rounded-2xl tw-text-white tw-font-black tw-text-base tw-flex tw-items-center tw-justify-center tw-gap-2"
+              style={{
+                background: `linear-gradient(135deg, ${BRAND}, #e91e63)`,
+                boxShadow: "0 8px 32px rgba(231,84,128,0.38)",
+                transition: "transform 0.15s, box-shadow 0.15s",
+              }}
+              onMouseOver={(e) => { e.currentTarget.style.transform = "scale(1.03)"; e.currentTarget.style.boxShadow = "0 12px 40px rgba(231,84,128,0.5)"; }}
+              onMouseOut={(e) => { e.currentTarget.style.transform = "scale(1)"; e.currentTarget.style.boxShadow = "0 8px 32px rgba(231,84,128,0.38)"; }}
+              onMouseDown={(e) => { e.currentTarget.style.transform = "scale(0.97)"; }}
+              onMouseUp={(e) => { e.currentTarget.style.transform = "scale(1.03)"; }}
+            >
+              <IconNaver />
+              네이버 간편가입으로 상담 신청하기
+            </button>
+          ) : (
+            <div
+              className="tw-w-full tw-py-4 tw-rounded-2xl tw-text-white tw-font-black tw-text-base tw-flex tw-items-center tw-justify-center tw-gap-2"
+              style={{
+                background: `linear-gradient(135deg, ${BRAND}, #e91e63)`,
+                boxShadow: "0 8px 32px rgba(231,84,128,0.2)",
+                opacity: 0.7,
+              }}
+            >
+              💌 상담 신청 완료!
+            </div>
+          )}
+
           <p className="tw-text-center tw-text-xs tw-mt-2" style={{ color: "#f48fb1" }}>
-            * 담당자가 1~2 영업일 내 연락드려요 🌸
+            * 네이버 간편가입만으로 상담 신청이 완료돼요 🌸
           </p>
         </div>
       </section>
@@ -639,7 +531,6 @@ export default function IcordEvent() {
         문의: 1588-0000
       </footer>
 
-      {modal && <PrivacyModal onClose={() => setModal(false)} />}
       <Toast show={toast} />
     </div>
   );
