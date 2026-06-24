@@ -168,63 +168,23 @@ export default function IcordEvent() {
 
   const [toast, setToast] = useState(false);
   const [participated, setParticipated] = useState(false);
-  const [formOpened, setFormOpened] = useState(false);
 
-  const handleComplete = () => {
-    sessionStorage.removeItem(SESSION_KEY);
-    setParticipated(true);
-    setFormOpened(false);
-    setToast(true);
-    console.log("📤 이벤트 참여 완료 — campaignId:", campaignId);
-    setTimeout(() => setToast(false), 3500);
-  };
-
+  // ── 핵심: 마운트 시 sessionStorage 확인 ──
+  // 흐름: 버튼 클릭 → sessionStorage 저장 → window.location.href로 구글폼 이동
+  //       → 유저 작성 후 뒤로가기 → 이 페이지 재마운트 → 플래그 감지 → 완료 처리
   useEffect(() => {
-    // ── 핵심: 페이지가 다시 보일 때마다 sessionStorage 확인 ──
-    // PC: 새 탭 닫고 돌아올 때 / 모바일: 뒤로가기 or 탭 전환으로 돌아올 때 모두 발동
-    const onVisibilityChange = () => {
-      if (document.visibilityState === "visible") {
-        const flag = sessionStorage.getItem(SESSION_KEY);
-        if (flag === "1") {
-          handleComplete();
-        }
-      }
-    };
-
-    // 페이지 포커스 감지 (PC 보조)
-    const onFocus = () => {
-      const flag = sessionStorage.getItem(SESSION_KEY);
-      if (flag === "1") {
-        handleComplete();
-      }
-    };
-
-    document.addEventListener("visibilitychange", onVisibilityChange);
-    window.addEventListener("focus", onFocus);
-
-    // 마운트 시점에도 한 번 체크 (뒤로가기로 돌아온 경우)
-    if (sessionStorage.getItem(SESSION_KEY) === "1") {
-      handleComplete();
+    if (sessionStorage.getItem(SESSION_KEY) === "Y") {
+      sessionStorage.removeItem(SESSION_KEY);
+      setParticipated(true);
+      setToast(true);
+      console.log("📤 이벤트 참여 완료 — campaignId:", campaignId);
+      setTimeout(() => setToast(false), 3500);
     }
-
-    return () => {
-      document.removeEventListener("visibilitychange", onVisibilityChange);
-      window.removeEventListener("focus", onFocus);
-    };
   }, []);
 
   const openForm = () => {
-    // 플래그 저장
-    sessionStorage.setItem(SESSION_KEY, "1");
-    setFormOpened(true);
-
-    // PC: 새 탭으로 열기 시도
-    const popup = window.open(GOOGLE_FORM_URL, "_blank");
-
-    // 모바일 팝업 차단 or 실패 시 → 현재 탭에서 열기
-    if (!popup) {
-      window.location.href = GOOGLE_FORM_URL;
-    }
+    sessionStorage.setItem(SESSION_KEY, "Y");
+    window.location.href = GOOGLE_FORM_URL;
   };
 
   return (
@@ -373,19 +333,6 @@ export default function IcordEvent() {
             ))}
           </div>
 
-          {/* 폼 열린 상태 안내 배너 */}
-          {formOpened && !participated && (
-            <div
-              className="tw-flex tw-items-center tw-gap-2 tw-rounded-2xl tw-px-4 tw-py-3 tw-mb-5"
-              style={{ background: "#fff9ec", border: "1.5px solid #ffcc80" }}
-            >
-              <span className="tw-text-base">📋</span>
-              <span className="tw-text-xs tw-font-bold" style={{ color: "#e65100" }}>
-                폼 제출 후 이 화면으로 돌아오면 자동 완료돼요!
-              </span>
-            </div>
-          )}
-
           {/* 완료 배지 */}
           {participated && (
             <div
@@ -406,8 +353,8 @@ export default function IcordEvent() {
           >
             <div className="tw-space-y-2">
               {[
-                { icon: "📋", text: "버튼을 누르면 구글 폼이 열려요" },
-                { icon: "✅", text: "폼 제출 후 돌아오면 자동으로 완료돼요 (PC·모바일 모두)" },
+                { icon: "📋", text: "버튼을 누르면 구글 폼으로 이동해요" },
+                { icon: "✅", text: "폼 제출 후 뒤로가기로 돌아오면 자동 완료돼요" },
                 { icon: "💬", text: "담당자가 1~2 영업일 내 연락드려요" },
               ].map((item) => (
                 <div key={item.text} className="tw-flex tw-items-center tw-gap-2.5">
@@ -424,9 +371,7 @@ export default function IcordEvent() {
               onClick={openForm}
               className="tw-w-full tw-py-4 tw-rounded-2xl tw-text-white tw-font-black tw-text-base tw-flex tw-items-center tw-justify-center tw-gap-2"
               style={{
-                background: formOpened
-                  ? "linear-gradient(135deg, #f06292, #e91e63)"
-                  : `linear-gradient(135deg, ${BRAND}, #e91e63)`,
+                background: `linear-gradient(135deg, ${BRAND}, #e91e63)`,
                 boxShadow: "0 8px 32px rgba(231,84,128,0.38)",
                 border: "none",
                 cursor: "pointer",
@@ -437,7 +382,7 @@ export default function IcordEvent() {
               onMouseDown={(e) => { e.currentTarget.style.transform = "scale(0.97)"; }}
               onMouseUp={(e) => { e.currentTarget.style.transform = "scale(1.03)"; }}
             >
-              {formOpened ? "📋 폼 다시 열기" : "🎉 이벤트 참여하기"}
+              🎉 이벤트 참여하기
             </button>
           ) : (
             <div
@@ -451,9 +396,7 @@ export default function IcordEvent() {
           <p className="tw-text-center tw-text-xs tw-mt-2" style={{ color: "#f48fb1" }}>
             {participated
               ? "* 담당자가 1~2 영업일 내 연락드려요 🌸"
-              : formOpened
-              ? "* 폼 제출 후  이벤트 참여가 완료됩니다. 🌸"
-              : "* 이벤트 참여하기 버튼을 눌러주세요! 🌸"}
+              : "* 폼 제출 후 뒤로가기로 돌아오면 완료돼요 🌸"}
           </p>
         </div>
       </section>
