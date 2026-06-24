@@ -43,6 +43,7 @@ import MainPage from "./pages/main/MainPage"
 //Chabio
 import Cha_example from "./pages/eventpage/Cha_example"
 import Cha_example2 from "./pages/eventpage/Cha_example2"
+import Cha_example3 from "./pages/eventpage/Cha_examole3"
 
 
 export default function App() {
@@ -94,6 +95,7 @@ export default function App() {
         {/* 차바이오텍 */}
         <Route path="/eventpage/Cha_example" element={<Cha_example />} />
         <Route path="/eventpage/Cha_example2" element={<Cha_example2 />} />
+        <Route path="/eventpage/Cha_example3" element={<Cha_example3 />} />
 
         
       </Routes>
