@@ -184,7 +184,7 @@ export default function IcordEvent() {
 
   const openForm = () => {
     sessionStorage.setItem(SESSION_KEY, "Y");
-    window.location.href = GOOGLE_FORM_URL;
+    window.location.replace(GOOGLE_FORM_URL);
   };
 
   return (
