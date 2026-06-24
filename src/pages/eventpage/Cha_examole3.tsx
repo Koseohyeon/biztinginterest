@@ -5,8 +5,7 @@ import logoImg from "../../assets/icodelogo.png";
 const LOGO_SRC = logoImg;
 const BRAND = "#E75480";
 const GOOGLE_FORM_URL =
-  "https://docs.google.com/forms/d/e/1FAIpQLSdqbbHhJ37jHwMZuWprMLYnY-yTpwwf2WCpqoubEueqMKhdpg/viewform";
-const SESSION_KEY = "icord_form_opened";
+  "https://docs.google.com/forms/d/e/1FAIpQLSdqbbHhJ37jHwMZuWprMLYnY-yTpwwf2WCpqoubEueqMKhdpg/viewform?embedded=true";
 
 function IconDrop() {
   return (
@@ -106,13 +105,10 @@ interface CordItemProps {
 function CordItem({ icon, color, title, body }: CordItemProps) {
   return (
     <div
-      className="tw-flex tw-gap-4 tw-items-start tw-rounded-2xl tw-p-4 tw-transition-all"
+      className="tw-flex tw-gap-4 tw-items-start tw-rounded-2xl tw-p-4"
       style={{ background: "white", border: "1.5px solid #fce4ec", boxShadow: "0 2px 12px rgba(231,84,128,0.06)" }}
     >
-      <div
-        className="tw-w-12 tw-h-12 tw-min-w-12 tw-rounded-2xl tw-flex tw-items-center tw-justify-center"
-        style={{ background: color }}
-      >
+      <div className="tw-w-12 tw-h-12 tw-min-w-12 tw-rounded-2xl tw-flex tw-items-center tw-justify-center" style={{ background: color }}>
         {icon}
       </div>
       <div>
@@ -132,10 +128,7 @@ interface GiftCardProps {
 
 function GiftCard({ emoji, label, sub, color }: GiftCardProps) {
   return (
-    <div
-      className="tw-relative tw-rounded-2xl tw-overflow-hidden"
-      style={{ border: "1.5px solid #fce4ec", background: color, boxShadow: "0 2px 12px rgba(231,84,128,0.07)" }}
-    >
+    <div className="tw-relative tw-rounded-2xl tw-overflow-hidden" style={{ border: "1.5px solid #fce4ec", background: color, boxShadow: "0 2px 12px rgba(231,84,128,0.07)" }}>
       <div className="tw-p-5 tw-text-center">
         <div className="tw-text-3xl tw-mb-2">{emoji}</div>
         <div className="tw-text-xs tw-font-bold tw-mb-0.5" style={{ color: "#ad1457" }}>{label}</div>
@@ -162,29 +155,119 @@ function Toast({ show }: { show: boolean }) {
   );
 }
 
+// ── 구글폼 바텀시트 모달 ───────────────────────────────────────────────
+function FormModal({ onClose, onDone }: { onClose: () => void; onDone: () => void }) {
+  const [loaded, setLoaded] = useState(false);
+  const loadCount = useState(0);
+
+  // iframe이 두 번째로 load되면 = 제출 후 감사 페이지로 이동한 것
+  const handleLoad = () => {
+    loadCount[1]((n) => {
+      const next = n + 1;
+      if (next >= 2) {
+        // 제출 완료 감지 → 잠깐 후 자동 닫기
+        setTimeout(() => onDone(), 800);
+      }
+      return next;
+    });
+    setLoaded(true);
+  };
+
+  // 모달 열릴 때 body 스크롤 막기
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = ""; };
+  }, []);
+
+  return (
+    <div
+      className="tw-fixed tw-inset-0 tw-z-40"
+      style={{ background: "rgba(0,0,0,0.6)" }}
+      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+    >
+      <div
+        className="tw-absolute tw-bottom-0 tw-left-0 tw-right-0 tw-flex tw-flex-col tw-rounded-t-3xl tw-overflow-hidden"
+        style={{
+          height: "88vh",
+          background: "white",
+          boxShadow: "0 -8px 40px rgba(231,84,128,0.2)",
+        }}
+      >
+        {/* 모달 헤더 */}
+        <div
+          className="tw-flex tw-items-center tw-justify-between tw-px-5 tw-py-3 tw-shrink-0"
+          style={{ borderBottom: "1.5px solid #fce4ec" }}
+        >
+          <div>
+            <p className="tw-text-sm tw-font-black" style={{ color: "#c2185b" }}>🎉 이벤트 참여하기</p>
+            <p className="tw-text-xs" style={{ color: "#f48fb1" }}>작성 후 제출 버튼을 눌러주세요</p>
+          </div>
+          <button
+            onClick={onClose}
+            style={{
+              width: 32, height: 32, borderRadius: "50%",
+              background: "#fce4ec", border: "none", cursor: "pointer",
+              color: BRAND, fontWeight: 700, fontSize: 16,
+              display: "flex", alignItems: "center", justifyContent: "center",
+            }}
+          >
+            ✕
+          </button>
+        </div>
+
+        {/* 로딩 */}
+        {!loaded && (
+          <div className="tw-flex tw-items-center tw-justify-center" style={{ flex: 1 }}>
+            <div style={{
+              width: 36, height: 36, borderRadius: "50%",
+              border: `3px solid #fce4ec`, borderTopColor: BRAND,
+              animation: "icord-spin 0.8s linear infinite",
+            }} />
+            <style>{`@keyframes icord-spin { to { transform: rotate(360deg); } }`}</style>
+          </div>
+        )}
+
+        {/* 구글폼 iframe */}
+        <iframe
+          src={GOOGLE_FORM_URL}
+          title="이벤트 참여 폼"
+          onLoad={handleLoad}
+          style={{
+            flex: 1, width: "100%", border: "none",
+            display: loaded ? "block" : "none",
+          }}
+        />
+
+        {/* 하단 수동 완료 버튼 */}
+        <div className="tw-px-4 tw-py-3 tw-shrink-0" style={{ borderTop: "1.5px solid #fce4ec" }}>
+          <button
+            onClick={onDone}
+            className="tw-w-full tw-py-3 tw-rounded-2xl tw-text-xs tw-font-bold"
+            style={{ background: "#fce4ec", color: BRAND, border: "none", cursor: "pointer" }}
+          >
+            ✅ 제출 완료했어요
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── 메인 ─────────────────────────────────────────────────────────────
 export default function IcordEvent() {
   const [searchParams] = useSearchParams();
   const campaignId = searchParams.get("cmpn-id") ?? "";
 
   const [toast, setToast] = useState(false);
   const [participated, setParticipated] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
-  // ── 핵심: 마운트 시 sessionStorage 확인 ──
-  // 흐름: 버튼 클릭 → sessionStorage 저장 → window.location.href로 구글폼 이동
-  //       → 유저 작성 후 뒤로가기 → 이 페이지 재마운트 → 플래그 감지 → 완료 처리
-  useEffect(() => {
-    if (sessionStorage.getItem(SESSION_KEY) === "Y") {
-      sessionStorage.removeItem(SESSION_KEY);
-      setParticipated(true);
-      setToast(true);
-      console.log("📤 이벤트 참여 완료 — campaignId:", campaignId);
-      setTimeout(() => setToast(false), 3500);
-    }
-  }, []);
-
-  const openForm = () => {
-    sessionStorage.setItem(SESSION_KEY, "Y");
-    window.location.replace(GOOGLE_FORM_URL);
+  const handleComplete = () => {
+    setShowModal(false);
+    setParticipated(true);
+    setToast(true);
+    console.log("📤 이벤트 참여 완료 — campaignId:", campaignId);
+    setTimeout(() => setToast(false), 3500);
   };
 
   return (
@@ -230,10 +313,7 @@ export default function IcordEvent() {
 
         <h1 className="tw-text-2xl tw-font-black tw-leading-snug tw-mb-3" style={{ color: "#3d0c22" }}>
           우리 아이의 소중한 미래<br />
-          <span
-            className="tw-inline-block tw-mt-1 tw-px-3 tw-py-0.5 tw-rounded-xl"
-            style={{ color: BRAND, background: "#fce4ec" }}
-          >
+          <span className="tw-inline-block tw-mt-1 tw-px-3 tw-py-0.5 tw-rounded-xl" style={{ color: BRAND, background: "#fce4ec" }}>
             제대혈 보관
           </span>{" "}
           이벤트
@@ -247,20 +327,14 @@ export default function IcordEvent() {
           className="tw-inline-flex tw-items-center tw-gap-2 tw-text-xs tw-font-semibold tw-px-4 tw-py-2.5 tw-rounded-full"
           style={{ background: "white", color: BRAND, boxShadow: "0 3px 16px rgba(231,84,128,0.14)", border: "1px solid #fce4ec" }}
         >
-          <span
-            className="tw-w-2 tw-h-2 tw-rounded-full tw-animate-pulse"
-            style={{ background: BRAND, display: "inline-block" }}
-          />
+          <span className="tw-w-2 tw-h-2 tw-rounded-full tw-animate-pulse" style={{ background: BRAND, display: "inline-block" }} />
           지금 이벤트 참여하고 선물 받아가세요 🎁
         </div>
       </section>
 
       {/* 제대혈 설명 */}
       <section className="tw-px-4 tw-mb-5">
-        <div
-          className="tw-rounded-3xl tw-p-5"
-          style={{ background: "white", border: "1px solid #fce4ec", boxShadow: "0 4px 24px rgba(231,84,128,0.07)" }}
-        >
+        <div className="tw-rounded-3xl tw-p-5" style={{ background: "white", border: "1px solid #fce4ec", boxShadow: "0 4px 24px rgba(231,84,128,0.07)" }}>
           <div className="tw-flex tw-items-center tw-gap-2 tw-mb-4">
             <IconDrop />
             <h2 className="tw-text-base tw-font-bold" style={{ color: "#c2185b" }}>제대혈이 뭐예요?</h2>
@@ -276,17 +350,12 @@ export default function IcordEvent() {
 
       {/* 이벤트 혜택 */}
       <section className="tw-px-4 tw-mb-5">
-        <div
-          className="tw-rounded-3xl tw-p-5"
-          style={{ background: "white", border: "1px solid #fce4ec", boxShadow: "0 4px 24px rgba(231,84,128,0.07)" }}
-        >
+        <div className="tw-rounded-3xl tw-p-5" style={{ background: "white", border: "1px solid #fce4ec", boxShadow: "0 4px 24px rgba(231,84,128,0.07)" }}>
           <div className="tw-flex tw-items-center tw-gap-2 tw-mb-2">
             <IconGift />
             <h2 className="tw-text-base tw-font-bold" style={{ color: "#c2185b" }}>이벤트 혜택</h2>
           </div>
-          <p className="tw-text-xs tw-mb-4" style={{ color: "#9e3a5a" }}>
-            지금 이벤트 참여하시면 아래 혜택 중 하나를 드려요! 🎁
-          </p>
+          <p className="tw-text-xs tw-mb-4" style={{ color: "#9e3a5a" }}>지금 이벤트 참여하시면 아래 혜택 중 하나를 드려요! 🎁</p>
           <div className="tw-grid tw-grid-cols-2 tw-gap-3">
             <GiftCard emoji="🍼" label="절충형 프리미엄 유아차" sub="이벤트 참여 시 증정" color="#fff5f8" />
             <GiftCard emoji="♨️" label="분유 포트" sub="이벤트 참여 시 증정" color="#fff9ec" />
@@ -298,15 +367,9 @@ export default function IcordEvent() {
 
       {/* CTA 섹션 */}
       <section className="tw-px-4 tw-pb-12">
-        <div
-          className="tw-rounded-3xl tw-p-5"
-          style={{ background: "white", border: "1px solid #fce4ec", boxShadow: "0 4px 32px rgba(231,84,128,0.1)" }}
-        >
+        <div className="tw-rounded-3xl tw-p-5" style={{ background: "white", border: "1px solid #fce4ec", boxShadow: "0 4px 32px rgba(231,84,128,0.1)" }}>
           <div className="tw-flex tw-items-center tw-gap-2 tw-mb-5">
-            <div
-              className="tw-w-8 tw-h-8 tw-rounded-xl tw-flex tw-items-center tw-justify-center tw-text-white tw-text-sm"
-              style={{ background: `linear-gradient(135deg, ${BRAND}, #f06292)` }}
-            >
+            <div className="tw-w-8 tw-h-8 tw-rounded-xl tw-flex tw-items-center tw-justify-center tw-text-white tw-text-sm" style={{ background: `linear-gradient(135deg, ${BRAND}, #f06292)` }}>
               🎉
             </div>
             <h2 className="tw-text-base tw-font-bold" style={{ color: "#c2185b" }}>이벤트 참여하기</h2>
@@ -314,7 +377,7 @@ export default function IcordEvent() {
 
           {/* 스텝 */}
           <div className="tw-flex tw-items-center tw-justify-center tw-gap-1.5 tw-mb-6">
-            {[["1", "폼 작성"], ["2", "제출 후 복귀"], ["3", "선물 받기 🎁"]].map(([num, lbl], i) => (
+            {[["1", "폼 작성"], ["2", "제출 완료"], ["3", "선물 받기 🎁"]].map(([num, lbl], i) => (
               <div key={num} className="tw-flex tw-items-center tw-gap-1.5">
                 <div className="tw-text-center">
                   <div
@@ -335,26 +398,18 @@ export default function IcordEvent() {
 
           {/* 완료 배지 */}
           {participated && (
-            <div
-              className="tw-flex tw-items-center tw-gap-2 tw-rounded-2xl tw-px-4 tw-py-3 tw-mb-5"
-              style={{ background: "#fff0f5", border: `1.5px solid ${BRAND}` }}
-            >
+            <div className="tw-flex tw-items-center tw-gap-2 tw-rounded-2xl tw-px-4 tw-py-3 tw-mb-5" style={{ background: "#fff0f5", border: `1.5px solid ${BRAND}` }}>
               <span className="tw-text-base">✅</span>
-              <span className="tw-text-xs tw-font-bold" style={{ color: BRAND }}>
-                이벤트 참여 완료! 담당자가 곧 연락드려요 💖
-              </span>
+              <span className="tw-text-xs tw-font-bold" style={{ color: BRAND }}>이벤트 참여 완료! 담당자가 곧 연락드려요 💖</span>
             </div>
           )}
 
           {/* 안내 */}
-          <div
-            className="tw-rounded-2xl tw-p-4 tw-mb-5"
-            style={{ background: "#fff5f8", border: "1.5px solid #fce4ec" }}
-          >
+          <div className="tw-rounded-2xl tw-p-4 tw-mb-5" style={{ background: "#fff5f8", border: "1.5px solid #fce4ec" }}>
             <div className="tw-space-y-2">
               {[
-                { icon: "📋", text: "버튼을 누르면 구글 폼으로 이동해요" },
-                { icon: "✅", text: "폼 제출 후 뒤로가기로 돌아오면 자동 완료돼요" },
+                { icon: "📋", text: "현재 화면에서 바로 폼이 열려요" },
+                { icon: "✅", text: "제출하면 자동으로 완료 처리돼요" },
                 { icon: "💬", text: "담당자가 1~2 영업일 내 연락드려요" },
               ].map((item) => (
                 <div key={item.text} className="tw-flex tw-items-center tw-gap-2.5">
@@ -368,14 +423,13 @@ export default function IcordEvent() {
           {/* 버튼 */}
           {!participated ? (
             <button
-              onClick={openForm}
+              onClick={() => setShowModal(true)}
               className="tw-w-full tw-py-4 tw-rounded-2xl tw-text-white tw-font-black tw-text-base tw-flex tw-items-center tw-justify-center tw-gap-2"
               style={{
                 background: `linear-gradient(135deg, ${BRAND}, #e91e63)`,
                 boxShadow: "0 8px 32px rgba(231,84,128,0.38)",
-                border: "none",
-                cursor: "pointer",
-                transition: "transform 0.15s, box-shadow 0.15s",
+                border: "none", cursor: "pointer",
+                transition: "transform 0.15s",
               }}
               onMouseOver={(e) => { e.currentTarget.style.transform = "scale(1.03)"; }}
               onMouseOut={(e) => { e.currentTarget.style.transform = "scale(1)"; }}
@@ -394,9 +448,7 @@ export default function IcordEvent() {
           )}
 
           <p className="tw-text-center tw-text-xs tw-mt-2" style={{ color: "#f48fb1" }}>
-            {participated
-              ? "* 담당자가 1~2 영업일 내 연락드려요 🌸"
-              : "* 폼 제출 후 뒤로가기로 돌아오면 완료돼요 🌸"}
+            {participated ? "* 담당자가 1~2 영업일 내 연락드려요 🌸" : "* 페이지를 벗어나지 않고 바로 참여할 수 있어요 🌸"}
           </p>
         </div>
       </section>
@@ -407,6 +459,14 @@ export default function IcordEvent() {
         이벤트 기간 내 선착순 마감될 수 있습니다<br />
         문의: 1588-0000
       </footer>
+
+      {/* 바텀시트 모달 */}
+      {showModal && (
+        <FormModal
+          onClose={() => setShowModal(false)}
+          onDone={handleComplete}
+        />
+      )}
 
       <Toast show={toast} />
     </div>
