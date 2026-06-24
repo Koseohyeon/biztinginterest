@@ -109,7 +109,10 @@ function CordItem({ icon, color, title, body }: CordItemProps) {
       className="tw-flex tw-gap-4 tw-items-start tw-rounded-2xl tw-p-4 tw-transition-all"
       style={{ background: "white", border: "1.5px solid #fce4ec", boxShadow: "0 2px 12px rgba(231,84,128,0.06)" }}
     >
-      <div className="tw-w-12 tw-h-12 tw-min-w-12 tw-rounded-2xl tw-flex tw-items-center tw-justify-center" style={{ background: color }}>
+      <div
+        className="tw-w-12 tw-h-12 tw-min-w-12 tw-rounded-2xl tw-flex tw-items-center tw-justify-center"
+        style={{ background: color }}
+      >
         {icon}
       </div>
       <div>
@@ -168,6 +171,13 @@ export default function IcordEvent() {
   const popupRef = useRef<Window | null>(null);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
+  const handleComplete = () => {
+    setParticipated(true);
+    setToast(true);
+    console.log("📤 이벤트 참여 완료 — campaignId:", campaignId);
+    setTimeout(() => setToast(false), 3500);
+  };
+
   const openForm = () => {
     const popup = window.open(
       GOOGLE_FORM_URL,
@@ -179,28 +189,20 @@ export default function IcordEvent() {
     pollRef.current = setInterval(() => {
       try {
         if (!popup || popup.closed) {
-          // 팝업 닫힘 — 제출 여부 불확실하므로 아무것도 하지 않음
           clearInterval(pollRef.current!);
           return;
         }
-        // 구글 폼 제출 완료 시 URL에 "formResponse" 포함
         const href = popup.location.href;
         if (href.includes("formResponse")) {
           clearInterval(pollRef.current!);
           popup.close();
+          window.focus();
           handleComplete();
         }
       } catch {
-        // cross-origin 에러는 무시 (폼 작성 중 정상)
+        // cross-origin 에러 무시 (폼 작성 중 정상)
       }
     }, 500);
-  };
-
-  const handleComplete = () => {
-    setParticipated(true);
-    setToast(true);
-    console.log("📤 이벤트 참여 완료 — campaignId:", campaignId);
-    setTimeout(() => setToast(false), 3500);
   };
 
   useEffect(() => {
@@ -252,7 +254,10 @@ export default function IcordEvent() {
 
         <h1 className="tw-text-2xl tw-font-black tw-leading-snug tw-mb-3" style={{ color: "#3d0c22" }}>
           우리 아이의 소중한 미래<br />
-          <span className="tw-inline-block tw-mt-1 tw-px-3 tw-py-0.5 tw-rounded-xl" style={{ color: BRAND, background: "#fce4ec" }}>
+          <span
+            className="tw-inline-block tw-mt-1 tw-px-3 tw-py-0.5 tw-rounded-xl"
+            style={{ color: BRAND, background: "#fce4ec" }}
+          >
             제대혈 보관
           </span>{" "}
           이벤트
@@ -266,14 +271,20 @@ export default function IcordEvent() {
           className="tw-inline-flex tw-items-center tw-gap-2 tw-text-xs tw-font-semibold tw-px-4 tw-py-2.5 tw-rounded-full"
           style={{ background: "white", color: BRAND, boxShadow: "0 3px 16px rgba(231,84,128,0.14)", border: "1px solid #fce4ec" }}
         >
-          <span className="tw-w-2 tw-h-2 tw-rounded-full tw-animate-pulse" style={{ background: BRAND, display: "inline-block" }} />
+          <span
+            className="tw-w-2 tw-h-2 tw-rounded-full tw-animate-pulse"
+            style={{ background: BRAND, display: "inline-block" }}
+          />
           지금 이벤트 참여하고 선물 받아가세요 🎁
         </div>
       </section>
 
       {/* 제대혈 설명 */}
       <section className="tw-px-4 tw-mb-5">
-        <div className="tw-rounded-3xl tw-p-5" style={{ background: "white", border: "1px solid #fce4ec", boxShadow: "0 4px 24px rgba(231,84,128,0.07)" }}>
+        <div
+          className="tw-rounded-3xl tw-p-5"
+          style={{ background: "white", border: "1px solid #fce4ec", boxShadow: "0 4px 24px rgba(231,84,128,0.07)" }}
+        >
           <div className="tw-flex tw-items-center tw-gap-2 tw-mb-4">
             <IconDrop />
             <h2 className="tw-text-base tw-font-bold" style={{ color: "#c2185b" }}>제대혈이 뭐예요?</h2>
@@ -289,7 +300,10 @@ export default function IcordEvent() {
 
       {/* 이벤트 혜택 */}
       <section className="tw-px-4 tw-mb-5">
-        <div className="tw-rounded-3xl tw-p-5" style={{ background: "white", border: "1px solid #fce4ec", boxShadow: "0 4px 24px rgba(231,84,128,0.07)" }}>
+        <div
+          className="tw-rounded-3xl tw-p-5"
+          style={{ background: "white", border: "1px solid #fce4ec", boxShadow: "0 4px 24px rgba(231,84,128,0.07)" }}
+        >
           <div className="tw-flex tw-items-center tw-gap-2 tw-mb-2">
             <IconGift />
             <h2 className="tw-text-base tw-font-bold" style={{ color: "#c2185b" }}>이벤트 혜택</h2>
@@ -357,7 +371,10 @@ export default function IcordEvent() {
           )}
 
           {/* 안내 */}
-          <div className="tw-rounded-2xl tw-p-4 tw-mb-5" style={{ background: "#fff5f8", border: "1.5px solid #fce4ec" }}>
+          <div
+            className="tw-rounded-2xl tw-p-4 tw-mb-5"
+            style={{ background: "#fff5f8", border: "1.5px solid #fce4ec" }}
+          >
             <div className="tw-space-y-2">
               {[
                 { icon: "📋", text: "간단한 정보 입력으로 이벤트 참여" },
@@ -392,7 +409,10 @@ export default function IcordEvent() {
           ) : (
             <div
               className="tw-w-full tw-py-4 tw-rounded-2xl tw-text-white tw-font-black tw-text-base tw-flex tw-items-center tw-justify-center tw-gap-2"
-              style={{ background: `linear-gradient(135deg, ${BRAND}, #e91e63)`, opacity: 0.6 }}
+              style={{
+                background: `linear-gradient(135deg, ${BRAND}, #e91e63)`,
+                opacity: 0.6,
+              }}
             >
               ✅ 이벤트 참여 완료!
             </div>
