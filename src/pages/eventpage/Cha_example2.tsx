@@ -6,7 +6,7 @@ import { useNaverLogin } from "./../../hooks/useNaverLogin";
 const LOGO_SRC = logoImg;
 const BRAND = "#E75480";
 
-const NAVER_CODE = "6qfrvN";
+const NAVER_CODE = "lBUZMJ";
 const NAVER_PAGE_ID = "Chabio";
 
 function IconDrop() {
