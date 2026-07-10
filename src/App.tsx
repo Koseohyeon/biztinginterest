@@ -45,6 +45,10 @@ import Cha_example from "./pages/eventpage/Cha_example"
 import Cha_example2 from "./pages/eventpage/Cha_example2"
 import Cha_example3 from "./pages/eventpage/Cha_examole3"
 
+//bizting propose
+import PersonalEventPagev1 from "./pages/eventpage/PersonalEventPagev1.0"
+import PersonalEventPagev2 from "./pages/eventpage/PersonalEventPagev1.1"
+
 
 export default function App() {
   return (
@@ -97,6 +101,9 @@ export default function App() {
         <Route path="/eventpage/Cha_example2" element={<Cha_example2 />} />
         <Route path="/eventpage/Cha_example3" element={<Cha_example3 />} />
 
+        {/* 비즈팅 제안서 */}
+        <Route path="/eventpage/PersonalEventPagev1" element={<PersonalEventPagev1 />} />
+        <Route path="/eventpage/PersonalEventPagev2" element={<PersonalEventPagev2 />} />
         
       </Routes>
     </HashRouter>

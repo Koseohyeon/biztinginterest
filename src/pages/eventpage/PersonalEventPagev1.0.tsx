@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import JsBarcode from 'jsbarcode';
 import {
     Sparkles, Users, Send, TrendingUp, ShieldCheck, Zap, X, Copy, Check,
-    Download, ChevronLeft, ChevronRight, Gift, MessageCircle, Lock,
+    Download, ChevronLeft, ChevronRight, Gift, Lock,
 } from 'lucide-react';
 import { useNaverLogin } from '../../hooks/useNaverLogin';
 import { NAVER_LOGIN } from '../../config/naverLogin';
@@ -68,7 +68,7 @@ const BENEFITS: Benefit[] = [
 
 const FEATURES = [
     { icon: ShieldCheck, title: '고객정보 없이도 OK', desc: '이미 확보된 개인정보가 없어도, 관심 있을 만한 사람에게 발송해요.' },
-    { icon: Zap, title: '빠른 세팅', desc: '복잡한 연동 없이 며칠 안에 페이지를 오픈할 수 있어요.' },
+    { icon: Zap, title: '빠른 세팅', desc: '복잡한 과정 없이 빠르게 집행할 수 있어요.' },
     { icon: TrendingUp, title: '매출로 이어지는 소식', desc: '관심고객 등록부터 실제 구매까지, 흐름을 함께 설계해요.' },
 ];
 
@@ -77,8 +77,8 @@ function useBarcode(code: string, canvasRef: React.RefObject<HTMLCanvasElement |
     useEffect(() => {
         if (active && canvasRef.current && code) {
             JsBarcode(canvasRef.current, code, {
-                format: 'CODE128', width: 2, height: 46, displayValue: false,
-                background: 'transparent', lineColor: '#2B2450', margin: 0,
+                format: 'CODE128', width: 2, height: 44, displayValue: false,
+                background: 'transparent', lineColor: '#2E3346', margin: 0,
             });
         }
     }, [code, active]);
@@ -98,8 +98,8 @@ function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: numbe
 function generateCouponPNG(benefit: Benefit): string {
     const barcodeCanvas = document.createElement('canvas');
     JsBarcode(barcodeCanvas, benefit.code, {
-        format: 'CODE128', width: 3, height: 70, displayValue: false,
-        background: '#ffffff', lineColor: '#2B2450', margin: 0,
+        format: 'CODE128', width: 3, height: 68, displayValue: false,
+        background: '#ffffff', lineColor: '#2E3346', margin: 0,
     });
 
     const W = 640, H = 380;
@@ -107,48 +107,49 @@ function generateCouponPNG(benefit: Benefit): string {
     canvas.width = W; canvas.height = H;
     const ctx = canvas.getContext('2d')!;
 
-    const grad = ctx.createLinearGradient(0, 0, W, H);
-    grad.addColorStop(0, '#7C6FF0');
-    grad.addColorStop(1, '#5B4FD1');
-    roundRect(ctx, 0, 0, W, H, 32);
-    ctx.fillStyle = grad;
+    roundRect(ctx, 0, 0, W, H, 28);
+    ctx.fillStyle = '#EEF0FE';
     ctx.fill();
 
-    roundRect(ctx, 20, 20, W - 40, H - 40, 24);
+    roundRect(ctx, 18, 18, W - 36, H - 36, 22);
     ctx.fillStyle = '#ffffff';
     ctx.fill();
+    ctx.strokeStyle = '#E7E9F3';
+    ctx.lineWidth = 1.5;
+    roundRect(ctx, 18, 18, W - 36, H - 36, 22);
+    ctx.stroke();
 
-    ctx.fillStyle = '#7C6FF0';
-    ctx.font = '700 18px "Noto Sans KR", sans-serif';
-    ctx.fillText('BIZTING EVENT COUPON', 44, 64);
+    ctx.fillStyle = '#4C58D6';
+    ctx.font = '700 17px "Noto Sans KR", sans-serif';
+    ctx.fillText('BIZTING EVENT COUPON', 44, 62);
 
-    ctx.fillStyle = '#2B2450';
-    ctx.font = '800 27px "Noto Sans KR", sans-serif';
-    ctx.fillText(benefit.title, 44, 106);
+    ctx.fillStyle = '#232839';
+    ctx.font = '800 26px "Noto Sans KR", sans-serif';
+    ctx.fillText(benefit.title, 44, 102);
 
-    ctx.fillStyle = '#6B6489';
+    ctx.fillStyle = '#767C94';
     ctx.font = '400 15px "Noto Sans KR", sans-serif';
-    ctx.fillText(benefit.desc, 44, 136);
+    ctx.fillText(benefit.desc, 44, 132);
 
-    ctx.strokeStyle = '#ECE9FB';
+    ctx.strokeStyle = '#E7E9F3';
     ctx.lineWidth = 2;
     ctx.setLineDash([6, 6]);
     ctx.beginPath();
-    ctx.moveTo(44, 168);
-    ctx.lineTo(W - 44, 168);
+    ctx.moveTo(44, 164);
+    ctx.lineTo(W - 44, 164);
     ctx.stroke();
     ctx.setLineDash([]);
 
-    ctx.drawImage(barcodeCanvas, 44, 196, W - 88, 76);
+    ctx.drawImage(barcodeCanvas, 44, 192, W - 88, 74);
 
-    ctx.fillStyle = '#6B6489';
+    ctx.fillStyle = '#767C94';
     ctx.font = '600 15px monospace';
     ctx.textAlign = 'center';
-    ctx.fillText(benefit.code, W / 2, 308);
+    ctx.fillText(benefit.code, W / 2, 302);
 
-    ctx.fillStyle = '#B7B0E8';
+    ctx.fillStyle = '#B7BAD6';
     ctx.font = '500 12px "Noto Sans KR", sans-serif';
-    ctx.fillText('bizting.co.kr · 랜딩페이지 목업 예시', W / 2, 340);
+    ctx.fillText('bizting.co.kr · 랜딩페이지 목업 예시', W / 2, 334);
     ctx.textAlign = 'left';
 
     return canvas.toDataURL('image/png');
@@ -175,12 +176,7 @@ function HeroCarousel() {
     const go = (n: number) => setIdx((n + HERO_SLIDES.length) % HERO_SLIDES.length);
 
     return (
-        <div className="bt-hero-wrap tw-relative tw-rounded-b-[2.5rem] tw-overflow-hidden">
-            <div className="bt-blob bt-blob-a" />
-            <div className="bt-blob bt-blob-b" />
-            <div className="bt-msg bt-msg-1"><MessageCircle size={16} /></div>
-            <div className="bt-msg bt-msg-2"><Sparkles size={14} /></div>
-
+        <div className="bt-hero-wrap tw-relative tw-rounded-b-[2rem] tw-overflow-hidden">
             <div
                 className="tw-flex tw-transition-transform tw-duration-500 tw-ease-out"
                 style={{ transform: `translateX(-${idx * 100}%)` }}
@@ -194,17 +190,17 @@ function HeroCarousel() {
                 }}
             >
                 {HERO_SLIDES.map(s => (
-                    <div key={s.id} className="tw-w-full tw-shrink-0 tw-px-6 tw-pt-12 tw-pb-9 tw-relative tw-z-10">
-                        <span className="tw-inline-block tw-text-[11px] tw-font-bold tw-text-white/80 tw-bg-white/15 tw-px-3 tw-py-1 tw-rounded-full tw-mb-4 tw-backdrop-blur-sm">
+                    <div key={s.id} className="tw-w-full tw-shrink-0 tw-px-6 tw-pt-11 tw-pb-8 tw-relative tw-z-10">
+                        <span className="tw-inline-block tw-text-[11px] tw-font-bold tw-text-[#4C58D6] tw-bg-white tw-px-3 tw-py-1 tw-rounded-full tw-mb-4 tw-shadow-sm">
                             {s.eyebrow}
                         </span>
-                        <h1 className="tw-text-white tw-font-black tw-text-[26px] tw-leading-[1.3] tw-whitespace-pre-line tw-mb-3" style={{ fontFamily: "'Jua', sans-serif" }}>
+                        <h1 className="tw-text-[#232839] tw-font-black tw-text-[23px] tw-leading-[1.4] tw-whitespace-pre-line tw-mb-2.5">
                             {s.title}
                         </h1>
-                        <p className="tw-text-white/85 tw-text-[13.5px] tw-leading-relaxed tw-mb-5 tw-max-w-[92%]">
+                        <p className="tw-text-[#5B6072] tw-text-[13px] tw-leading-relaxed tw-mb-5 tw-max-w-[94%]">
                             {s.desc}
                         </p>
-                        <div className="tw-rounded-[1.5rem] tw-overflow-hidden tw-shadow-lg" style={{ aspectRatio: '16/9' }}>
+                        <div className="tw-rounded-[1.25rem] tw-overflow-hidden tw-shadow-sm tw-border tw-border-white/60" style={{ aspectRatio: '16/9' }}>
                             <img src={s.img} alt="" className="tw-w-full tw-h-full tw-object-cover" />
                         </div>
                     </div>
@@ -212,19 +208,19 @@ function HeroCarousel() {
             </div>
 
             <button onClick={() => go(idx - 1)} aria-label="이전 슬라이드"
-                className="tw-absolute tw-left-2 tw-top-1/2 -tw-translate-y-1/2 tw-z-20 tw-w-8 tw-h-8 tw-bg-white/20 tw-backdrop-blur-sm tw-rounded-full tw-flex tw-items-center tw-justify-center tw-text-white">
+                className="tw-absolute tw-left-2 tw-top-[42%] -tw-translate-y-1/2 tw-z-20 tw-w-8 tw-h-8 tw-bg-white tw-shadow-sm tw-rounded-full tw-flex tw-items-center tw-justify-center tw-text-[#4C58D6]">
                 <ChevronLeft size={16} />
             </button>
             <button onClick={() => go(idx + 1)} aria-label="다음 슬라이드"
-                className="tw-absolute tw-right-2 tw-top-1/2 -tw-translate-y-1/2 tw-z-20 tw-w-8 tw-h-8 tw-bg-white/20 tw-backdrop-blur-sm tw-rounded-full tw-flex tw-items-center tw-justify-center tw-text-white">
+                className="tw-absolute tw-right-2 tw-top-[42%] -tw-translate-y-1/2 tw-z-20 tw-w-8 tw-h-8 tw-bg-white tw-shadow-sm tw-rounded-full tw-flex tw-items-center tw-justify-center tw-text-[#4C58D6]">
                 <ChevronRight size={16} />
             </button>
 
-            <div className="tw-absolute tw-bottom-4 tw-left-0 tw-right-0 tw-flex tw-justify-center tw-gap-1.5 tw-z-20">
+            <div className="tw-absolute tw-bottom-3 tw-left-0 tw-right-0 tw-flex tw-justify-center tw-gap-1.5 tw-z-20">
                 {HERO_SLIDES.map((s, i) => (
                     <button key={s.id} onClick={() => go(i)} aria-label={`${i + 1}번 슬라이드로 이동`}
                         className="tw-transition-all tw-rounded-full"
-                        style={{ width: i === idx ? 18 : 6, height: 6, background: i === idx ? '#fff' : 'rgba(255,255,255,0.45)' }} />
+                        style={{ width: i === idx ? 16 : 6, height: 6, background: i === idx ? '#4C58D6' : '#C7CBEA' }} />
                 ))}
             </div>
         </div>
@@ -247,52 +243,50 @@ function BenefitCard({ benefit, unlocked, onRequestLogin }: { benefit: Benefit; 
     };
 
     return (
-        <div className="bt-card tw-relative tw-bg-white tw-rounded-[1.7rem] tw-p-5 tw-mb-3.5 tw-shadow-sm">
+        <div className="tw-relative tw-bg-white tw-rounded-[1.4rem] tw-p-5 tw-mb-3.5 tw-border tw-border-[#EEF0F6]">
             <div className="tw-flex tw-items-center tw-gap-3 tw-mb-4">
-                <div className="tw-w-11 tw-h-11 tw-rounded-2xl tw-flex tw-items-center tw-justify-center tw-shrink-0 tw-text-white" style={{ background: 'linear-gradient(135deg,#7C6FF0,#5B4FD1)' }}>
-                    <Icon size={20} />
+                <div className="tw-w-11 tw-h-11 tw-rounded-xl tw-flex tw-items-center tw-justify-center tw-shrink-0 tw-bg-[#EEF0FE] tw-text-[#4C58D6]">
+                    <Icon size={19} />
                 </div>
                 <div className="tw-flex-1 tw-min-w-0">
-                    <span className="tw-inline-block tw-text-[10.5px] tw-font-bold tw-text-[#FF7A50] tw-bg-[#FFF1EB] tw-px-2 tw-py-0.5 tw-rounded-md tw-mb-1">
+                    <span className="tw-inline-block tw-text-[10.5px] tw-font-bold tw-text-[#B5643D] tw-bg-[#FFF2EC] tw-px-2 tw-py-0.5 tw-rounded-md tw-mb-1">
                         {benefit.tag}
                     </span>
-                    <h3 className="tw-text-[14.5px] tw-font-extrabold tw-text-[#2B2450] tw-leading-snug">{benefit.title}</h3>
-                    <p className="tw-text-[11.5px] tw-text-[#8A84AD] tw-mt-0.5">{benefit.desc}</p>
+                    <h3 className="tw-text-[14px] tw-font-bold tw-text-[#232839] tw-leading-snug">{benefit.title}</h3>
+                    <p className="tw-text-[11.5px] tw-text-[#8B90A6] tw-mt-0.5">{benefit.desc}</p>
                 </div>
             </div>
 
-            <div className="tw-relative tw-bg-[#F8F6FF] tw-rounded-2xl tw-p-4 tw-text-center" style={{ minHeight: 112 }}>
+            <div className="tw-relative tw-bg-[#F8F9FC] tw-rounded-xl tw-p-4 tw-text-center" style={{ minHeight: 110 }}>
                 {!unlocked && (
                     <div
-                        className="tw-absolute tw-inset-0 tw-rounded-2xl tw-z-10 tw-flex tw-flex-col tw-items-center tw-justify-center tw-gap-2 tw-px-4"
-                        style={{ backdropFilter: 'blur(7px)', background: 'rgba(248,246,255,0.7)' }}
+                        className="tw-absolute tw-inset-0 tw-rounded-xl tw-z-10 tw-flex tw-flex-col tw-items-center tw-justify-center tw-gap-2 tw-px-4"
+                        style={{ backdropFilter: 'blur(6px)', background: 'rgba(248,249,252,0.75)' }}
                     >
-                        <Lock size={16} className="tw-text-[#7C6FF0]" />
-                        <p className="tw-text-[11.5px] tw-font-bold tw-text-[#6B6489]">관심고객 등록 후 확인 가능</p>
+                        <Lock size={15} className="tw-text-[#8B90A6]" />
+                        <p className="tw-text-[11.5px] tw-font-semibold tw-text-[#5B6072]">관심고객 등록 후 확인 가능</p>
                         <button
                             onClick={onRequestLogin}
-                            className="tw-w-full tw-py-2.5 tw-rounded-xl tw-text-[12.5px] tw-font-bold tw-text-white tw-flex tw-items-center tw-justify-center tw-gap-1.5"
-                            style={{ background: 'linear-gradient(135deg,#7C6FF0,#5B4FD1)' }}
+                            className="tw-w-full tw-py-2.5 tw-rounded-lg tw-text-[12.5px] tw-font-bold tw-text-white tw-bg-[#4C58D6] tw-flex tw-items-center tw-justify-center tw-gap-1.5"
                         >
                             <Gift size={14} /> 혜택 코드 열어보기
                         </button>
                     </div>
                 )}
                 <div className="tw-flex tw-justify-center tw-mb-2">
-                    <canvas ref={canvasRef} className="tw-w-full tw-max-w-[230px] tw-h-[38px] mix-blend-multiply" />
+                    <canvas ref={canvasRef} className="tw-w-full tw-max-w-[220px] tw-h-[36px] mix-blend-multiply" />
                 </div>
-                <p className="tw-font-mono tw-text-[11.5px] tw-font-bold tw-text-[#B7B0E8]">{benefit.code}</p>
+                <p className="tw-font-mono tw-text-[11.5px] tw-font-bold tw-text-[#B5B9D6]">{benefit.code}</p>
             </div>
 
             {unlocked && (
                 <div className="tw-mt-3 tw-grid tw-grid-cols-2 tw-gap-2">
                     <button onClick={handleCopy}
-                        className="tw-py-2.5 tw-rounded-xl tw-text-[12.5px] tw-font-bold tw-flex tw-items-center tw-justify-center tw-gap-1.5 tw-bg-[#F0EDFF] tw-text-[#5B4FD1] tw-transition-colors">
+                        className="tw-py-2.5 tw-rounded-lg tw-text-[12.5px] tw-font-bold tw-flex tw-items-center tw-justify-center tw-gap-1.5 tw-bg-[#F1F2F8] tw-text-[#4C58D6] tw-transition-colors">
                         {copied ? <Check size={14} /> : <Copy size={14} />} {copied ? '복사됨' : '코드 복사'}
                     </button>
                     <button onClick={() => downloadCouponImage(benefit)}
-                        className="tw-py-2.5 tw-rounded-xl tw-text-[12.5px] tw-font-bold tw-text-white tw-flex tw-items-center tw-justify-center tw-gap-1.5"
-                        style={{ background: 'linear-gradient(135deg,#FF9770,#FF7A50)' }}>
+                        className="tw-py-2.5 tw-rounded-lg tw-text-[12.5px] tw-font-bold tw-text-white tw-bg-[#4C58D6] tw-flex tw-items-center tw-justify-center tw-gap-1.5">
                         <Download size={14} /> 쿠폰 다운로드
                     </button>
                 </div>
@@ -301,40 +295,35 @@ function BenefitCard({ benefit, unlocked, onRequestLogin }: { benefit: Benefit; 
     );
 }
 
-/* ─── 네이버 로그인 모달 ─── */
+/* ─── 네이버 로그인 모달 (깔끔한 버전) ─── */
 function LoginModal({ open, onClose, onLogin }: { open: boolean; onClose: () => void; onLogin: () => void }) {
     if (!open) return null;
     return (
         <div className="tw-fixed tw-inset-0 tw-z-[100] tw-flex tw-items-center tw-justify-center tw-px-6"
-            style={{ background: 'rgba(43,36,80,0.55)', backdropFilter: 'blur(4px)' }}>
-            <div className="tw-w-full tw-bg-white tw-rounded-[1.8rem] tw-overflow-hidden" style={{ maxWidth: 340 }}>
-                <div className="tw-px-6 tw-pt-8 tw-pb-6 tw-text-center tw-relative" style={{ background: 'linear-gradient(135deg,#7C6FF0,#5B4FD1)' }}>
-                    <button onClick={onClose} className="tw-absolute tw-top-3 tw-right-3 tw-text-white/70">
-                        <X size={18} />
-                    </button>
-                    <div className="tw-text-[42px] tw-mb-2">💌</div>
-                    <p className="tw-text-white tw-font-black tw-text-[18px]">비즈팅 관심고객이 되어보세요</p>
-                    <p className="tw-text-[12px] tw-mt-1.5 tw-text-white/80">네이버 로그인 한 번으로 이벤트 혜택 오픈</p>
+            style={{ background: 'rgba(35,40,57,0.45)' }}>
+            <div className="tw-w-full tw-bg-white tw-rounded-2xl tw-overflow-hidden tw-relative" style={{ maxWidth: 320 }}>
+                <button onClick={onClose} aria-label="닫기"
+                    className="tw-absolute tw-top-4 tw-right-4 tw-text-[#B5B9D6]">
+                    <X size={18} />
+                </button>
+
+                <div className="tw-px-6 tw-pt-8 tw-pb-5">
+                    <div className="tw-w-11 tw-h-11 tw-rounded-xl tw-bg-[#EEF0FE] tw-text-[#4C58D6] tw-flex tw-items-center tw-justify-center tw-mb-4">
+                        <Gift size={20} />
+                    </div>
+                    <p className="tw-text-[#232839] tw-font-bold tw-text-[16.5px] tw-mb-1.5">비즈팅 관심고객 등록하고 혜택 받기</p>
+                    <p className="tw-text-[12.5px] tw-text-[#8B90A6] tw-leading-relaxed">
+                        비즈팅에 관심고객으로 등록하고 다양한 혜택을 받아보세요!
+                    </p>
                 </div>
-                <div className="tw-px-6 tw-pt-5 tw-pb-2 tw-space-y-2.5">
-                    {[
-                        { icon: '🎁', text: '등록 즉시 이벤트 혜택 전체 오픈' },
-                        { icon: '📩', text: '고객정보 입력 없이 소식만 받아보기' },
-                        { icon: '🙅', text: '언제든 수신 거부 가능' },
-                    ].map(item => (
-                        <div key={item.text} className="tw-flex tw-items-center tw-gap-3">
-                            <span className="tw-text-[16px]">{item.icon}</span>
-                            <span className="tw-text-[12.5px] tw-font-medium tw-text-[#4A4470]">{item.text}</span>
-                        </div>
-                    ))}
-                </div>
-                <div className="tw-px-6 tw-py-5 tw-flex tw-flex-col tw-gap-2.5">
+
+                <div className="tw-px-6 tw-pb-6 tw-flex tw-flex-col tw-gap-2">
                     <button onClick={onLogin}
-                        className="tw-w-full tw-py-3.5 tw-rounded-2xl tw-text-[14px] tw-font-bold tw-text-white tw-bg-[#03C75A]">
-                        네이버로 3초 만에 등록하기
+                        className="tw-w-full tw-py-3.5 tw-rounded-xl tw-text-[14px] tw-font-bold tw-text-white tw-bg-[#03C75A]">
+                        관심고객하기
                     </button>
                     <button onClick={onClose}
-                        className="tw-w-full tw-py-3 tw-rounded-2xl tw-text-[13px] tw-font-medium tw-text-[#B7B0E8] tw-bg-[#F8F6FF]">
+                        className="tw-w-full tw-py-2.5 tw-rounded-xl tw-text-[13px] tw-font-medium tw-text-[#8B90A6]">
                         다음에 할게요
                     </button>
                 </div>
@@ -360,25 +349,15 @@ export default function BiztingEventLandingLocked() {
     }, [openLogin]);
 
     return (
-        <div className="tw-max-w-md tw-mx-auto tw-min-h-screen tw-relative tw-overflow-hidden" style={{ background: '#F8F6FF', fontFamily: "'Noto Sans KR', sans-serif" }}>
+        <div className="tw-max-w-md tw-mx-auto tw-min-h-screen tw-relative" style={{ background: '#F8F9FC', fontFamily: "'Noto Sans KR', sans-serif" }}>
             <style>{`
-                @import url('https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR:wght@400;500;700;800;900&display=swap');
-                .bt-hero-wrap { background: linear-gradient(155deg,#8A7DF5 0%,#5B4FD1 65%,#4A3FB8 100%); }
-                .bt-blob { position:absolute; border-radius:9999px; filter:blur(2px); opacity:0.35; z-index:0; }
-                .bt-blob-a { width:180px; height:180px; background:#FF9770; top:-60px; right:-50px; animation: bt-float 7s ease-in-out infinite; }
-                .bt-blob-b { width:120px; height:120px; background:#9DFFE0; bottom:-30px; left:-30px; animation: bt-float 8s ease-in-out infinite reverse; }
-                @keyframes bt-float { 0%,100% { transform: translateY(0) scale(1); } 50% { transform: translateY(14px) scale(1.05); } }
-                .bt-msg { position:absolute; z-index:1; color:#fff; opacity:0.55; animation: bt-drift 6s ease-in-out infinite; }
-                .bt-msg-1 { top: 22%; left: 8%; animation-delay: 0.5s; }
-                .bt-msg-2 { top: 68%; right: 10%; animation-delay: 1.5s; }
-                @keyframes bt-drift { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-                .bt-card { transition: box-shadow .2s ease; }
-                .bt-tag-note { border: 1.5px dashed #D8D2FF; }
+                @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800;900&display=swap');
+                .bt-hero-wrap { background: linear-gradient(165deg,#E9EBFB 0%,#F3F1FC 55%,#FBF3EF 100%); }
             `}</style>
 
             {/* 목업 안내 배너 */}
-            <div className="tw-bg-[#2B2450] tw-text-white tw-text-[10.5px] tw-font-semibold tw-text-center tw-py-1.5 tw-px-4 tw-tracking-wide">
-                ✦ 랜딩페이지 목업입니다 · 비즈팅 제작 서비스 예시 페이지입니다 ✦
+            <div className="tw-bg-[#232839] tw-text-white tw-text-[10.5px] tw-font-semibold tw-text-center tw-py-1.5 tw-px-4 tw-tracking-wide">
+                비즈팅 부가서비스 예시 페이지입니다
             </div>
 
             <LoginModal open={showLoginModal} onClose={() => setShowLoginModal(false)} onLogin={handleLogin} />
@@ -387,21 +366,21 @@ export default function BiztingEventLandingLocked() {
 
             {/* 서비스 소개 */}
             <div className="tw-px-5 tw-pt-7 tw-pb-2">
-                <h2 className="tw-text-[17px] tw-font-black tw-text-[#2B2450] tw-mb-1" style={{ fontFamily: "'Jua', sans-serif" }}>
+                <h2 className="tw-text-[16.5px] tw-font-extrabold tw-text-[#232839] tw-mb-1">
                     비즈팅은 이런 서비스예요
                 </h2>
-                <p className="tw-text-[12.5px] tw-text-[#8A84AD] tw-mb-4">고객정보 없이도 발송 가능한 메시지 솔루션</p>
+                <p className="tw-text-[12.5px] tw-text-[#8B90A6] tw-mb-4">고객정보 없이도 광고 메시지 발송이 가능한 마케팅 솔루션</p>
                 <div className="tw-space-y-2.5">
                     {FEATURES.map(f => {
                         const Icon = f.icon;
                         return (
-                            <div key={f.title} className="tw-bg-white tw-rounded-2xl tw-p-4 tw-flex tw-items-center tw-gap-3.5 tw-shadow-sm">
-                                <div className="tw-w-10 tw-h-10 tw-rounded-full tw-flex tw-items-center tw-justify-center tw-shrink-0 tw-bg-[#F0EDFF] tw-text-[#5B4FD1]">
-                                    <Icon size={18} />
+                            <div key={f.title} className="tw-bg-white tw-rounded-xl tw-p-4 tw-flex tw-items-center tw-gap-3.5 tw-border tw-border-[#EEF0F6]">
+                                <div className="tw-w-10 tw-h-10 tw-rounded-full tw-flex tw-items-center tw-justify-center tw-shrink-0 tw-bg-[#EEF0FE] tw-text-[#4C58D6]">
+                                    <Icon size={17} />
                                 </div>
                                 <div>
-                                    <h3 className="tw-text-[13.5px] tw-font-extrabold tw-text-[#2B2450]">{f.title}</h3>
-                                    <p className="tw-text-[11.5px] tw-text-[#8A84AD] tw-mt-0.5 tw-leading-snug">{f.desc}</p>
+                                    <h3 className="tw-text-[13.5px] tw-font-bold tw-text-[#232839]">{f.title}</h3>
+                                    <p className="tw-text-[11.5px] tw-text-[#8B90A6] tw-mt-0.5 tw-leading-snug">{f.desc}</p>
                                 </div>
                             </div>
                         );
@@ -410,21 +389,21 @@ export default function BiztingEventLandingLocked() {
             </div>
 
             {/* 이벤트 혜택 */}
-            <div className="tw-px-5 tw-pt-7 tw-pb-28">
+            <div className="tw-px-5 tw-pt-7 tw-pb-6">
                 <div className="tw-flex tw-items-center tw-gap-2 tw-mb-1">
-                    <Gift className="tw-text-[#FF7A50]" size={18} />
-                    <h2 className="tw-text-[17px] tw-font-black tw-text-[#2B2450]" style={{ fontFamily: "'Jua', sans-serif" }}>
+                    <Gift className="tw-text-[#4C58D6]" size={17} />
+                    <h2 className="tw-text-[16.5px] tw-font-extrabold tw-text-[#232839]">
                         오픈 기념 이벤트 혜택
                     </h2>
                 </div>
-                <p className="tw-text-[12.5px] tw-text-[#8A84AD] tw-mb-4">
+                <p className="tw-text-[12.5px] tw-text-[#8B90A6] tw-mb-4">
                     {unlocked ? '관심고객 등록이 완료됐어요. 아래 혜택을 자유롭게 사용해보세요.' : '관심고객으로 등록하면 아래 혜택이 모두 열려요.'}
                 </p>
 
                 {unlocked && (
-                    <div className="tw-mb-4 tw-rounded-2xl tw-p-3.5 tw-flex tw-items-center tw-gap-3 tw-bg-[#E7FBF3]">
-                        <span className="tw-text-[20px]">🎉</span>
-                        <p className="tw-text-[12px] tw-font-bold tw-text-[#0F9D6B]">등록 완료! 혜택 코드가 모두 열렸어요</p>
+                    <div className="tw-mb-4 tw-rounded-xl tw-p-3.5 tw-flex tw-items-center tw-gap-3 tw-bg-[#E9F9F1] tw-border tw-border-[#D6F3E4]">
+                        <Check size={18} className="tw-text-[#1FA971]" />
+                        <p className="tw-text-[12px] tw-font-bold tw-text-[#1B8F60]">등록 완료! 혜택 코드가 모두 열렸어요</p>
                     </div>
                 )}
 
@@ -432,26 +411,23 @@ export default function BiztingEventLandingLocked() {
                     <BenefitCard key={b.id} benefit={b} unlocked={unlocked} onRequestLogin={() => setShowLoginModal(true)} />
                 ))}
             </div>
+            <div className={`tw-px-6 tw-pt-4 tw-text-center ${!unlocked ? 'tw-pb-28' : 'tw-pb-10'}`}>
+                <p className="tw-text-[10.5px] tw-text-[#B5B9D6] tw-leading-relaxed">
+                    * 본 페이지는 비즈팅 랜딩페이지 제작 서비스 소개를 위한 목업(예시)입니다.<br />
+                    실제 이벤트가 아니며, 표기된 혜택·코드는 데모용 샘플입니다.<br />
+                    문의 · tf@biztalk.co.kr
+                </p>
+            </div>
 
             {/* 하단 고정 CTA */}
             {!unlocked && (
-                <div className="tw-fixed tw-bottom-0 tw-left-0 tw-right-0 tw-max-w-md tw-mx-auto tw-p-4 tw-bg-white/90 tw-backdrop-blur-md tw-border-t tw-border-[#ECE9FB] tw-z-30">
+                <div className="tw-fixed tw-bottom-0 tw-left-0 tw-right-0 tw-max-w-md tw-mx-auto tw-p-4 tw-bg-white/95 tw-backdrop-blur-md tw-border-t tw-border-[#EEF0F6] tw-z-30">
                     <button onClick={() => setShowLoginModal(true)}
-                        className="tw-w-full tw-py-4 tw-rounded-2xl tw-text-[15px] tw-font-bold tw-text-white tw-flex tw-items-center tw-justify-center tw-gap-2 tw-shadow-lg"
-                        style={{ background: 'linear-gradient(135deg,#7C6FF0,#5B4FD1)' }}>
-                        <Sparkles size={17} /> 이벤트 혜택 받기
+                        className="tw-w-full tw-py-4 tw-rounded-xl tw-text-[15px] tw-font-bold tw-text-white tw-bg-[#4C58D6] tw-flex tw-items-center tw-justify-center tw-gap-2">
+                        <Sparkles size={16} /> 이벤트 혜택 받기
                     </button>
                 </div>
             )}
-
-            {/* 하단 안내 */}
-            <div className="tw-px-6 tw-pb-8 tw-pt-4 tw-text-center">
-                <p className="tw-text-[10.5px] tw-text-[#B7B0E8] tw-leading-relaxed">
-                    * 본 페이지는 비즈팅 랜딩페이지 제작 서비스 소개를 위한 목업(예시)입니다.<br />
-                    실제 이벤트가 아니며, 표기된 혜택·코드는 데모용 샘플입니다.<br />
-                    문의 · bizting.co.kr
-                </p>
-            </div>
         </div>
     );
 }
