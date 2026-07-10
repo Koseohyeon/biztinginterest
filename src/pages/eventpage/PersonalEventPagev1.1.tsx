@@ -74,7 +74,7 @@ const BENEFITS: Benefit[] = [
 
 const FEATURES = [
     { icon: ShieldCheck, title: '고객정보 없이도 OK', desc: '이미 확보된 개인정보가 없어도, 관심 있을 만한 사람에게 발송해요.' },
-    { icon: Zap, title: '빠른 세팅', desc: '복잡한 연동 없이 며칠 안에 페이지를 오픈할 수 있어요.' },
+    { icon: Zap, title: '빠른 세팅', desc: '복잡한 과정 없이 빠르게 집행할 수 있어요.' },
     { icon: TrendingUp, title: '매출로 이어지는 소식', desc: '관심고객 등록부터 실제 구매까지, 흐름을 함께 설계해요.' },
 ];
 
@@ -346,7 +346,7 @@ export default function BiztingEventLandingOpen() {
 
             {/* 목업 안내 배너 */}
             <div className="tw-bg-[#232839] tw-text-white tw-text-[10.5px] tw-font-semibold tw-text-center tw-py-1.5 tw-px-4 tw-tracking-wide">
-                랜딩페이지 목업입니다 · 비즈팅 제작 서비스 예시 페이지입니다
+                 비즈팅 부가 서비스 예시 페이지입니다.
             </div>
 
             <LoginModal open={showLoginModal} onClose={() => setShowLoginModal(false)} onLogin={handleLogin} />
@@ -406,7 +406,7 @@ export default function BiztingEventLandingOpen() {
                 <p className="tw-text-[10.5px] tw-text-[#B5B9D6] tw-leading-relaxed">
                     * 본 페이지는 비즈팅 랜딩페이지 제작 서비스 소개를 위한 목업(예시)입니다.<br />
                     실제 이벤트가 아니며, 표기된 혜택·코드는 데모용 샘플입니다.<br />
-                    문의 · bizting.co.kr
+                    문의 · tf@biztalk.co.kr
                 </p>
             </div>
 
