@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import JsBarcode from 'jsbarcode';
 import {
     Sparkles, Users, Send, TrendingUp, ShieldCheck, Zap, X, Copy, Check,
-    Download, ChevronLeft, ChevronRight, Gift,
+ChevronLeft, ChevronRight, Gift,
 } from 'lucide-react';
 import { useNaverLogin } from '../../hooks/useNaverLogin';
 import { NAVER_LOGIN } from '../../config/naverLogin';
@@ -10,23 +10,7 @@ import { NAVER_LOGIN } from '../../config/naverLogin';
 /* ════════════════════════════════════════════════════════════════════
    BIZTING 이벤트 랜딩페이지 · 목업 (v2 · 오픈형)
    ------------------------------------------------------------------
-   ⚠️ 이 파일은 비즈팅의 "랜딩페이지 제작" 서비스를 소개하기 위해
-   고객사에게 보여드리는 예시(목업) 산출물입니다. 실제 이벤트 데이터가
-   아닙니다.
 
-   v1(잠금형)과 달리 혜택 카드는 블러/잠금 없이 처음부터 바코드·코드가
-   보이고, "코드 복사" / "쿠폰 다운로드" 버튼이 바로 동작합니다.
-   상단 히어로의 "이벤트 혜택 받기" 버튼은 별도로 네이버 로그인을 통해
-   관심고객으로 등록시키는 리드 수집용 CTA입니다.
-
-   ※ 히어로/카드 이미지는 Unsplash 무료 라이선스(상업적 이용 가능,
-   출처 표기 불필요) 이미지를 임시로 사용했습니다. 실제 배포 시
-   자사 촬영 이미지 또는 별도 구매 이미지로 교체를 권장합니다.
-
-   ※ v2.1: 쿠폰 다운로드를 모바일(iOS/안드로이드) 대응 로직으로 개선
-   - canvas.toBlob() 사용 (dataURL보다 안정적)
-   - Web Share API 우선 시도 → 실패 시 Blob URL 다운로드 → iOS 최종 fallback
-   - 카카오톡 등 인앱 브라우저 감지 및 안내
    ════════════════════════════════════════════════════════════════════ */
 
 const IMG = {
@@ -93,138 +77,6 @@ function useBarcode(code: string, canvasRef: React.RefObject<HTMLCanvasElement |
             });
         }
     }, [code]);
-}
-
-/* ─── 캔버스 유틸 ─── */
-function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) {
-    ctx.beginPath();
-    ctx.moveTo(x + r, y);
-    ctx.arcTo(x + w, y, x + w, y + h, r);
-    ctx.arcTo(x + w, y + h, x, y + h, r);
-    ctx.arcTo(x, y + h, x, y, r);
-    ctx.arcTo(x, y, x + w, y, r);
-    ctx.closePath();
-}
-
-/* ─── 쿠폰 이미지 생성 (Blob 반환) ─── */
-function generateCouponBlob(benefit: Benefit): Promise<Blob> {
-    return new Promise((resolve, reject) => {
-        const barcodeCanvas = document.createElement('canvas');
-        JsBarcode(barcodeCanvas, benefit.code, {
-            format: 'CODE128', width: 3, height: 68, displayValue: false,
-            background: '#ffffff', lineColor: '#2E3346', margin: 0,
-        });
-
-        const W = 640, H = 380;
-        const canvas = document.createElement('canvas');
-        canvas.width = W; canvas.height = H;
-        const ctx = canvas.getContext('2d')!;
-
-        roundRect(ctx, 0, 0, W, H, 28);
-        ctx.fillStyle = '#EEF0FE';
-        ctx.fill();
-
-        roundRect(ctx, 18, 18, W - 36, H - 36, 22);
-        ctx.fillStyle = '#ffffff';
-        ctx.fill();
-        ctx.strokeStyle = '#E7E9F3';
-        ctx.lineWidth = 1.5;
-        roundRect(ctx, 18, 18, W - 36, H - 36, 22);
-        ctx.stroke();
-
-        ctx.fillStyle = '#4C58D6';
-        ctx.font = '700 17px "Noto Sans KR", sans-serif';
-        ctx.fillText('BIZTING EVENT COUPON', 44, 62);
-
-        ctx.fillStyle = '#232839';
-        ctx.font = '800 26px "Noto Sans KR", sans-serif';
-        ctx.fillText(benefit.title, 44, 102);
-
-        ctx.fillStyle = '#767C94';
-        ctx.font = '400 15px "Noto Sans KR", sans-serif';
-        ctx.fillText(benefit.desc, 44, 132);
-
-        ctx.strokeStyle = '#E7E9F3';
-        ctx.lineWidth = 2;
-        ctx.setLineDash([6, 6]);
-        ctx.beginPath();
-        ctx.moveTo(44, 164);
-        ctx.lineTo(W - 44, 164);
-        ctx.stroke();
-        ctx.setLineDash([]);
-
-        ctx.drawImage(barcodeCanvas, 44, 192, W - 88, 74);
-
-        ctx.fillStyle = '#767C94';
-        ctx.font = '600 15px monospace';
-        ctx.textAlign = 'center';
-        ctx.fillText(benefit.code, W / 2, 302);
-
-        ctx.fillStyle = '#B7BAD6';
-        ctx.font = '500 12px "Noto Sans KR", sans-serif';
-        ctx.fillText('bizting.co.kr · 랜딩페이지 목업 예시', W / 2, 334);
-        ctx.textAlign = 'left';
-
-        canvas.toBlob(blob => {
-            if (blob) resolve(blob);
-            else reject(new Error('캔버스를 이미지로 변환하지 못했습니다.'));
-        }, 'image/png');
-    });
-}
-
-/* ─── 인앱 브라우저 감지 ─── */
-function isInAppBrowser(): boolean {
-    const ua = navigator.userAgent || '';
-    return /KAKAOTALK|Line|FBAN|FBAV|Instagram|NAVER/i.test(ua);
-}
-
-/* ─── 쿠폰 다운로드 (안드로이드 + iOS 모두 대응) ─── */
-async function downloadCouponImage(benefit: Benefit) {
-    let blob: Blob;
-    try {
-        blob = await generateCouponBlob(benefit);
-    } catch {
-        alert('쿠폰 이미지를 만드는 데 실패했어요. 다시 시도해 주세요.');
-        return;
-    }
-
-    const filename = `bizting-coupon-${benefit.code}.png`;
-    const file = new File([blob], filename, { type: 'image/png' });
-
-    if (isInAppBrowser()) {
-        const blobUrl = URL.createObjectURL(blob);
-        window.open(blobUrl, '_blank');
-        alert('인앱 브라우저에서는 저장이 제한될 수 있어요.\n이미지를 길게 눌러 "이미지 저장"을 선택해 주세요.');
-        return;
-    }
-
-    if (navigator.canShare && navigator.canShare({ files: [file] })) {
-        try {
-            await navigator.share({ files: [file], title: benefit.title });
-            return;
-        } catch (err) {
-            if ((err as Error).name === 'AbortError') return;
-        }
-    }
-
-    const blobUrl = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = blobUrl;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    setTimeout(() => URL.revokeObjectURL(blobUrl), 5000);
-
-    const isIOS = /iP(hone|od|ad)/.test(navigator.userAgent);
-    if (isIOS) {
-        setTimeout(() => {
-            const win = window.open();
-            if (win) {
-                win.document.write(`<img src="${URL.createObjectURL(blob)}" style="width:100%" />`);
-            }
-        }, 300);
-    }
 }
 
 /* ─── 히어로 캐러셀 ─── */
@@ -295,7 +147,6 @@ function HeroCarousel() {
 function BenefitCard({ benefit }: { benefit: Benefit }) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [copied, setCopied] = useState(false);
-    const [downloading, setDownloading] = useState(false);
     useBarcode(benefit.code, canvasRef);
     const Icon = benefit.icon;
 
@@ -307,15 +158,6 @@ function BenefitCard({ benefit }: { benefit: Benefit }) {
         } catch { /* clipboard unavailable */ }
     };
 
-    const handleDownload = async () => {
-        if (downloading) return;
-        setDownloading(true);
-        try {
-            await downloadCouponImage(benefit);
-        } finally {
-            setDownloading(false);
-        }
-    };
 
     return (
         <div className="tw-relative tw-bg-white tw-rounded-[1.4rem] tw-p-5 tw-mb-3.5 tw-border tw-border-[#EEF0F6]">
@@ -338,15 +180,10 @@ function BenefitCard({ benefit }: { benefit: Benefit }) {
                 </div>
                 <p className="tw-font-mono tw-text-[11.5px] tw-font-bold tw-text-[#B5B9D6]">{benefit.code}</p>
             </div>
-
-            <div className="tw-mt-3 tw-grid tw-grid-cols-2 tw-gap-2">
+            <div className="tw-mt-5">
                 <button onClick={handleCopy}
-                    className="tw-py-2.5 tw-rounded-lg tw-text-[12.5px] tw-font-bold tw-flex tw-items-center tw-justify-center tw-gap-1.5 tw-bg-[#F1F2F8] tw-text-[#4C58D6] tw-transition-colors">
+                    className="tw-w-full tw-py-2.5 tw-rounded-lg tw-text-[12.5px] tw-font-bold tw-flex tw-items-center tw-justify-center tw-gap-1.5 tw-bg-[#F1F2F8] tw-text-[#4C58D6] tw-transition-colors">
                     {copied ? <Check size={14} /> : <Copy size={14} />} {copied ? '복사됨' : '코드 복사'}
-                </button>
-                <button onClick={handleDownload} disabled={downloading}
-                    className="tw-py-2.5 tw-rounded-lg tw-text-[12.5px] tw-font-bold tw-text-white tw-bg-[#4C58D6] tw-flex tw-items-center tw-justify-center tw-gap-1.5 disabled:tw-opacity-60">
-                    <Download size={14} /> {downloading ? '처리중...' : '쿠폰 다운로드'}
                 </button>
             </div>
         </div>
@@ -474,15 +311,6 @@ export default function BiztingEventLandingOpen() {
                     문의 · tf@biztalk.co.kr
                 </p>
             </div>
-
-            {!unlocked && (
-                <div className="tw-fixed tw-bottom-0 tw-left-0 tw-right-0 tw-max-w-md tw-mx-auto tw-p-4 tw-bg-white/95 tw-backdrop-blur-md tw-border-t tw-border-[#EEF0F6] tw-z-30">
-                    <button onClick={() => setShowLoginModal(true)}
-                        className="tw-w-full tw-py-4 tw-rounded-xl tw-text-[15px] tw-font-bold tw-text-white tw-bg-[#4C58D6] tw-flex tw-items-center tw-justify-center tw-gap-2">
-                        <Sparkles size={16} /> 이벤트 혜택 받기
-                    </button>
-                </div>
-            )}
         </div>
     );
 }
