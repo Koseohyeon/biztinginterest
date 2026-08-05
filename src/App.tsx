@@ -49,6 +49,9 @@ import Cha_example3 from "./pages/eventpage/Cha_examole3"
 import PersonalEventPagev1 from "./pages/eventpage/PersonalEventPagev1.0"
 import PersonalEventPagev2 from "./pages/eventpage/PersonalEventPagev1.1"
 
+//edms
+import EDMS_page from "./pages/edms/EDMS_page";
+
 
 export default function App() {
   return (
@@ -104,6 +107,9 @@ export default function App() {
         {/* 비즈팅 제안서 */}
         <Route path="/eventpage/PersonalEventPagev1" element={<PersonalEventPagev1 />} />
         <Route path="/eventpage/PersonalEventPagev2" element={<PersonalEventPagev2 />} />
+
+        {/* EDMS */}
+        <Route path="/edms/EDMS_page" element={<EDMS_page />} />
         
       </Routes>
     </HashRouter>
