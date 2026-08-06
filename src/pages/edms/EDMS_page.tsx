@@ -20,6 +20,14 @@ const INTEREST_SEGMENTS = ["중학생 부모", "고등학생 부모", "대학생
 const COST_PER_SEND = 120;
 const MAX_SEND = 1000;
 
+// 발송/정책 관련 매직넘버 — 한 곳에서 관리
+const APPROVAL_LEAD_BUSINESS_DAYS = 2; // 등록일 기준 영업일 +N일 뒤 발송
+const STATS_NOTIFY_BUSINESS_DAYS = 2; // 발송일 기준 영업일 +N일 뒤 통계 알림톡
+const RECURRING_CYCLE_DAYS = 28; // 정기발송 주기
+const CHARGE_DEADLINE_DAYS = 20; // 등록일 기준 +N일까지 캐시 충전
+const TITLE_MAX_LENGTH = 30; // 메시지 제목 최대 글자수
+const VAT_MULTIPLIER = 1.1; // 충전 결제금액 = 캐시 금액 × VAT_MULTIPLIER
+
 interface HeroDot {
   x: number;
   y: number;
@@ -52,6 +60,8 @@ interface MessageTemplate {
   name: string;
   description: string;
   variables: TemplateVariable[];
+  /** LMS 제목(타이틀) — 본문과 별도로 표시되며 치환 후 30자를 넘을 수 없다. */
+  title: string;
   body: string;
 }
 
@@ -64,6 +74,7 @@ const MESSAGE_TEMPLATES: MessageTemplate[] = [
       { key: "branch", label: "지점명", hint: "등록된 지점명을 불러왔어요. 목록에 없으면 직접 입력할 수 있어요.", options: BRANCH_OPTIONS, placeholder: "지점명을 선택하거나 입력하세요" },
       { key: "phone", label: "고객센터 번호", hint: "등록된 고객센터 번호를 불러왔어요. 목록에 없으면 직접 입력할 수 있어요.", options: PHONE_OPTIONS, placeholder: "전화번호를 입력해주세요 (예: 010-1234-5678)" },
     ],
+    title: "{{branch}} 안내",
     body: `{{branch}}을 안내드립니다.
 
 넓고 쾌적한 스터디카페를 찾고 계신가요? 네이버에서 '{{branch}}'을 검색하고, 지금 바로 최고의 학습 환경을 경험해 보세요.
@@ -89,6 +100,7 @@ const MESSAGE_TEMPLATES: MessageTemplate[] = [
       { key: "deadline", label: "행사 마감일", hint: "프로모션 종료일을 입력해주세요.", options: [], placeholder: "예: 2026-08-31" },
       { key: "phone", label: "고객센터 번호", hint: "등록된 고객센터 번호를 불러왔어요. 목록에 없으면 직접 입력할 수 있어요.", options: PHONE_OPTIONS, placeholder: "전화번호를 입력해주세요" },
     ],
+    title: "{{branch}} 프로모션 안내",
     body: `[{{branch}}] 특별 프로모션 안내
 
 지금 가입하면 {{discount}}!
@@ -110,6 +122,7 @@ const MESSAGE_TEMPLATES: MessageTemplate[] = [
       { key: "openDate", label: "오픈일", hint: "오픈 예정일을 입력해주세요.", options: [], placeholder: "예: 2026-09-01" },
       { key: "phone", label: "고객센터 번호", hint: "등록된 고객센터 번호를 불러왔어요. 목록에 없으면 직접 입력할 수 있어요.", options: PHONE_OPTIONS, placeholder: "전화번호를 입력해주세요" },
     ],
+    title: "{{branch}} 신규 오픈 안내",
     body: `{{branch}} 신규 오픈 안내
 
 {{openDate}}, 새로운 학습 공간이 문을 엽니다.
@@ -122,9 +135,9 @@ const MESSAGE_TEMPLATES: MessageTemplate[] = [
   },
 ];
 
-function renderTemplateBody(template: MessageTemplate, values: Record<string, string>): ReactNode[] {
-  const varMap = new Map(template.variables.map((v) => [v.key, v]));
-  return template.body.split(/(\{\{\w+\}\})/g).map((part, i) => {
+function renderTemplateText(text: string, variables: TemplateVariable[], values: Record<string, string>): ReactNode[] {
+  const varMap = new Map(variables.map((v) => [v.key, v]));
+  return text.split(/(\{\{\w+\}\})/g).map((part, i) => {
     const match = part.match(/^\{\{(\w+)\}\}$/);
     if (!match) return <span key={i}>{part}</span>;
     const v = varMap.get(match[1]);
@@ -135,6 +148,23 @@ function renderTemplateBody(template: MessageTemplate, values: Record<string, st
       </b>
     );
   });
+}
+
+/** 화면 표시용이 아닌 순수 문자열 치환 — 글자수 계산 등에 사용 */
+function substituteTemplateText(text: string, variables: TemplateVariable[], values: Record<string, string>): string {
+  const varMap = new Map(variables.map((v) => [v.key, v]));
+  return text.replace(/\{\{(\w+)\}\}/g, (_match, key: string) => {
+    const v = varMap.get(key);
+    return values[key] || v?.label || "";
+  });
+}
+
+function renderTemplateBody(template: MessageTemplate, values: Record<string, string>): ReactNode[] {
+  return renderTemplateText(template.body, template.variables, values);
+}
+
+function renderTemplateTitle(template: MessageTemplate, values: Record<string, string>): ReactNode[] {
+  return renderTemplateText(template.title, template.variables, values);
 }
 
 function hashCount(seedStr: string): number {
@@ -179,7 +209,6 @@ const fieldCls = "tw-w-full tw-h-[38px] tw-border tw-border-[#E1E3E8] tw-rounded
 const interestBoxCls = "tw-flex tw-flex-wrap tw-gap-1.5 tw-bg-[#F6F9FF] tw-border tw-border-[#DCE7FF] tw-rounded-lg tw-p-2.5";
 const interestChipCls = "tw-bg-[#2C5FF6] tw-text-white tw-text-xs tw-px-2.5 tw-py-[5px] tw-rounded-full tw-font-medium";
 const eyebrowBadgeCls = "tw-inline-block tw-text-xs tw-text-[#2C5FF6] tw-font-medium tw-bg-[#EEF4FF] tw-px-3 tw-py-[5px] tw-rounded-full tw-mb-1";
-const statPillCls = "tw-text-xs tw-text-[#4A4F59] tw-bg-[#F5F6FA] tw-border tw-border-[#ECEDF1] tw-px-3 tw-py-[5px] tw-rounded-full";
 const overlayCls = "tw-absolute tw-inset-0 tw-bg-black/45 tw-flex tw-items-center tw-justify-center tw-z-50";
 const toggleTrackCls = "tw-relative tw-w-9 tw-h-5 tw-rounded-full tw-border-none tw-p-0";
 const toggleThumbCls = "tw-absolute tw-top-0.5 tw-left-[18px] tw-w-4 tw-h-4 tw-rounded-full tw-bg-white tw-transition-[left] tw-duration-150";
@@ -206,6 +235,18 @@ function FieldLabel({ children, hint }: FieldLabelProps) {
   );
 }
 
+/** 자동으로 채워져 수정할 수 없는 필드(발송 방식/발송 일시 등)를 라벨+회색 박스로 표시 */
+function LockedField({ label, hint, value, locked, className = "tw-mb-3" }: { label: string; hint?: string; value: ReactNode; locked?: boolean; className?: string }) {
+  return (
+    <>
+      <FieldLabel hint={hint}>{label}</FieldLabel>
+      <div className={`${fieldCls} tw-flex tw-items-center tw-gap-1 tw-bg-[#F5F6FA] tw-text-[#767C88] ${className}`}>
+        {value}{locked && " 🔒"}
+      </div>
+    </>
+  );
+}
+
 interface ReadonlyRowProps {
   label: string;
   value: string;
@@ -227,8 +268,9 @@ interface DatalistFieldProps {
   options: string[];
   placeholder: string;
   className?: string;
+  onBlur?: () => void;
 }
-function DatalistField({ listId, value, onChange, options, placeholder, className = "tw-mb-4" }: DatalistFieldProps) {
+function DatalistField({ listId, value, onChange, options, placeholder, className = "tw-mb-4", onBlur }: DatalistFieldProps) {
   return (
     <>
       <input
@@ -236,6 +278,7 @@ function DatalistField({ listId, value, onChange, options, placeholder, classNam
         className={`${fieldCls} ${className}`}
         value={value}
         onChange={(e: ChangeEvent<HTMLInputElement>) => onChange(e.target.value)}
+        onBlur={onBlur}
         placeholder={placeholder}
       />
       <datalist id={listId}>{options.map((o) => <option key={o} value={o} />)}</datalist>
@@ -292,9 +335,12 @@ function Hero() {
 
 interface SktMessageMockupProps {
   phoneNumber: string;
+  title: ReactNode;
+  titleLength: number;
   children: ReactNode;
 }
-function SktMessageMockup({ phoneNumber, children }: SktMessageMockupProps) {
+function SktMessageMockup({ phoneNumber, title, titleLength, children }: SktMessageMockupProps) {
+  const titleTooLong = titleLength > TITLE_MAX_LENGTH;
   return (
     <div className={phoneFrameCls}>
       <div className={phoneHeaderCls}>
@@ -315,6 +361,16 @@ function SktMessageMockup({ phoneNumber, children }: SktMessageMockupProps) {
             확인된 발신번호
           </span>
         </div>
+        <div className="tw-mb-1">
+          <div className="tw-flex tw-items-center tw-justify-between tw-mb-0.5">
+            <span className="tw-text-[10px] tw-text-[#9AA0AC]">제목</span>
+            <span className={`tw-text-[10px] ${titleTooLong ? "tw-text-[#D94848] tw-font-medium" : "tw-text-[#B7BBC4]"}`}>{titleLength}/{TITLE_MAX_LENGTH}자</span>
+          </div>
+          <div className={`${phoneBubbleCls} tw-font-bold tw-py-2`}>{title}</div>
+          {titleTooLong && (
+            <div className="tw-text-[10.5px] tw-text-[#D94848] tw-mt-1">⚠ 제목이 30자를 초과했어요. 다시 한번 확인해주세요.</div>
+          )}
+        </div>
         <div className={phoneBubbleCls}>{children}</div>
       </div>
 
@@ -330,8 +386,10 @@ interface SideNavProps {
   onGoToCampaign: () => void;
   open: boolean;
   onClose: () => void;
+  cashBalance: number;
+  onOpenCharge: () => void;
 }
-function SideNav({ onGoToCampaign, open, onClose }: SideNavProps) {
+function SideNav({ onGoToCampaign, open, onClose, cashBalance, onOpenCharge }: SideNavProps) {
   const Item = ({ label, active, badge }: { label: string; active?: boolean; badge?: string }) => (
     <div
       onClick={() => {
@@ -371,8 +429,13 @@ function SideNav({ onGoToCampaign, open, onClose }: SideNavProps) {
         <div className="tw-text-[13px] tw-text-[#4A4F59] tw-mb-2.5">edmsTEST 님</div>
         <div className="tw-text-[11.5px] tw-text-[#9AA0AC] tw-mb-1">보유 캐시</div>
         <div className="tw-flex tw-items-center tw-justify-between">
-          <span className="tw-text-base tw-font-medium tw-text-[#1F2430]">20,000 캐시</span>
-          <button className="tw-text-[11.5px] tw-border tw-border-[#E1E3E8] tw-rounded-full tw-px-2.5 tw-py-1 tw-bg-white tw-text-[#4A4F59] tw-cursor-pointer">충전하기</button>
+          <span className="tw-text-base tw-font-medium tw-text-[#1F2430]">{cashBalance.toLocaleString()} 캐시</span>
+          <button
+            className="tw-text-[11.5px] tw-border tw-border-[#E1E3E8] tw-rounded-full tw-px-2.5 tw-py-1 tw-bg-white tw-text-[#4A4F59] tw-cursor-pointer"
+            onClick={onOpenCharge}
+          >
+            충전하기
+          </button>
         </div>
       </div>
 
@@ -447,32 +510,150 @@ function StepBar({ current }: { current: number }) {
   );
 }
 
-function ErrorAlert({ onRetry, onClose }: { onRetry: () => void; onClose: () => void }) {
+interface AlertModalProps {
+  icon?: string;
+  iconBg?: string;
+  iconColor?: string;
+  title: string;
+  message: ReactNode;
+  primaryLabel: string;
+  onPrimary: () => void;
+  secondaryLabel?: string;
+  onSecondary?: () => void;
+}
+/** 단일/2버튼 알럿 팝업 공용 컴포넌트 — 모수조회 실패, 등록 확인, 안내 알럿 등에서 재사용 */
+function AlertModal({ icon = "!", iconBg = "#FFF3D6", iconColor = "#8A6100", title, message, primaryLabel, onPrimary, secondaryLabel, onSecondary }: AlertModalProps) {
   return (
     <div className={overlayCls}>
-      <div className={`${cardCls} tw-w-[300px] tw-text-center tw-p-6`}>
-        <div className="tw-w-10 tw-h-10 tw-rounded-full tw-bg-[#FDEBEC] tw-text-[#D94848] tw-flex tw-items-center tw-justify-center tw-mx-auto tw-mb-3.5 tw-text-lg tw-font-medium">!</div>
-        <div className="tw-text-[14.5px] tw-font-medium tw-text-[#1F2430] tw-mb-1.5">모수를 추출하지 못했어요</div>
-        <div className="tw-text-[12.5px] tw-text-[#767C88] tw-mb-5 tw-leading-relaxed">네트워크 상태를 확인한 뒤 다시 시도해주세요.</div>
+      <div className={`${cardCls} tw-w-[320px] tw-text-center tw-p-6`}>
+        <div
+          className="tw-w-10 tw-h-10 tw-rounded-full tw-flex tw-items-center tw-justify-center tw-mx-auto tw-mb-3.5 tw-text-lg tw-font-medium"
+          style={{ background: iconBg, color: iconColor }}
+        >
+          {icon}
+        </div>
+        <div className="tw-text-[14.5px] tw-font-medium tw-text-[#1F2430] tw-mb-1.5">{title}</div>
+        <div className="tw-text-[12.5px] tw-text-[#767C88] tw-mb-5 tw-leading-relaxed">{message}</div>
         <div className="tw-flex tw-gap-2">
-          <button className={`${secondaryBtnCls} tw-flex-1`} onClick={onClose}>닫기</button>
-          <button className={`${primaryBtnCls} tw-flex-1 tw-py-[11px]`} onClick={onRetry}>다시 시도</button>
+          {secondaryLabel && (
+            <button className={`${secondaryBtnCls} tw-flex-1`} onClick={onSecondary}>{secondaryLabel}</button>
+          )}
+          <button className={`${primaryBtnCls} tw-flex-1 tw-py-[11px]`} onClick={onPrimary}>{primaryLabel}</button>
         </div>
       </div>
     </div>
   );
 }
 
-function ConfirmRegisterModal({ onCancel, onConfirm }: { onCancel: () => void; onConfirm: () => void }) {
+const CHARGE_PRESETS = [10000, 30000, 50000, 100000, 200000, 300000];
+const RATE_ALIMTALK = 15;
+const RATE_SMS = 15;
+const RATE_LMS = 30;
+
+interface PaymentWindowProps {
+  cashBalance: number;
+  cost: number | null;
+  onCharge: (amount: number) => void;
+  onClose: () => void;
+}
+function PaymentWindow({ cashBalance, cost, onCharge, onClose }: PaymentWindowProps) {
+  const [selected, setSelected] = useState(() => {
+    if (cost == null) return 10000;
+    const needed = Math.max(cost - cashBalance, 0);
+    return CHARGE_PRESETS.find((p) => p >= needed) ?? CHARGE_PRESETS[CHARGE_PRESETS.length - 1];
+  });
+  const [method, setMethod] = useState<"card" | "transfer" | "deposit">("card");
+  const [agreed, setAgreed] = useState(false);
+
+  const insufficient = cost != null && cashBalance < cost;
+  const payAmount = Math.round(selected * VAT_MULTIPLIER);
+  const alimtalkCount = Math.floor(selected / RATE_ALIMTALK);
+  const smsCount = Math.floor(selected / RATE_SMS);
+  const lmsCount = Math.floor(selected / RATE_LMS);
+
   return (
     <div className={overlayCls}>
-      <div className={`${cardCls} tw-w-[320px] tw-text-center tw-p-6`}>
-        <div className="tw-w-10 tw-h-10 tw-rounded-full tw-bg-[#FFF3D6] tw-text-[#8A6100] tw-flex tw-items-center tw-justify-center tw-mx-auto tw-mb-3.5 tw-text-lg tw-font-medium">!</div>
-        <div className="tw-text-[14.5px] tw-font-medium tw-text-[#1F2430] tw-mb-1.5">캠페인을 등록하시겠어요?</div>
-        <div className="tw-text-[12.5px] tw-text-[#767C88] tw-mb-5 tw-leading-relaxed">등록 후에는 캠페인을 취소할 수 없어요.<br />그래도 등록을 진행하시겠어요?</div>
-        <div className="tw-flex tw-gap-2">
-          <button className={`${secondaryBtnCls} tw-flex-1`} onClick={onCancel}>취소</button>
-          <button className={`${primaryBtnCls} tw-flex-1 tw-py-[11px]`} onClick={onConfirm}>등록 진행하기</button>
+      <div className="tw-bg-white tw-rounded-xl tw-border tw-border-[#E5E7EB] tw-w-[380px] tw-max-h-[90vh] tw-overflow-y-auto tw-shadow-[0_8px_30px_rgba(0,0,0,0.18)]">
+        <div className="tw-flex tw-items-center tw-gap-2 tw-px-4 tw-py-2.5 tw-border-b tw-border-[#EEF0F3] tw-bg-[#F5F6FA] tw-rounded-t-xl">
+          <span className="tw-w-2.5 tw-h-2.5 tw-rounded-full tw-bg-[#E1E3E8]" />
+          <span className="tw-text-[11px] tw-text-[#767C88] tw-flex-1 tw-text-center">EDMS - Chrome</span>
+          <button onClick={onClose} aria-label="닫기" className="tw-bg-transparent tw-border-none tw-text-sm tw-text-[#9AA0AC] tw-cursor-pointer">×</button>
+        </div>
+        <div className="tw-px-4 tw-py-1.5 tw-border-b tw-border-[#EEF0F3] tw-text-[10.5px] tw-text-[#9AA0AC]">🔒 biztalkpay.co.kr/pay/request</div>
+
+        <div className="tw-p-5">
+          <div className="tw-text-[16px] tw-font-medium tw-text-[#1F2430] tw-text-center tw-mb-4">충전하기</div>
+
+          {insufficient && (
+            <div className="tw-bg-[#FDEBEC] tw-text-[#D94848] tw-text-[12px] tw-rounded-lg tw-px-3 tw-py-2.5 tw-mb-4">
+              ⚠ 금액이 부족합니다. 충전해주세요. (부족액 {Math.max(cost! - cashBalance, 0).toLocaleString()}원)
+            </div>
+          )}
+
+          <div className="tw-text-[13px] tw-font-medium tw-text-[#1F2430] tw-mb-2">결제상품 선택</div>
+          <div className="tw-grid tw-grid-cols-2 tw-gap-2 tw-mb-4">
+            {CHARGE_PRESETS.map((p) => (
+              <button
+                key={p}
+                type="button"
+                onClick={() => setSelected(p)}
+                className={`tw-text-[13px] tw-font-medium tw-rounded-lg tw-py-2.5 tw-border tw-cursor-pointer ${
+                  selected === p ? "tw-bg-[#1F2A5C] tw-text-white tw-border-[#1F2A5C]" : "tw-bg-white tw-text-[#4A4F59] tw-border-[#E1E3E8]"
+                }`}
+              >
+                {p.toLocaleString()} 캐시
+              </button>
+            ))}
+          </div>
+
+          <div className="tw-bg-[#FAFBFC] tw-border tw-border-[#EEF0F3] tw-rounded-lg tw-p-3 tw-mb-4">
+            <div className="tw-text-[12px] tw-font-medium tw-text-[#1F2430] tw-mb-1.5">메시지 타입별 발송 가능 건수</div>
+            <div className="tw-text-[12px] tw-text-[#4A4F59] tw-mb-1.5">
+              알림톡 <b>{alimtalkCount.toLocaleString()}건</b> · SMS <b>{smsCount.toLocaleString()}건</b> · LMS <b>{lmsCount.toLocaleString()}건</b>
+            </div>
+            <div className="tw-text-[11px] tw-text-[#9AA0AC]">· 발송 단가 알림톡 {RATE_ALIMTALK}원 · SMS {RATE_SMS}원 · LMS {RATE_LMS}원</div>
+          </div>
+
+          <div className="tw-text-[13px] tw-font-medium tw-text-[#1F2430] tw-mb-2">결제방법 선택</div>
+          <div className="tw-grid tw-grid-cols-3 tw-gap-1.5 tw-mb-3">
+            {[
+              { key: "card", label: "신용카드" },
+              { key: "transfer", label: "실시간 계좌이체" },
+              { key: "deposit", label: "무통장 입금" },
+            ].map((m) => (
+              <button
+                key={m.key}
+                type="button"
+                onClick={() => setMethod(m.key as typeof method)}
+                className={`tw-text-[11.5px] tw-font-medium tw-rounded-lg tw-py-2 tw-border tw-cursor-pointer ${
+                  method === m.key ? "tw-bg-[#1F2A5C] tw-text-white tw-border-[#1F2A5C]" : "tw-bg-white tw-text-[#4A4F59] tw-border-[#E1E3E8]"
+                }`}
+              >
+                {m.label}
+              </button>
+            ))}
+          </div>
+          <div className="tw-text-[10.5px] tw-text-[#B7BBC4] tw-mb-4 tw-leading-relaxed">카드사별로 결제 가능 금액이 상이하며, 한도 금액을 초과할 경우 승인되지 않습니다.</div>
+
+          <div className="tw-flex tw-justify-between tw-items-end tw-border-t tw-border-[#EEF0F3] tw-pt-3 tw-mb-4">
+            <div className="tw-text-[12px] tw-text-[#9AA0AC]">결제금액<br /><span className="tw-text-[10.5px]">(VAT 포함)</span></div>
+            <div className="tw-text-[20px] tw-font-medium tw-text-[#1F2430]">{payAmount.toLocaleString()}원</div>
+          </div>
+
+          <label className="tw-flex tw-items-start tw-gap-2 tw-text-[11px] tw-text-[#4A4F59] tw-mb-4 tw-cursor-pointer">
+            <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} className="tw-mt-0.5" />
+            <span>발신번호 등록 계정은 담당자·발신번호 명의자·결제자 간 관계 확인 또는 소명을 요청받을 수 있음을 확인했습니다.</span>
+          </label>
+
+          <button
+            className={`tw-w-full tw-py-[13px] tw-rounded-lg tw-text-white tw-text-sm tw-font-medium tw-border-none ${
+              agreed ? "tw-bg-[#1F2A5C] tw-cursor-pointer" : "tw-bg-[#C7CBD6] tw-cursor-not-allowed"
+            }`}
+            disabled={!agreed}
+            onClick={() => agreed && onCharge(selected)}
+          >
+            충전하기
+          </button>
         </div>
       </div>
     </div>
@@ -536,6 +717,11 @@ export default function PotentialCustomerFlow() {
   const [showErrorAlert, setShowErrorAlert] = useState(false);
   const [showConsent, setShowConsent] = useState(false);
   const [showConfirmRegister, setShowConfirmRegister] = useState(false);
+  const [showPaymentWindow, setShowPaymentWindow] = useState(false);
+  const [showStillInsufficientAlert, setShowStillInsufficientAlert] = useState(false);
+  const [paymentContext, setPaymentContext] = useState<"register" | "sidebar" | null>(null);
+  const [showTitleLengthAlert, setShowTitleLengthAlert] = useState(false);
+  const [cashBalance, setCashBalance] = useState(20000);
   const [hasAgreed, setHasAgreed] = useState(false);
   const [hasSentBefore, setHasSentBefore] = useState(false);
   const [recurring, setRecurring] = useState(true);
@@ -543,6 +729,8 @@ export default function PotentialCustomerFlow() {
   const [sido, setSido] = useState("서울특별시");
   const [gu, setGu] = useState("강남구");
   const [dong, setDong] = useState("대치동");
+  // 등록된 매장 주소를 자동으로 불러왔다고 가정하는 상태. 불러오지 못했거나 사용자가 다른 주소를 쓰고 싶을 때 false로 바꿔 직접 선택하게 한다.
+  const [regionAutoLoaded, setRegionAutoLoaded] = useState(true);
   const [templateId, setTemplateId] = useState(MESSAGE_TEMPLATES[0].id);
   const template = MESSAGE_TEMPLATES.find((t) => t.id === templateId) ?? MESSAGE_TEMPLATES[0];
   const [variableValues, setVariableValues] = useState<Record<string, string>>(() =>
@@ -563,12 +751,12 @@ export default function PotentialCustomerFlow() {
   const isActive = hasSentBefore && recurring;
 
   const today = useMemo(() => new Date(), []);
-  const sendDateObj = useMemo(() => addBusinessDays(today, 2), [today]);
+  const sendDateObj = useMemo(() => addBusinessDays(today, APPROVAL_LEAD_BUSINESS_DAYS), [today]);
   const sendDate = useMemo(() => formatDate(sendDateObj), [sendDateObj]);
   const sendDateTime = `${sendDate} 오전 10시`;
-  const statsNotifyDate = useMemo(() => formatDate(addBusinessDays(sendDateObj, 2)), [sendDateObj]);
-  const nextRecurringDate = useMemo(() => formatDate(addDays(sendDateObj, 28)), [sendDateObj]);
-  const chargeDeadline = useMemo(() => formatDate(addDays(today, 20)), [today]);
+  const statsNotifyDate = useMemo(() => formatDate(addBusinessDays(sendDateObj, STATS_NOTIFY_BUSINESS_DAYS)), [sendDateObj]);
+  const nextRecurringDate = useMemo(() => formatDate(addDays(sendDateObj, RECURRING_CYCLE_DAYS)), [sendDateObj]);
+  const chargeDeadline = useMemo(() => formatDate(addDays(today, CHARGE_DEADLINE_DAYS)), [today]);
 
   const audience = useMemo(() => hashCount(`${sido}-${gu}-${dong}`), [sido, gu, dong]);
   const cost = audience * COST_PER_SEND;
@@ -601,16 +789,54 @@ export default function PotentialCustomerFlow() {
     }, 1100);
   };
 
-  const handlePayClick = () => {
+  const proceedToPayment = () => {
     if (hasAgreed) setShowConfirmRegister(true);
     else setShowConsent(true);
   };
 
-  const confirmRegister = () => {
+  const handlePayClick = () => {
+    proceedToPayment();
+  };
+
+  const openChargeFromSidebar = () => {
+    setPaymentContext("sidebar");
+    setShowPaymentWindow(true);
+  };
+
+  const completeRegistration = () => {
     setHasSentBefore(true);
     setRecurring(true);
-    setShowConfirmRegister(false);
     setStep("done");
+  };
+
+  // 실제 캠페인 등록/결제가 이루어지는 지점 — 이미 구현되어 있는 실제 충전(결제) 화면을 그대로 띄운다.
+  const confirmRegister = () => {
+    setShowConfirmRegister(false);
+    setPaymentContext("register");
+    setShowPaymentWindow(true);
+  };
+
+  // 결제창에서 충전을 완료했을 때 — 충분히 충전됐으면 캠페인 등록을 완료 처리한다.
+  // 아직 부족하면 등록은 절대 진행하지 않고, "여전히 부족합니다" 알럿을 띄운 뒤 결제창으로 그대로 돌아간다.
+  const handleChargeComplete = (amount: number) => {
+    const newBalance = cashBalance + amount;
+    setCashBalance(newBalance);
+    if (paymentContext === "sidebar") {
+      setShowPaymentWindow(false);
+      return;
+    }
+    if (newBalance >= cost) {
+      setShowPaymentWindow(false);
+      completeRegistration();
+    } else {
+      setShowStillInsufficientAlert(true);
+    }
+  };
+
+  const renderedTitle = substituteTemplateText(template.title, template.variables, variableValues);
+
+  const checkTitleLength = () => {
+    if (renderedTitle.length > TITLE_MAX_LENGTH) setShowTitleLengthAlert(true);
   };
 
   const headerTitle = step === "landing" || step === "result" ? "우리가게 광고하기" : "새 메시지 만들기";
@@ -632,7 +858,6 @@ export default function PotentialCustomerFlow() {
           .mobile-close-btn { display: inline-block !important; }
           .sidebar-overlay.open { display: block; }
           .setup-grid { grid-template-columns: 1fr !important; }
-          .payment-card-sticky { position: static !important; }
           .app-content { padding: 16px !important; }
           .app-header { padding: 14px 16px !important; }
           .hero-card { padding: 32px 20px !important; }
@@ -640,9 +865,14 @@ export default function PotentialCustomerFlow() {
         }
         .mobile-menu-btn, .mobile-close-btn { display: none; }
         .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(20,22,28,0.45); z-index: 55; }
+        .landing-split { display: flex; flex-direction: column; gap: 28px; }
+        @media (min-width: 760px) {
+          .landing-split { flex-direction: row; align-items: center; gap: 48px; }
+          .landing-split > div { flex: 1; }
+        }
       `}</style>
 
-      <SideNav onGoToCampaign={goToCampaign} open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <SideNav onGoToCampaign={goToCampaign} open={sidebarOpen} onClose={() => setSidebarOpen(false)} cashBalance={cashBalance} onOpenCharge={openChargeFromSidebar} />
       <div className={`sidebar-overlay${sidebarOpen ? " open" : ""}`} onClick={() => setSidebarOpen(false)} />
 
       <div className="tw-flex-1 tw-flex tw-flex-col tw-min-w-0">
@@ -659,28 +889,56 @@ export default function PotentialCustomerFlow() {
 
           {step === "landing" && (
             <div className="tw-flex-1 tw-flex tw-items-center tw-justify-center tw-py-4">
-            <div className={`hero-card ${cardCls} tw-text-center tw-pt-12 tw-px-8 tw-pb-11 tw-max-w-[540px] tw-w-full tw-relative tw-overflow-hidden`}>
-              <div className="tw-absolute -tw-top-15 -tw-right-15 tw-w-40 tw-h-40 tw-rounded-full tw-bg-[#F6F9FF]" />
-              <div className="tw-absolute -tw-bottom-[70px] -tw-left-[50px] tw-w-[140px] tw-h-[140px] tw-rounded-full tw-bg-[#FAF6EC]" />
-              <div className="tw-relative">
-                <span className={eyebrowBadgeCls}>✦ 광고 시작하기 전에</span>
-                <Hero />
-                <div className="tw-text-2xl tw-font-medium tw-text-[#1F2430] tw-mt-1.5 tw-mb-2.5 tw-leading-snug">
-                  우리 가게 잠재고객은<br />몇 명일까?
+            <div className={`hero-card ${cardCls} tw-p-10 tw-max-w-[1040px] tw-w-full tw-relative tw-overflow-hidden`}>
+              <div className="landing-split tw-relative">
+                <div className="tw-min-w-0">
+                  <span className={eyebrowBadgeCls}>✦ 광고 시작하기 전에</span>
+                  <div className="tw-text-[32px] tw-font-medium tw-text-[#1F2430] tw-mt-3 tw-mb-3 tw-leading-tight">
+                    우리 가게 잠재고객은<br />몇 명일까?
+                  </div>
+                  <div className="tw-text-sm tw-text-[#767C88] tw-mb-7 tw-leading-relaxed">
+                    주변 상권에서 우리 가게에 관심 가질 만한 고객만 골라
+                    <br />실시간으로 몇 명인지 먼저 확인해보세요.
+                  </div>
+
+                  <div className="tw-flex tw-flex-col tw-gap-2.5 tw-mb-8">
+                    {[
+                      { icon: "⚡", text: "실시간으로 관심 고객군을 분석해요" },
+                      { icon: "📍", text: "우리 동네 상권에 맞춰 타겟팅해요" },
+                      { icon: "🆓", text: "조회는 무료, 결제 전엔 비용이 없어요" },
+                    ].map((f) => (
+                      <div key={f.text} className="tw-flex tw-items-center tw-gap-2.5">
+                        <span className="tw-w-7 tw-h-7 tw-rounded-full tw-bg-[#EEF4FF] tw-flex tw-items-center tw-justify-center tw-text-[13px] tw-shrink-0">{f.icon}</span>
+                        <span className="tw-text-[13px] tw-text-[#4A4F59]">{f.text}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  <button className={`${primaryBtnCls} tw-inline-flex tw-items-center tw-gap-2`} onClick={startExtraction} disabled={isLoading}>
+                    {isLoading ? "조회 중..." : "우리 가게 잠재고객은 몇 명일까?"}
+                    {!isLoading && <span>→</span>}
+                  </button>
                 </div>
-                <div className="tw-text-sm tw-text-[#767C88] tw-mb-5.5 tw-leading-relaxed">
-                  주변 상권에서 우리 가게에 관심 가질 만한 고객만 골라
-                  <br />실시간으로 몇 명인지 먼저 확인해보세요.
+
+                <div className="tw-bg-[#F6F9FF] tw-rounded-2xl tw-p-6 tw-min-w-0">
+                  <Hero />
+                  <div className={`${cardCls} tw-bg-white tw-p-4 tw-mt-1`}>
+                    <div className="tw-flex tw-items-center tw-justify-between tw-mb-2">
+                      <span className="tw-text-[11px] tw-text-[#9AA0AC]">이렇게 확인돼요</span>
+                      <span className="tw-text-[10px] tw-text-[#9AA0AC] tw-bg-[#F5F6FA] tw-px-2 tw-py-0.5 tw-rounded-full">예시</span>
+                    </div>
+                    <div className="tw-flex tw-items-baseline tw-gap-1 tw-mb-3">
+                      <span className="tw-text-[26px] tw-font-medium tw-text-[#2C5FF6]">1,248</span>
+                      <span className="tw-text-sm tw-text-[#1F2430]">명</span>
+                    </div>
+                    <div className="tw-flex tw-gap-1.5 tw-flex-wrap">
+                      <span className={chipCls}>📍 서울특별시 강남구</span>
+                      {INTEREST_SEGMENTS.map((s) => (
+                        <span key={s} className={`${chipCls} tw-bg-[#EEF4FF] tw-text-[#1F4FD6] tw-border-[#D7E4FF]`}>{s}</span>
+                      ))}
+                    </div>
+                  </div>
                 </div>
-                <div className="tw-flex tw-gap-2 tw-justify-center tw-mb-7 tw-flex-wrap">
-                  <span className={statPillCls}>실시간 분석</span>
-                  <span className={statPillCls}>우리 동네 맞춤 타겟팅</span>
-                  <span className={statPillCls}>무료 조회</span>
-                </div>
-                <button className={`${primaryBtnCls} tw-inline-flex tw-items-center tw-gap-2`} onClick={startExtraction} disabled={isLoading}>
-                  {isLoading ? "조회 중..." : "우리 가게 잠재고객은 몇 명일까?"}
-                  {!isLoading && <span>→</span>}
-                </button>
               </div>
             </div>
             </div>
@@ -688,7 +946,7 @@ export default function PotentialCustomerFlow() {
 
           {step === "result" && (
             <div className="tw-flex-1 tw-flex tw-items-center tw-justify-center tw-py-4">
-            <div className={`hero-card ${cardCls} tw-pt-10 tw-px-8 tw-pb-10 tw-max-w-[540px] tw-w-full tw-relative tw-overflow-hidden`}>
+            <div className={`hero-card ${cardCls} tw-pt-10 tw-px-8 tw-pb-10 tw-max-w-[620px] tw-w-full tw-relative tw-overflow-hidden`}>
               <div className="tw-absolute -tw-top-[50px] -tw-left-[50px] tw-w-[130px] tw-h-[130px] tw-rounded-full tw-bg-[#F6F9FF]" />
               <div className="tw-relative">
                 <div className={infoBoxCls}>우리 가게에 관심이 있을 법한 타겟군만 골라, 실시간으로 관심 고객을 추출합니다.</div>
@@ -721,7 +979,7 @@ export default function PotentialCustomerFlow() {
 
           {step === "setup" && (
             <>
-              <div className="setup-grid tw-grid tw-grid-cols-[1fr_300px] tw-gap-4 tw-items-start">
+              <div className="setup-grid tw-grid tw-grid-cols-[1fr_300px] tw-gap-4 tw-items-start tw-max-w-[1040px] tw-mx-auto">
                 <div className={`${cardCls} tw-p-6`}>
                   <div className={sectionTitleCls}>메시지 구성 &amp; 타겟조건</div>
 
@@ -746,15 +1004,15 @@ export default function PotentialCustomerFlow() {
                   </div>
 
                   <div className="tw-text-xs tw-text-[#9AA0AC] tw-mb-2.5 tw-leading-relaxed">
-                    실제 SKT 인증 발신번호로 이렇게 발송돼요. 색칠된 부분은 아래에서 입력한 값으로 자동 치환됩니다.
+                    실제 SKT 인증 발신번호로 이렇게 발송돼요. 제목과 본문의 색칠된 부분은 아래 가변영역에서 입력한 값으로 자동 치환됩니다. 제목은 {TITLE_MAX_LENGTH}자를 넘을 수 없어요.
                   </div>
                   <div className="tw-bg-[#EDEFF2] tw-rounded-xl tw-p-4 tw-mb-4 tw-max-w-[320px] tw-mx-auto">
-                    <SktMessageMockup phoneNumber={previewPhoneNumber}>
+                    <SktMessageMockup phoneNumber={previewPhoneNumber} title={renderTemplateTitle(template, variableValues)} titleLength={renderedTitle.length}>
                       {renderTemplateBody(template, variableValues)}
                     </SktMessageMockup>
                   </div>
 
-                  <FieldLabel hint="이 템플릿의 가변영역이에요. 값을 바꾸면 위 미리보기에 바로 반영돼요.">가변영역</FieldLabel>
+                  <FieldLabel hint="이 템플릿의 가변영역이에요. 값을 바꾸면 위 제목·본문 미리보기에 바로 반영돼요.">가변영역</FieldLabel>
                   <div className="tw-flex tw-flex-col tw-gap-3.5 tw-mb-5">
                     {template.variables.map((v) => (
                       <div key={v.key}>
@@ -766,6 +1024,7 @@ export default function PotentialCustomerFlow() {
                           options={v.options}
                           placeholder={v.placeholder}
                           className=""
+                          onBlur={v.key === "branch" ? checkTitleLength : undefined}
                         />
                         <div className="tw-text-[11px] tw-text-[#9AA0AC] tw-mt-1">{v.hint}</div>
                       </div>
@@ -777,47 +1036,68 @@ export default function PotentialCustomerFlow() {
                     <div className={interestBoxCls}><InterestChips /></div>
                     <div className="tw-text-[11.5px] tw-text-[#9AA0AC] tw-mt-1 tw-mb-4">우리 가게에 관심 가질 확률이 높은 고객군이에요. 예상 잠재고객 수를 결정하는 핵심 조건입니다.</div>
 
-                    <FieldLabel hint="광고를 알릴 지역을 선택해주세요.">지역</FieldLabel>
-                    <div className="tw-flex tw-gap-1.5 tw-mb-1">
-                      <select
-                        className={fieldCls}
-                        value={sido}
-                        onChange={(e) => {
-                          const v = e.target.value;
-                          setSido(v);
-                          const firstGu = Object.keys(REGION_DATA[v])[0];
-                          setGu(firstGu);
-                          setDong(REGION_DATA[v][firstGu][0]);
-                        }}
-                      >
-                        {Object.keys(REGION_DATA).map((s) => <option key={s} value={s}>{s}</option>)}
-                      </select>
-                      <select
-                        className={fieldCls}
-                        value={gu}
-                        onChange={(e) => {
-                          const v = e.target.value;
-                          setGu(v);
-                          setDong(REGION_DATA[sido][v][0]);
-                        }}
-                      >
-                        {sidoGuOptions.map((g) => <option key={g} value={g}>{g}</option>)}
-                      </select>
-                      <select className={fieldCls} value={dong} onChange={(e) => setDong(e.target.value)}>
-                        {dongOptions.map((d) => <option key={d} value={d}>{d}</option>)}
-                      </select>
-                    </div>
-                    <div className={`tw-text-[11.5px] tw-mb-4 ${regionMatched ? "tw-text-[#3B8A5A]" : "tw-text-[#B58A1E]"}`}>
-                      {regionMatched ? "✓ 지역이 설정되었습니다." : "‼ 등록된 지역 정보가 없어 관심고객군 기준으로 추출돼요."}
-                    </div>
+                    {regionAutoLoaded ? (
+                      <>
+                        <LockedField
+                          label="지역"
+                          hint="등록된 매장 주소를 자동으로 불러왔어요. 다른 주소로 보내려면 직접 선택할 수 있어요."
+                          value={<>📍 {sido} {gu} {dong}</>}
+                          locked
+                          className="tw-mb-1.5"
+                        />
+                        <button
+                          type="button"
+                          className="tw-text-[11.5px] tw-text-[#2C5FF6] tw-bg-transparent tw-border-none tw-p-0 tw-cursor-pointer tw-mb-3"
+                          onClick={() => setRegionAutoLoaded(false)}
+                        >
+                          다른 지역인가요? 직접 선택하기 →
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <FieldLabel hint="등록된 매장 주소를 자동으로 불러왔어요. 다른 주소로 보내려면 직접 선택할 수 있어요.">지역</FieldLabel>
+                        <div className="tw-flex tw-gap-1.5 tw-mb-1">
+                          <select
+                            className={fieldCls}
+                            value={sido}
+                            onChange={(e) => {
+                              const v = e.target.value;
+                              setSido(v);
+                              const firstGu = Object.keys(REGION_DATA[v])[0];
+                              setGu(firstGu);
+                              setDong(REGION_DATA[v][firstGu][0]);
+                            }}
+                          >
+                            {Object.keys(REGION_DATA).map((s) => <option key={s} value={s}>{s}</option>)}
+                          </select>
+                          <select
+                            className={fieldCls}
+                            value={gu}
+                            onChange={(e) => {
+                              const v = e.target.value;
+                              setGu(v);
+                              setDong(REGION_DATA[sido][v][0]);
+                            }}
+                          >
+                            {sidoGuOptions.map((g) => <option key={g} value={g}>{g}</option>)}
+                          </select>
+                          <select className={fieldCls} value={dong} onChange={(e) => setDong(e.target.value)}>
+                            {dongOptions.map((d) => <option key={d} value={d}>{d}</option>)}
+                          </select>
+                        </div>
+                        <div className={`tw-text-[11.5px] tw-mb-4 ${regionMatched ? "tw-text-[#3B8A5A]" : "tw-text-[#B58A1E]"}`}>
+                          {regionMatched ? "✓ 지역이 설정되었습니다." : "‼ 등록된 지역 정보가 없어 관심고객군 기준으로 추출돼요."}
+                        </div>
+                      </>
+                    )}
 
-                    <ReadonlyRow label="발송 방식" value="RCS/일반 (텍스트)" />
-                    <ReadonlyRow label="발송 일시" value={sendDateTime} locked />
-                    <div className="tw-text-xs tw-text-[#B7BBC4] tw-mt-1.5">* 등록일 기준 영업일 +2일 뒤로 고정 발송됩니다.</div>
+                    <LockedField label="발송 방식" value="RCS/일반 (텍스트)" />
+                    <LockedField label="발송 일시" value={sendDateTime} locked className="tw-mb-1" />
+                    <div className="tw-text-xs tw-text-[#B7BBC4] tw-mt-1.5">* 등록일 기준 영업일 +{APPROVAL_LEAD_BUSINESS_DAYS}일 뒤로 고정 발송됩니다.</div>
                   </div>
                 </div>
 
-                <div className={`payment-card-sticky ${cardCls} tw-p-6 tw-sticky tw-top-4`}>
+                <div className={`${cardCls} tw-p-6`}>
                   <div className={sectionTitleCls}>결제 정보</div>
 
                   <div className="tw-flex tw-justify-between tw-items-center tw-mt-3.5 tw-mb-1.5">
@@ -846,13 +1126,13 @@ export default function PotentialCustomerFlow() {
                 </div>
               </div>
 
-              <div className={`${cardCls} tw-mt-4 tw-p-6 tw-bg-[#FFF9EC] tw-border-[#F5E4B8]`}>
+              <div className={`${cardCls} tw-mt-8 tw-p-6 tw-bg-[#FFF9EC] tw-border-[#F5E4B8]tw-w-full `}>
                 <div className="tw-text-[13px] tw-font-medium tw-text-[#8A6100] tw-mb-2">안내사항</div>
                 <ul className="tw-m-0 tw-pl-4.5 tw-text-[12.5px] tw-text-[#8A6100] tw-leading-loose tw-list-disc">
-                  <li>캠페인 집행 후 2일 뒤 통계가 알림톡으로 발송돼요.</li>
-                  <li>28일마다 정기발송이 진행되니 캐시가 부족하지 않도록 미리 충전해주세요.</li>
+                  <li>캠페인 집행 후 {STATS_NOTIFY_BUSINESS_DAYS}일 뒤 통계가 알림톡으로 발송돼요.</li>
+                  <li>{RECURRING_CYCLE_DAYS}일마다 정기발송이 진행되니 캐시가 부족하지 않도록 미리 충전해주세요.</li>
                   <li>정기발송이 두번 스킵되면 자동으로 정기발송이 중지돼요.</li>
-                  <li>발송은 최대 1,000건까지 가능하며, 모수 추출 결과에 따라 변동될 수 있어요.</li>
+                  <li>발송은 최대 {MAX_SEND.toLocaleString()}건까지 가능하며, 모수 추출 결과에 따라 변동될 수 있어요.</li>
                 </ul>
               </div>
             </>
@@ -865,7 +1145,7 @@ export default function PotentialCustomerFlow() {
                 <div className="tw-text-lg tw-font-medium tw-text-[#1F2430]">결제가 완료됐어요</div>
               </div>
 
-              <div className={urgentBoxCls}>
+              <div className={urgentBoxCls} >
                 <div className={urgentRowCls}>⚡ <b>{chargeDeadline}</b>까지 캐시를 충전해주세요.</div>
                 <div className={urgentRowCls}>⚡ 정기발송은 계속 진행되며, <b>캐시가 부족하면 발송이 중단돼요.</b></div>
                 <div className={urgentRowCls}>⚡ 등록된 캠페인은 <b>취소할 수 없어요.</b></div>
@@ -883,12 +1163,47 @@ export default function PotentialCustomerFlow() {
             </div>
           )}
 
-          {showErrorAlert && <ErrorAlert onRetry={startExtraction} onClose={() => setShowErrorAlert(false)} />}
+          {showErrorAlert && (
+            <AlertModal
+              iconBg="#FDEBEC" iconColor="#D94848"
+              title="모수를 추출하지 못했어요"
+              message="네트워크 상태를 확인한 뒤 다시 시도해주세요."
+              secondaryLabel="닫기" onSecondary={() => setShowErrorAlert(false)}
+              primaryLabel="다시 시도" onPrimary={startExtraction}
+            />
+          )}
           {showConsent && (
             <ConsentModal onClose={() => setShowConsent(false)} onAgree={() => { setHasAgreed(true); setShowConsent(false); setShowConfirmRegister(true); }} />
           )}
           {showConfirmRegister && (
-            <ConfirmRegisterModal onCancel={() => setShowConfirmRegister(false)} onConfirm={confirmRegister} />
+            <AlertModal
+              title="캠페인을 등록하시겠어요?"
+              message={<>등록 후에는 캠페인을 취소할 수 없어요.<br />그래도 등록을 진행하시겠어요?</>}
+              secondaryLabel="취소" onSecondary={() => setShowConfirmRegister(false)}
+              primaryLabel="등록 진행하기" onPrimary={confirmRegister}
+            />
+          )}
+          {showPaymentWindow && (
+            <PaymentWindow
+              cashBalance={cashBalance}
+              cost={paymentContext === "register" ? cost : null}
+              onCharge={handleChargeComplete}
+              onClose={() => setShowPaymentWindow(false)}
+            />
+          )}
+          {showStillInsufficientAlert && (
+            <AlertModal
+              title="캐시가 아직 부족해요"
+              message={`충전했지만 캠페인 등록에 필요한 금액에는 아직 못 미쳐요. 등록은 진행되지 않았어요 — 결제 화면에서 조금 더 충전해주세요. (부족액 ${Math.max(cost - cashBalance, 0).toLocaleString()}원)`}
+              primaryLabel="확인" onPrimary={() => setShowStillInsufficientAlert(false)}
+            />
+          )}
+          {showTitleLengthAlert && (
+            <AlertModal
+              title="제목 글자수를 확인해주세요"
+              message={`메시지 제목이 ${TITLE_MAX_LENGTH}자를 넘었어요. 문자 발송 시 제목이 잘릴 수 있으니 다시 한번 확인해주세요.`}
+              primaryLabel="확인" onPrimary={() => setShowTitleLengthAlert(false)}
+            />
           )}
         </div>
       </div>
