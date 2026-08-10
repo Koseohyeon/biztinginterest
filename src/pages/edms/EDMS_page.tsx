@@ -20,13 +20,13 @@ const INTEREST_SEGMENTS = ["중학생 부모", "고등학생 부모", "대학생
 const COST_PER_SEND = 120;
 const MAX_SEND = 1000;
 
-// 발송/정책 관련 매직넘버 — 한 곳에서 관리
-const APPROVAL_LEAD_BUSINESS_DAYS = 2; // 등록일 기준 영업일 +N일 뒤 발송
-const STATS_NOTIFY_BUSINESS_DAYS = 2; // 발송일 기준 영업일 +N일 뒤 통계 알림톡
-const RECURRING_CYCLE_DAYS = 28; // 정기발송 주기
-const CHARGE_DEADLINE_DAYS = 20; // 등록일 기준 +N일까지 캐시 충전
+// 발송/정책 관련 매직넘버 — 한 곳에서 관리 (EDMSx비즈팅 정기발송 정책 및 개발가이드 v1.0 기준)
+const APPROVAL_LEAD_BUSINESS_DAYS = 2; // P-02: 요청 유효일(D) 다음날부터 영업일 2일 뒤 = 초회 계획 발송일
+const STATS_NOTIFY_DAYS = 2; // 기능정의서 No.44: 발송일로부터 2일 경과 시점에 통계 집계(달력일 기준)
+const CASH_PRECHECK_DAYS = 14; // 기능정의서 No.45: 발송 후 14일째 다음 회차 생성 시도 + 캐시 사전 확인
 const TITLE_MAX_LENGTH = 30; // 메시지 제목 최대 글자수
 const VAT_MULTIPLIER = 1.1; // 충전 결제금액 = 캐시 금액 × VAT_MULTIPLIER
+const BIZTALKING_UNIT_PRICE = 120; // 비즈팅 발송 단가(원, VAT 별도) — 기능정의서 No.37
 
 interface HeroDot {
   x: number;
@@ -144,7 +144,7 @@ function renderTemplateText(text: string, variables: TemplateVariable[], values:
     const value = values[match[1]];
     return (
       <b key={i} className={highlightCls}>
-        {value || (v ? `${v.label}을 입력해주세요` : part)}
+        {value || (v ? `{${v.label}}` : part)}
       </b>
     );
   });
@@ -155,7 +155,7 @@ function substituteTemplateText(text: string, variables: TemplateVariable[], val
   const varMap = new Map(variables.map((v) => [v.key, v]));
   return text.replace(/\{\{(\w+)\}\}/g, (_match, key: string) => {
     const v = varMap.get(key);
-    return values[key] || v?.label || "";
+    return values[key] || (v ? `{${v.label}}` : "");
   });
 }
 
@@ -188,6 +188,49 @@ function addDays(date: Date, days: number): Date {
   const result = new Date(date);
   result.setDate(result.getDate() + days);
   return result;
+}
+
+// 주말만 휴일로 판단(프로토타입 간소화). 실서비스는 business_calendar(공휴일 테이블) 조회로 대체.
+function isBusinessDay(date: Date): boolean {
+  const day = date.getDay();
+  return day !== 0 && day !== 6;
+}
+function nextBusinessDay(date: Date): Date {
+  let d = new Date(date);
+  while (!isBusinessDay(d)) d.setDate(d.getDate() + 1);
+  return d;
+}
+function previousBusinessDay(date: Date): Date {
+  let d = new Date(date);
+  while (!isBusinessDay(d)) d.setDate(d.getDate() - 1);
+  return d;
+}
+
+/**
+ * P-04~P-06: 초회 계획 발송일의 '일(day-of-month)'을 anchor_day로 고정하고,
+ * 대상 월(targetYear, targetMonth0)에서 그 날짜를 기준일로 삼는다.
+ * - 그 달에 해당 일자가 없으면 말일 적용(P-05)
+ * - 기준일이 휴일이면 다음 영업일로 이동하되, 그 이동이 다음 달로 넘어가면
+ *   같은 달의 직전 영업일로 이동해 '달력월당 1회'를 보장한다(P-06)
+ */
+function monthlyPlannedDate(targetYear: number, targetMonth0: number, anchorDay: number): Date {
+  const lastDay = new Date(targetYear, targetMonth0 + 1, 0).getDate();
+  const day = Math.min(anchorDay, lastDay);
+  const candidate = new Date(targetYear, targetMonth0, day);
+  if (isBusinessDay(candidate)) return candidate;
+
+  const forward = nextBusinessDay(addDays(candidate, 1));
+  if (forward.getFullYear() === targetYear && forward.getMonth() === targetMonth0) return forward;
+  return previousBusinessDay(addDays(candidate, -1));
+}
+
+/** 최초 발송일을 기준으로 '다음 달의 동일 anchor_day' 정기발송일을 계산한다(P-07: 실제 발송 지연과 무관하게 anchor_day 유지). */
+function nextMonthlyRecurringDate(firstSendDate: Date): Date {
+  const anchorDay = firstSendDate.getDate();
+  let y = firstSendDate.getFullYear();
+  let m0 = firstSendDate.getMonth() + 1;
+  if (m0 > 11) { m0 = 0; y += 1; }
+  return monthlyPlannedDate(y, m0, anchorDay);
 }
 
 function formatDate(date: Date): string {
@@ -269,17 +312,22 @@ interface DatalistFieldProps {
   placeholder: string;
   className?: string;
   onBlur?: () => void;
+  invalid?: boolean;
+  disabled?: boolean;
 }
-function DatalistField({ listId, value, onChange, options, placeholder, className = "tw-mb-4", onBlur }: DatalistFieldProps) {
+function DatalistField({ listId, value, onChange, options, placeholder, className = "tw-mb-4", onBlur, invalid = false, disabled = false }: DatalistFieldProps) {
+  const base = "tw-w-full tw-h-[38px] tw-border tw-rounded-lg tw-px-2.5 tw-text-[13px] tw-bg-white";
+  const borderColor = disabled ? "tw-border-[#E1E3E8] tw-text-[#9AA0AC] tw-bg-[#F5F6FA] tw-cursor-not-allowed" : invalid ? "tw-border-[#D94848] tw-text-[#D94848]" : "tw-border-[#E1E3E8] tw-text-[#1F2430]";
   return (
     <>
       <input
         list={listId}
-        className={`${fieldCls} ${className}`}
+        className={`${base} ${borderColor} ${className}`}
         value={value}
         onChange={(e: ChangeEvent<HTMLInputElement>) => onChange(e.target.value)}
         onBlur={onBlur}
         placeholder={placeholder}
+        disabled={disabled}
       />
       <datalist id={listId}>{options.map((o) => <option key={o} value={o} />)}</datalist>
     </>
@@ -545,7 +593,7 @@ function AlertModal({ icon = "!", iconBg = "#FFF3D6", iconColor = "#8A6100", tit
   );
 }
 
-const CHARGE_PRESETS = [10000, 30000, 50000, 100000, 200000, 300000];
+const CHARGE_PRESETS = [10000, 30000, 50000, 100000, 120000, 200000, 300000];
 const RATE_ALIMTALK = 15;
 const RATE_SMS = 15;
 const RATE_LMS = 30;
@@ -604,6 +652,14 @@ function PaymentWindow({ cashBalance, cost, onCharge, onClose }: PaymentWindowPr
                 {p.toLocaleString()} 캐시
               </button>
             ))}
+          </div>
+
+          <div className="tw-bg-[#EEF4FF] tw-border tw-border-[#D7E4FF] tw-rounded-lg tw-p-3 tw-mb-3">
+            <div className="tw-text-[12px] tw-font-medium tw-text-[#1F2430] tw-mb-1.5">비즈팅 캠페인 발송 가능 건수</div>
+            <div className="tw-text-[12px] tw-text-[#1F4FD6]">
+              <b>{Math.floor(selected / BIZTALKING_UNIT_PRICE).toLocaleString()}건</b>
+            </div>
+            <div className="tw-text-[11px] tw-text-[#767C88] tw-mt-0.5">· 비즈팅 발송 단가 {BIZTALKING_UNIT_PRICE}원(VAT 별도)</div>
           </div>
 
           <div className="tw-bg-[#FAFBFC] tw-border tw-border-[#EEF0F3] tw-rounded-lg tw-p-3 tw-mb-4">
@@ -721,6 +777,8 @@ export default function PotentialCustomerFlow() {
   const [showStillInsufficientAlert, setShowStillInsufficientAlert] = useState(false);
   const [paymentContext, setPaymentContext] = useState<"register" | "sidebar" | null>(null);
   const [showTitleLengthAlert, setShowTitleLengthAlert] = useState(false);
+  const [showStopRecurringConfirm, setShowStopRecurringConfirm] = useState(false);
+  const [showRequiredFieldsAlert, setShowRequiredFieldsAlert] = useState(false);
   const [cashBalance, setCashBalance] = useState(20000);
   const [hasAgreed, setHasAgreed] = useState(false);
   const [hasSentBefore, setHasSentBefore] = useState(false);
@@ -749,14 +807,20 @@ export default function PotentialCustomerFlow() {
   const sidoGuOptions = REGION_DATA[sido] ? Object.keys(REGION_DATA[sido]) : [];
   const regionMatched = Boolean(REGION_DATA[sido]?.[gu]?.includes(dong));
   const isActive = hasSentBefore && recurring;
+  // 캠페인이 이미 등록되어 정기발송이 진행 중이면, 이미 발송된(승인요청된) 문구를 임의로 바꿀 수 없도록 잠근다.
+  const isLocked = isActive;
 
   const today = useMemo(() => new Date(), []);
   const sendDateObj = useMemo(() => addBusinessDays(today, APPROVAL_LEAD_BUSINESS_DAYS), [today]);
   const sendDate = useMemo(() => formatDate(sendDateObj), [sendDateObj]);
   const sendDateTime = `${sendDate} 오전 10시`;
-  const statsNotifyDate = useMemo(() => formatDate(addBusinessDays(sendDateObj, STATS_NOTIFY_BUSINESS_DAYS)), [sendDateObj]);
-  const nextRecurringDate = useMemo(() => formatDate(addDays(sendDateObj, RECURRING_CYCLE_DAYS)), [sendDateObj]);
-  const chargeDeadline = useMemo(() => formatDate(addDays(today, CHARGE_DEADLINE_DAYS)), [today]);
+  // No.44: 발송일로부터 2일(달력일) 경과 시점에 통계 집계 + 알림톡
+  const statsNotifyDate = useMemo(() => formatDate(addDays(sendDateObj, STATS_NOTIFY_DAYS)), [sendDateObj]);
+  // No.45: 발송 후 14일째 다음 회차 생성을 미리 시도하며 캐시를 사전 확인(부족 시 안내 알림톡)
+  const cashPrecheckDate = useMemo(() => formatDate(addDays(sendDateObj, CASH_PRECHECK_DAYS)), [sendDateObj]);
+  // P-04~P-07: 초회 발송일의 '일(day)'을 anchor_day로 고정해 다음 달 동일 기준일 계산(28일 고정 아님)
+  const anchorDay = sendDateObj.getDate();
+  const nextRecurringDate = useMemo(() => formatDate(nextMonthlyRecurringDate(sendDateObj)), [sendDateObj]);
 
   const audience = useMemo(() => hashCount(`${sido}-${gu}-${dong}`), [sido, gu, dong]);
   const cost = audience * COST_PER_SEND;
@@ -794,7 +858,13 @@ export default function PotentialCustomerFlow() {
     else setShowConsent(true);
   };
 
+  const hasEmptyRequiredField = template.variables.some((v) => !(variableValues[v.key] ?? "").trim());
+
   const handlePayClick = () => {
+    if (hasEmptyRequiredField) {
+      setShowRequiredFieldsAlert(true);
+      return;
+    }
     proceedToPayment();
   };
 
@@ -979,9 +1049,16 @@ export default function PotentialCustomerFlow() {
 
           {step === "setup" && (
             <>
-              <div className="setup-grid tw-grid tw-grid-cols-[1fr_300px] tw-gap-4 tw-items-start tw-max-w-[1040px] tw-mx-auto">
+              <div className="tw-max-w-[1040px] tw-mx-auto">
+              <div className="setup-grid tw-grid tw-grid-cols-[1fr_300px] tw-gap-4 tw-items-start">
                 <div className={`${cardCls} tw-p-6`}>
                   <div className={sectionTitleCls}>메시지 구성 &amp; 타겟조건</div>
+
+                  {isLocked && (
+                    <div className="tw-flex tw-items-center tw-gap-1.5 tw-text-[12.5px] tw-font-medium tw-text-[#2C5FF6] tw-bg-[#EEF4FF] tw-rounded-lg tw-px-3 tw-py-2.5 tw-mt-3.5">
+                      🔒 이미 등록된 캠페인의 발송 문구예요. 문구를 바꾸려면 정기발송을 종료한 뒤 다시 시작해주세요.
+                    </div>
+                  )}
 
                   <div className="tw-mt-3.5 tw-mb-4">
                     <FieldLabel hint="템플릿마다 아래 가변영역 항목이 달라져요.">템플릿 선택</FieldLabel>
@@ -990,8 +1067,9 @@ export default function PotentialCustomerFlow() {
                         <button
                           key={t.id}
                           type="button"
-                          onClick={() => handleTemplateChange(t.id)}
-                          className={`tw-text-[12.5px] tw-font-medium tw-rounded-full tw-px-3.5 tw-py-1.5 tw-cursor-pointer tw-border ${
+                          onClick={() => !isLocked && handleTemplateChange(t.id)}
+                          disabled={isLocked}
+                          className={`tw-text-[12.5px] tw-font-medium tw-rounded-full tw-px-3.5 tw-py-1.5 tw-border ${isLocked ? "tw-cursor-not-allowed tw-opacity-70" : "tw-cursor-pointer"} ${
                             t.id === templateId
                               ? "tw-bg-[#2C5FF6] tw-text-white tw-border-[#2C5FF6]"
                               : "tw-bg-[#F5F6FA] tw-text-[#4A4F59] tw-border-[#ECEDF1]"
@@ -1012,23 +1090,41 @@ export default function PotentialCustomerFlow() {
                     </SktMessageMockup>
                   </div>
 
-                  <FieldLabel hint="이 템플릿의 가변영역이에요. 값을 바꾸면 위 제목·본문 미리보기에 바로 반영돼요.">가변영역</FieldLabel>
+                  <FieldLabel hint="이 템플릿의 가변영역이에요. 값을 바꾸면 위 제목·본문 미리보기에 바로 반영돼요. 모든 항목은 필수 입력입니다.">가변영역</FieldLabel>
                   <div className="tw-flex tw-flex-col tw-gap-3.5 tw-mb-5">
-                    {template.variables.map((v) => (
-                      <div key={v.key}>
-                        <div className="tw-text-[12.5px] tw-text-[#4A4F59] tw-mb-1">{v.label}</div>
-                        <DatalistField
-                          listId={`var-${template.id}-${v.key}`}
-                          value={variableValues[v.key] ?? ""}
-                          onChange={(val) => setVariable(v.key, val)}
-                          options={v.options}
-                          placeholder={v.placeholder}
-                          className=""
-                          onBlur={v.key === "branch" ? checkTitleLength : undefined}
-                        />
-                        <div className="tw-text-[11px] tw-text-[#9AA0AC] tw-mt-1">{v.hint}</div>
-                      </div>
-                    ))}
+                    {template.variables.map((v) => {
+                      const value = variableValues[v.key] ?? "";
+                      const isEmpty = value.trim() === "";
+                      const autoLoadable = v.options.length > 0;
+                      return (
+                        <div key={v.key}>
+                          <div className="tw-flex tw-items-center tw-gap-1 tw-mb-1">
+                            <span className="tw-text-[12.5px] tw-text-[#4A4F59]">{v.label}</span>
+                            {!isLocked && <span className="tw-text-[10.5px] tw-text-[#D94848] tw-font-medium">*필수</span>}
+                          </div>
+                          <DatalistField
+                            listId={`var-${template.id}-${v.key}`}
+                            value={value}
+                            onChange={(val) => setVariable(v.key, val)}
+                            options={v.options}
+                            placeholder={`{${v.label}}`}
+                            className=""
+                            invalid={isEmpty && !isLocked}
+                            disabled={isLocked}
+                            onBlur={v.key === "branch" ? checkTitleLength : undefined}
+                          />
+                          {isLocked ? (
+                            <div className="tw-text-[11px] tw-text-[#9AA0AC] tw-mt-1">🔒 발송 확정된 값이에요.</div>
+                          ) : isEmpty ? (
+                            <div className="tw-text-[11px] tw-text-[#D94848] tw-mt-1">
+                              ⚠ {autoLoadable ? "등록된 값을 불러오지 못했어요." : "자동으로 불러올 수 없는 값이에요."} 직접 입력해주세요.
+                            </div>
+                          ) : (
+                            <div className="tw-text-[11px] tw-text-[#9AA0AC] tw-mt-1">{v.hint}</div>
+                          )}
+                        </div>
+                      );
+                    })}
                   </div>
 
                   <div className="tw-border-t tw-border-[#EEF0F3] tw-pt-4">
@@ -1103,17 +1199,17 @@ export default function PotentialCustomerFlow() {
                   <div className="tw-flex tw-justify-between tw-items-center tw-mt-3.5 tw-mb-1.5">
                     <span className="tw-text-[13.5px] tw-font-medium tw-text-[#1F2430]">정기발송</span>
                     <button
-                      onClick={() => isActive && setRecurring(false)}
+                      onClick={() => isActive && setShowStopRecurringConfirm(true)}
                       className={`${toggleTrackCls} tw-bg-[#2C5FF6] ${isActive ? "tw-opacity-100 tw-cursor-pointer" : "tw-opacity-50 tw-cursor-not-allowed"}`}
                       aria-label="정기발송 토글"
                       disabled={!isActive}
                     >
                       <span className={toggleThumbCls} />
                     </button>
-                  </div>
+                  </div>cardCls
                   <div className="tw-text-xs tw-text-[#9AA0AC] tw-mb-4.5 tw-leading-relaxed">
                     {isActive
-                      ? "* 정기발송이 진행 중이에요. 끄면 발송이 중지되고, 다시 시작하려면 결제가 필요해요."
+                      ? "* 정기발송이 진행 중이에요. 끄면 다음 회차부터 중단되고, 이미 등록된 회차는 예정대로 발송돼요."
                       : "* 정기발송 전용 서비스예요. 결제하면 이 조건으로 정기발송이 바로 시작돼요."}
                   </div>
 
@@ -1126,14 +1222,17 @@ export default function PotentialCustomerFlow() {
                 </div>
               </div>
 
-              <div className={`${cardCls} tw-mt-8 tw-p-6 tw-bg-[#FFF9EC] tw-border-[#F5E4B8]tw-w-full `}>
+              <div className={`${cardCls} tw-mt-8 tw-p-6 tw-bg-[#FFF9EC] tw-border-[#F5E4B8]`}>
                 <div className="tw-text-[13px] tw-font-medium tw-text-[#8A6100] tw-mb-2">안내사항</div>
                 <ul className="tw-m-0 tw-pl-4.5 tw-text-[12.5px] tw-text-[#8A6100] tw-leading-loose tw-list-disc">
-                  <li>캠페인 집행 후 {STATS_NOTIFY_BUSINESS_DAYS}일 뒤 통계가 알림톡으로 발송돼요.</li>
-                  <li>{RECURRING_CYCLE_DAYS}일마다 정기발송이 진행되니 캐시가 부족하지 않도록 미리 충전해주세요.</li>
-                  <li>정기발송이 두번 스킵되면 자동으로 정기발송이 중지돼요.</li>
+                  <li>캠페인 집행 후 {STATS_NOTIFY_DAYS}일 뒤 통계가 알림톡으로 발송돼요.</li>
+                  <li>정기발송은 최초 발송일의 날짜를 기준으로 매월 같은 날짜에 진행돼요. (해당 월에 그 날짜가 없으면 말일에 발송)</li>
+                  <li>발송 {CASH_PRECHECK_DAYS}일 후 다음 회차를 미리 준비하며 캐시를 확인해요. 부족하면 안내 알림톡이 발송되니 미리 충전해주세요.</li>
+                  <li>캐시 부족이 2회 연속되면 자동으로 정기발송이 중지돼요. (1회차는 유지, 2회차부터 중지)</li>
+                  <li>정기발송을 끄면 다음 회차부터 중단돼요 — 이미 등록된 회차는 예정대로 발송되며 취소되지 않아요.</li>
                   <li>발송은 최대 {MAX_SEND.toLocaleString()}건까지 가능하며, 모수 추출 결과에 따라 변동될 수 있어요.</li>
                 </ul>
+              </div>
               </div>
             </>
           )}
@@ -1145,15 +1244,16 @@ export default function PotentialCustomerFlow() {
                 <div className="tw-text-lg tw-font-medium tw-text-[#1F2430]">결제가 완료됐어요</div>
               </div>
 
-              <div className={urgentBoxCls} >
-                <div className={urgentRowCls}>⚡ <b>{chargeDeadline}</b>까지 캐시를 충전해주세요.</div>
-                <div className={urgentRowCls}>⚡ 정기발송은 계속 진행되며, <b>캐시가 부족하면 발송이 중단돼요.</b></div>
+              <div className={urgentBoxCls}>
+                <div className={urgentRowCls}>⚡ <b>{cashPrecheckDate}</b>에 다음 회차 캐시를 미리 확인해요. 부족하면 안내 알림톡이 발송되니 미리 충전해주세요.</div>
+                <div className={urgentRowCls}>⚡ 정기발송은 계속 진행되며, <b>2회 연속 캐시 부족 시 자동으로 중지돼요.</b></div>
                 <div className={urgentRowCls}>⚡ 등록된 캠페인은 <b>취소할 수 없어요.</b></div>
               </div>
 
               <div className={`${cardCls} tw-bg-[#FAFBFC] tw-p-4 tw-mb-5`}>
                 <ReadonlyRow label="발송 일시" value={sendDateTime} locked />
                 <ReadonlyRow label="발송 통계 알림톡" value={statsNotifyDate} />
+                <ReadonlyRow label="정기발송 기준일" value={`매월 ${anchorDay}일`} />
                 <ReadonlyRow label="다음 정기발송일" value={nextRecurringDate} />
                 <ReadonlyRow label="예상 발송 건수" value={`${audience.toLocaleString()}건`} />
               </div>
@@ -1203,6 +1303,28 @@ export default function PotentialCustomerFlow() {
               title="제목 글자수를 확인해주세요"
               message={`메시지 제목이 ${TITLE_MAX_LENGTH}자를 넘었어요. 문자 발송 시 제목이 잘릴 수 있으니 다시 한번 확인해주세요.`}
               primaryLabel="확인" onPrimary={() => setShowTitleLengthAlert(false)}
+            />
+          )}
+          {showStopRecurringConfirm && (
+            <AlertModal
+              icon="⏸" iconBg="#EEF4FF" iconColor="#2C5FF6"
+              title="정기발송을 종료할까요?"
+              message={
+                <span className="tw-block tw-text-left">
+                  <b>현재 회차</b>: {sendDateTime} 예정대로 발송돼요.<br />
+                  <b>종료 적용 회차</b>: {nextRecurringDate} 부터 생성되지 않아요.<br />
+                  <b>마지막 계획 발송일</b>: {sendDate}
+                </span>
+              }
+              secondaryLabel="취소" onSecondary={() => setShowStopRecurringConfirm(false)}
+              primaryLabel="정기발송 종료" onPrimary={() => { setRecurring(false); setShowStopRecurringConfirm(false); }}
+            />
+          )}
+          {showRequiredFieldsAlert && (
+            <AlertModal
+              title="필수 입력값을 확인해주세요"
+              message="가변영역은 모두 필수 입력 항목이에요. 비어 있는 항목을 채워주세요."
+              primaryLabel="확인" onPrimary={() => setShowRequiredFieldsAlert(false)}
             />
           )}
         </div>
