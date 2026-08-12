@@ -949,7 +949,7 @@ export default function PotentialCustomerFlow() {
         <TopHeader title={headerTitle} onMenuClick={() => setSidebarOpen(true)} />
 
         <div className="app-content tw-px-8 tw-py-6 tw-flex-1 tw-relative tw-flex tw-flex-col">
-          {(step === "setup" || step === "done") && (
+          {(step === "landing" || step === "setup" || step === "done") && (
             <div className="tw-flex tw-justify-between tw-items-center">
               <StepBar current={step === "done" ? 1 : 0} />
               {/* 문의하기 클릭 시 좌측 사이드바의 '1:1 문의 > 문의하기' 화면으로 이동 (실제 라우팅은 별도 구현 필요) */}
@@ -975,7 +975,7 @@ export default function PotentialCustomerFlow() {
                     {[
                       { icon: "⚡", text: "실시간으로 관심 고객군을 분석해요" },
                       { icon: "📍", text: "우리 동네 상권에 맞춰 타겟팅해요" },
-                      { icon: "🆓", text: "조회는 무료, 결제 전엔 비용이 없어요" },
+                      { icon: "🆓", text: "지금 내 가게 잠재고객을 무료로 확인해보세요!" },
                     ].map((f) => (
                       <div key={f.text} className="tw-flex tw-items-center tw-gap-2.5">
                         <span className="tw-w-7 tw-h-7 tw-rounded-full tw-bg-[#EEF4FF] tw-flex tw-items-center tw-justify-center tw-text-[13px] tw-shrink-0">{f.icon}</span>
@@ -995,7 +995,7 @@ export default function PotentialCustomerFlow() {
                   <div className={`${cardCls} tw-bg-white tw-p-4 tw-mt-1`}>
                     <div className="tw-flex tw-items-center tw-justify-between tw-mb-2">
                       <span className="tw-text-[11px] tw-text-[#9AA0AC]">이렇게 확인돼요</span>
-                      <span className="tw-text-[10px] tw-text-[#9AA0AC] tw-bg-[#F5F6FA] tw-px-2 tw-py-0.5 tw-rounded-full">예시</span>
+                     
                     </div>
                     <div className="tw-flex tw-items-baseline tw-gap-1 tw-mb-3">
                       <span className="tw-text-[26px] tw-font-medium tw-text-[#2C5FF6]">1,248</span>
@@ -1027,10 +1027,8 @@ export default function PotentialCustomerFlow() {
                   </div>
                 </div>
                 <div className="tw-mb-7">
-                  <div className="tw-text-xs tw-text-[#9AA0AC] tw-text-center tw-mb-2">이런 조건으로 추출했어요</div>
                   <div className={`tw-flex tw-gap-1.5 tw-justify-center tw-flex-wrap ${regionMatched ? "tw-mb-2.5" : "tw-mb-1.5"}`}>
                     {regionMatched && <span className={chipCls}>📍 {sido} {gu} {dong}</span>}
-                    <span className={chipCls}>SMS</span>
                   </div>
                   <div className="tw-flex tw-gap-1.5 tw-justify-center tw-flex-wrap">
                     <InterestChips />
@@ -1079,10 +1077,6 @@ export default function PotentialCustomerFlow() {
                         </button>
                       ))}
                     </div>
-                  </div>
-
-                  <div className="tw-text-xs tw-text-[#9AA0AC] tw-mb-2.5 tw-leading-relaxed">
-                    실제 SKT 인증 발신번호로 이렇게 발송돼요. 제목과 본문의 색칠된 부분은 아래 가변영역에서 입력한 값으로 자동 치환됩니다. 제목은 {TITLE_MAX_LENGTH}자를 넘을 수 없어요.
                   </div>
                   <div className="tw-bg-[#EDEFF2] tw-rounded-xl tw-p-4 tw-mb-4 tw-max-w-[320px] tw-mx-auto">
                     <SktMessageMockup phoneNumber={previewPhoneNumber} title={renderTemplateTitle(template, variableValues)} titleLength={renderedTitle.length}>
@@ -1206,11 +1200,11 @@ export default function PotentialCustomerFlow() {
                     >
                       <span className={toggleThumbCls} />
                     </button>
-                  </div>cardCls
+                  </div>
                   <div className="tw-text-xs tw-text-[#9AA0AC] tw-mb-4.5 tw-leading-relaxed">
                     {isActive
-                      ? "* 정기발송이 진행 중이에요. 끄면 다음 회차부터 중단되고, 이미 등록된 회차는 예정대로 발송돼요."
-                      : "* 정기발송 전용 서비스예요. 결제하면 이 조건으로 정기발송이 바로 시작돼요."}
+                      ? "* 정기발송이 진행 중이에요. OFF 시 다음 회차부터 중단되고, 이미 등록된 회차는 예정대로 발송돼요."
+                      : "* 정기발송 전용 서비스예요. 결제하면 현재 정보로 정기발송이 바로 시작돼요."}
                   </div>
 
                   <div className="tw-text-xs tw-text-[#9AA0AC] tw-mb-1">예상 발송 건수</div>
@@ -1226,10 +1220,10 @@ export default function PotentialCustomerFlow() {
                 <div className="tw-text-[13px] tw-font-medium tw-text-[#8A6100] tw-mb-2">안내사항</div>
                 <ul className="tw-m-0 tw-pl-4.5 tw-text-[12.5px] tw-text-[#8A6100] tw-leading-loose tw-list-disc">
                   <li>캠페인 집행 후 {STATS_NOTIFY_DAYS}일 뒤 통계가 알림톡으로 발송돼요.</li>
-                  <li>정기발송은 최초 발송일의 날짜를 기준으로 매월 같은 날짜에 진행돼요. (해당 월에 그 날짜가 없으면 말일에 발송)</li>
-                  <li>발송 {CASH_PRECHECK_DAYS}일 후 다음 회차를 미리 준비하며 캐시를 확인해요. 부족하면 안내 알림톡이 발송되니 미리 충전해주세요.</li>
-                  <li>캐시 부족이 2회 연속되면 자동으로 정기발송이 중지돼요. (1회차는 유지, 2회차부터 중지)</li>
-                  <li>정기발송을 끄면 다음 회차부터 중단돼요 — 이미 등록된 회차는 예정대로 발송되며 취소되지 않아요.</li>
+                  <li>정기발송은 최초 발송일의 날짜를 기준으로 매월 같은 날짜에 진행돼요. 영업일 (해당 월에 그 날짜가 없으면 말일에 발송,영업일이 아닐 경우 가장 가까운 영업일에 발송)</li>
+                  <li>캐시가 부족하면 안내 알림톡이 발송되니 미리 충전해주세요.</li>
+                  <li>캐시 부족이 자동발송이 2회 스킵되면 정기발송이 중지돼요.</li>
+                  <li>정기발송을 증지하면 다음 회차부터 중단돼요 — 이미 등록된 회차는 예정대로 발송되며 취소가 어려워요.</li>
                   <li>발송은 최대 {MAX_SEND.toLocaleString()}건까지 가능하며, 모수 추출 결과에 따라 변동될 수 있어요.</li>
                 </ul>
               </div>
@@ -1267,7 +1261,7 @@ export default function PotentialCustomerFlow() {
             <AlertModal
               iconBg="#FDEBEC" iconColor="#D94848"
               title="모수를 추출하지 못했어요"
-              message="네트워크 상태를 확인한 뒤 다시 시도해주세요."
+              message="지속적으로 모수추출이 되지 않을 경우, 1:1문의하기 혹은 문의하기 버튼을 통해 문의해주세요."
               secondaryLabel="닫기" onSecondary={() => setShowErrorAlert(false)}
               primaryLabel="다시 시도" onPrimary={startExtraction}
             />
