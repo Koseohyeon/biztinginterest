@@ -68,7 +68,7 @@ interface MessageTemplate {
 const MESSAGE_TEMPLATES: MessageTemplate[] = [
   {
     id: "branch-intro",
-    name: "매장 소개형",
+    name: "매장 소개형(성과측정X)",
     description: "매장 특징을 소개하는 기본 템플릿",
     variables: [
       { key: "branch", label: "지점명", hint: "등록된 지점명을 불러왔어요. 목록에 없으면 직접 입력할 수 있어요.", options: BRANCH_OPTIONS, placeholder: "지점명을 선택하거나 입력하세요" },
@@ -92,7 +92,7 @@ const MESSAGE_TEMPLATES: MessageTemplate[] = [
   },
   {
     id: "promo-event",
-    name: "프로모션 안내형",
+    name: "프로모션 안내",
     description: "할인·이벤트 혜택을 강조하는 템플릿",
     variables: [
       { key: "branch", label: "지점명", hint: "등록된 지점명을 불러왔어요. 목록에 없으면 직접 입력할 수 있어요.", options: BRANCH_OPTIONS, placeholder: "지점명을 선택하거나 입력하세요" },
@@ -114,25 +114,64 @@ const MESSAGE_TEMPLATES: MessageTemplate[] = [
 무료 수신거부 1504`,
   },
   {
-    id: "new-open",
-    name: "신규 오픈 안내형",
-    description: "신규 지점 오픈 소식을 알리는 템플릿",
-    variables: [
-      { key: "branch", label: "지점명", hint: "등록된 지점명을 불러왔어요. 목록에 없으면 직접 입력할 수 있어요.", options: BRANCH_OPTIONS, placeholder: "지점명을 선택하거나 입력하세요" },
-      { key: "openDate", label: "오픈일", hint: "오픈 예정일을 입력해주세요.", options: [], placeholder: "예: 2026-09-01" },
-      { key: "phone", label: "고객센터 번호", hint: "등록된 고객센터 번호를 불러왔어요. 목록에 없으면 직접 입력할 수 있어요.", options: PHONE_OPTIONS, placeholder: "전화번호를 입력해주세요" },
-    ],
-    title: "{{branch}} 신규 오픈 안내",
-    body: `{{branch}} 신규 오픈 안내
+  id: "new-open",
+  name: "매장소개형(성과측정O)",
+  description: "신규 지점 오픈 소식을 알리는 템플릿",
+  variables: [
+    {
+      key: "branch",
+      label: "스터디카페명",
+      hint: "등록된 스터디카페명을 불러왔어요. 목록에 없으면 직접 입력할 수 있어요.",
+      options: BRANCH_OPTIONS,
+      placeholder: "스터디카페명을 선택하거나 입력하세요",
+    },
+    {
+      key: "url",
+      label: "위치 확인 URL",
+      hint: "위치 확인 페이지 URL을 입력해주세요. https://로 시작하는 주소만 입력할 수 있어요.",
+      options: [],
+      placeholder: "https://로 시작하는 URL을 입력해주세요",
+    },
+    {
+      key: "phone",
+      label: "고객센터 번호",
+      hint: "등록된 고객센터 번호를 불러왔어요. 목록에 없으면 직접 입력할 수 있어요.",
+      options: PHONE_OPTIONS,
+      placeholder: "전화번호를 입력해주세요",
+    },
+  ],
+  title: "{{branch}} 안내드립니다",
+  body: `(광고)[SKT]{{branch}} 안내드립니다.
 
-{{openDate}}, 새로운 학습 공간이 문을 엽니다.
-오픈 기념 혜택도 준비되어 있으니 놓치지 마세요!
+고객님 안녕하세요.
 
-■ 고객센터
-{{phone}}
+넓고 쾌적한 스터디카페를 찾고 계신가요?
+
+지금 바로 방문하고 '{{branch}}'에서 최고의 학습 환경을 경험해 보세요!
+
+■{{branch}} 특장점
+
+- 커피, 차, 주스 등 음료 무제한 제공
+- 24시간 연중무휴 운영
+- 휴게 공간 분리 운영
+- 1인 집중석
+- 오픈형 학습존
+- 프라이빗 독서실형 좌석 완비
+- 무료 Wi-Fi
+- 냉난방 최적화
+- 출입 보안 시스템
+- 방음 설계 및 저소음 공간
+
+▶ 위치 확인하기:{{url}}
+
+■문의: {{branch}}고객센터({{phone}})
+
+※ 이 메시지는 SK텔레콤이 혜택/광고 수신에 동의하신 고객님께 발송되었습니다.
+
+감사합니다.
 
 무료 수신거부 1504`,
-  },
+},
 ];
 
 function renderTemplateText(text: string, variables: TemplateVariable[], values: Record<string, string>): ReactNode[] {
@@ -194,6 +233,14 @@ function addDays(date: Date, days: number): Date {
 function isBusinessDay(date: Date): boolean {
   const day = date.getDay();
   return day !== 0 && day !== 6;
+}
+function isValidHttpsUrl(value: string): boolean {
+  try {
+    const url = new URL(value);
+    return url.protocol === "https:";
+  } catch {
+    return false;
+  }
 }
 function nextBusinessDay(date: Date): Date {
   let d = new Date(date);
@@ -260,7 +307,7 @@ const consentBoxCls = "tw-max-h-[90px] tw-overflow-y-auto tw-text-[11.5px] tw-te
 const urgentBoxCls = "tw-bg-[#FFF3D6] tw-border tw-border-[#F0D999] tw-rounded-lg tw-p-4 tw-mb-5 tw-flex tw-flex-col tw-gap-2";
 const urgentRowCls = "tw-text-[12.5px] tw-text-[#8A6100] tw-leading-relaxed";
 
-const phoneFrameCls = "tw-max-w-[272px] tw-mx-auto tw-bg-white tw-rounded-[24px] tw-border tw-border-[#E5E7EB] tw-overflow-hidden tw-shadow-[0_2px_14px_rgba(0,0,0,0.06)]";
+const phoneFrameCls = "tw-max-w-[700px] tw-mx-auto tw-bg-white tw-rounded-[24px] tw-border tw-border-[#E5E7EB] tw-overflow-hidden tw-shadow-[0_2px_14px_rgba(0,0,0,0.06)]";
 const phoneHeaderCls = "tw-flex tw-items-center tw-gap-2.5 tw-px-4 tw-pt-4 tw-pb-3 tw-border-b tw-border-[#F1F2F4]";
 const phoneAvatarCls = "tw-w-9 tw-h-9 tw-rounded-full tw-bg-[#5A4FE0] tw-flex tw-items-center tw-justify-center tw-text-white tw-font-bold tw-text-sm tw-shrink-0";
 const phoneBubbleCls = "tw-bg-[#F4F5F7] tw-rounded-[14px] tw-p-3.5 tw-text-[12px] tw-leading-[1.65] tw-text-[#26282B] tw-whitespace-pre-wrap";
@@ -654,20 +701,27 @@ function PaymentWindow({ cashBalance, cost, onCharge, onClose }: PaymentWindowPr
             ))}
           </div>
 
-          <div className="tw-bg-[#EEF4FF] tw-border tw-border-[#D7E4FF] tw-rounded-lg tw-p-3 tw-mb-3">
-            <div className="tw-text-[12px] tw-font-medium tw-text-[#1F2430] tw-mb-1.5">비즈팅 캠페인 발송 가능 건수</div>
-            <div className="tw-text-[12px] tw-text-[#1F4FD6]">
-              <b>{Math.floor(selected / BIZTALKING_UNIT_PRICE).toLocaleString()}건</b>
+                  <div className="tw-bg-[#FAFBFC] tw-border tw-border-[#EEF0F3] tw-rounded-lg tw-p-3 tw-mb-4">
+            <div className="tw-text-[13px] tw-font-medium tw-text-[#1F2430] tw-mb-2">메시지 타입 별 발송 가능 건수</div>
+            <div className="tw-text-[13px] tw-text-[#1F2430] tw-mb-2">
+              비즈팅 <b className="tw-text-[#5B4FE0]">{Math.floor(selected / BIZTALKING_UNIT_PRICE).toLocaleString()}건</b>
+              <span className="tw-text-[#DDE0E6] tw-mx-1.5">|</span>
+              알림톡 <b className="tw-text-[#5B4FE0]">{alimtalkCount.toLocaleString()}건</b>
+              <span className="tw-text-[#DDE0E6] tw-mx-1.5">|</span>
+              SMS <b className="tw-text-[#5B4FE0]">{smsCount.toLocaleString()}건</b>
+              <span className="tw-text-[#DDE0E6] tw-mx-1.5">|</span>
+              LMS <b className="tw-text-[#5B4FE0]">{lmsCount.toLocaleString()}건</b>
             </div>
-            <div className="tw-text-[11px] tw-text-[#767C88] tw-mt-0.5">· 비즈팅 발송 단가 {BIZTALKING_UNIT_PRICE}원(VAT 별도)</div>
-          </div>
-
-          <div className="tw-bg-[#FAFBFC] tw-border tw-border-[#EEF0F3] tw-rounded-lg tw-p-3 tw-mb-4">
-            <div className="tw-text-[12px] tw-font-medium tw-text-[#1F2430] tw-mb-1.5">메시지 타입별 발송 가능 건수</div>
-            <div className="tw-text-[12px] tw-text-[#4A4F59] tw-mb-1.5">
-              알림톡 <b>{alimtalkCount.toLocaleString()}건</b> · SMS <b>{smsCount.toLocaleString()}건</b> · LMS <b>{lmsCount.toLocaleString()}건</b>
+            <div className="tw-text-[12px] tw-text-[#767C88] tw-flex tw-items-start tw-gap-1">
+              <span>•</span>
+              <span>
+                <b className="tw-text-[#4A4F59]">발송 단가</b>{" "}
+                비즈팅 {BIZTALKING_UNIT_PRICE}원 <span className="tw-text-[#DDE0E6] tw-mx-0.5">|</span>
+                알림톡 {RATE_ALIMTALK}원 <span className="tw-text-[#DDE0E6] tw-mx-0.5">|</span>
+                SMS {RATE_SMS}원 <span className="tw-text-[#DDE0E6] tw-mx-0.5">|</span>
+                LMS {RATE_LMS}원
+              </span>
             </div>
-            <div className="tw-text-[11px] tw-text-[#9AA0AC]">· 발송 단가 알림톡 {RATE_ALIMTALK}원 · SMS {RATE_SMS}원 · LMS {RATE_LMS}원</div>
           </div>
 
           <div className="tw-text-[13px] tw-font-medium tw-text-[#1F2430] tw-mb-2">결제방법 선택</div>
@@ -857,8 +911,17 @@ export default function PotentialCustomerFlow() {
     if (hasAgreed) setShowConfirmRegister(true);
     else setShowConsent(true);
   };
+const hasEmptyRequiredField = template.variables.some((v) => {
+  const value = (variableValues[v.key] ?? "").trim();
 
-  const hasEmptyRequiredField = template.variables.some((v) => !(variableValues[v.key] ?? "").trim());
+  if (!value) return true;
+
+  if (v.key === "url" && !isValidHttpsUrl(value)) {
+    return true;
+  }
+
+  return false;
+});
 
   const handlePayClick = () => {
     if (hasEmptyRequiredField) {
@@ -1077,8 +1140,14 @@ export default function PotentialCustomerFlow() {
                         </button>
                       ))}
                     </div>
+                    {templateId === "branch-intro" && (
+                      <div className="tw-text-[12px] tw-font-medium tw-text-[#D94848] tw-mt-2 tw-leading-relaxed">
+                        해당 템플릿은 URL이 포함되지 않아 반응률 확인이 어렵습니다.<br />
+                        반응률을 확인하시려면 동일한 내용의 '성과측정 O' 템플릿을 이용해 주세요.
+                      </div>
+                    )}
                   </div>
-                  <div className="tw-bg-[#EDEFF2] tw-rounded-xl tw-p-4 tw-mb-4 tw-max-w-[320px] tw-mx-auto">
+                  <div className="tw-w-[432px] tw-bg-[#EDEFF2] tw-rounded-xl tw-p-4 tw-mb-4 tw-mx-auto">
                     <SktMessageMockup phoneNumber={previewPhoneNumber} title={renderTemplateTitle(template, variableValues)} titleLength={renderedTitle.length}>
                       {renderTemplateBody(template, variableValues)}
                     </SktMessageMockup>
@@ -1086,10 +1155,17 @@ export default function PotentialCustomerFlow() {
 
                   <FieldLabel hint="이 템플릿의 가변영역이에요. 값을 바꾸면 위 제목·본문 미리보기에 바로 반영돼요. 모든 항목은 필수 입력입니다.">가변영역</FieldLabel>
                   <div className="tw-flex tw-flex-col tw-gap-3.5 tw-mb-5">
-                    {template.variables.map((v) => {
-                      const value = variableValues[v.key] ?? "";
-                      const isEmpty = value.trim() === "";
-                      const autoLoadable = v.options.length > 0;
+                   {template.variables.map((v) => {
+  const value = variableValues[v.key] ?? "";
+  const isEmpty = value.trim() === "";
+  const autoLoadable = v.options.length > 0;
+
+  const isInvalidUrl =
+    v.key === "url" &&
+    value.trim() !== "" &&
+    !isValidHttpsUrl(value);
+
+  const isInvalid = isEmpty || isInvalidUrl;
                       return (
                         <div key={v.key}>
                           <div className="tw-flex tw-items-center tw-gap-1 tw-mb-1">
@@ -1103,19 +1179,27 @@ export default function PotentialCustomerFlow() {
                             options={v.options}
                             placeholder={`{${v.label}}`}
                             className=""
-                            invalid={isEmpty && !isLocked}
+                            invalid={isInvalid && !isLocked}
                             disabled={isLocked}
                             onBlur={v.key === "branch" ? checkTitleLength : undefined}
                           />
                           {isLocked ? (
-                            <div className="tw-text-[11px] tw-text-[#9AA0AC] tw-mt-1">🔒 발송 확정된 값이에요.</div>
-                          ) : isEmpty ? (
-                            <div className="tw-text-[11px] tw-text-[#D94848] tw-mt-1">
-                              ⚠ {autoLoadable ? "등록된 값을 불러오지 못했어요." : "자동으로 불러올 수 없는 값이에요."} 직접 입력해주세요.
-                            </div>
-                          ) : (
-                            <div className="tw-text-[11px] tw-text-[#9AA0AC] tw-mt-1">{v.hint}</div>
-                          )}
+  <div className="tw-text-[11px] tw-text-[#9AA0AC] tw-mt-1">
+    🔒 발송 확정된 값이에요.
+  </div>
+) : isInvalidUrl ? (
+  <div className="tw-text-[11px] tw-text-[#D94848] tw-mt-1">
+    ⚠ https://로 시작하는 올바른 URL을 입력해주세요.
+  </div>
+) : isEmpty ? (
+  <div className="tw-text-[11px] tw-text-[#D94848] tw-mt-1">
+    ⚠ {autoLoadable ? "등록된 값을 불러오지 못했어요." : "자동으로 불러올 수 없는 값이에요."} 직접 입력해주세요.
+  </div>
+) : (
+  <div className="tw-text-[11px] tw-text-[#9AA0AC] tw-mt-1">
+    {v.hint}
+  </div>
+)}
                         </div>
                       );
                     })}
@@ -1225,6 +1309,7 @@ export default function PotentialCustomerFlow() {
                   <li>캐시 부족이 자동발송이 2회 스킵되면 정기발송이 중지돼요.</li>
                   <li>정기발송을 증지하면 다음 회차부터 중단돼요 — 이미 등록된 회차는 예정대로 발송되며 취소가 어려워요.</li>
                   <li>발송은 최대 {MAX_SEND.toLocaleString()}건까지 가능하며, 모수 추출 결과에 따라 변동될 수 있어요.</li>
+                  <li>성과측정X 템플릿은 URL이 포함되지 않아 반응률 확인이 어렵습니다. 반응률을 확인하시려면 동일한 내용의 ‘성과측정 O’ 템플릿을 이용해 주세요.</li>
                 </ul>
               </div>
               </div>
@@ -1317,7 +1402,7 @@ export default function PotentialCustomerFlow() {
           {showRequiredFieldsAlert && (
             <AlertModal
               title="필수 입력값을 확인해주세요"
-              message="가변영역은 모두 필수 입력 항목이에요. 비어 있는 항목을 채워주세요."
+              message="가변영역은 모두 필수 입력 항목이에요. 비어 있거나 잘못 적힌 항목을 채워주세요."
               primaryLabel="확인" onPrimary={() => setShowRequiredFieldsAlert(false)}
             />
           )}
