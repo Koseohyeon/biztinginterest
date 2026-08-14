@@ -23,8 +23,8 @@ const MAX_SEND = 1000;
 // 발송/정책 관련 매직넘버 — 한 곳에서 관리 (EDMSx비즈팅 정기발송 정책 및 개발가이드 v1.0 기준)
 const APPROVAL_LEAD_BUSINESS_DAYS = 2; // P-02: 요청 유효일(D) 다음날부터 영업일 2일 뒤 = 초회 계획 발송일
 const STATS_NOTIFY_DAYS = 2; // 기능정의서 No.44: 발송일로부터 2일 경과 시점에 통계 집계(달력일 기준)
-const CASH_PRECHECK_DAYS = 14; // 기능정의서 No.45: 발송 후 14일째 다음 회차 생성 시도 + 캐시 사전 확인
-const TITLE_MAX_LENGTH = 30; // 메시지 제목 최대 글자수
+/* const CASH_PRECHECK_DAYS = 14; // 기능정의서 No.45: 발송 후 14일째 다음 회차 생성 시도 + 캐시 사전 확인
+ */const TITLE_MAX_LENGTH = 30; // 메시지 제목 최대 글자수
 const VAT_MULTIPLIER = 1.1; // 충전 결제금액 = 캐시 금액 × VAT_MULTIPLIER
 const BIZTALKING_UNIT_PRICE = 120; // 비즈팅 발송 단가(원, VAT 별도) — 기능정의서 No.37
 
@@ -114,34 +114,34 @@ const MESSAGE_TEMPLATES: MessageTemplate[] = [
 무료 수신거부 1504`,
   },
   {
-  id: "new-open",
-  name: "매장소개형(성과측정O)",
-  description: "신규 지점 오픈 소식을 알리는 템플릿",
-  variables: [
-    {
-      key: "branch",
-      label: "스터디카페명",
-      hint: "등록된 스터디카페명을 불러왔어요. 목록에 없으면 직접 입력할 수 있어요.",
-      options: BRANCH_OPTIONS,
-      placeholder: "스터디카페명을 선택하거나 입력하세요",
-    },
-    {
-      key: "url",
-      label: "위치 확인 URL",
-      hint: "위치 확인 페이지 URL을 입력해주세요. https://로 시작하는 주소만 입력할 수 있어요.",
-      options: [],
-      placeholder: "https://로 시작하는 URL을 입력해주세요",
-    },
-    {
-      key: "phone",
-      label: "고객센터 번호",
-      hint: "등록된 고객센터 번호를 불러왔어요. 목록에 없으면 직접 입력할 수 있어요.",
-      options: PHONE_OPTIONS,
-      placeholder: "전화번호를 입력해주세요",
-    },
-  ],
-  title: "{{branch}} 안내드립니다",
-  body: `(광고)[SKT]{{branch}} 안내드립니다.
+    id: "new-open",
+    name: "매장소개형(성과측정O)",
+    description: "신규 지점 오픈 소식을 알리는 템플릿",
+    variables: [
+      {
+        key: "branch",
+        label: "스터디카페명",
+        hint: "등록된 스터디카페명을 불러왔어요. 목록에 없으면 직접 입력할 수 있어요.",
+        options: BRANCH_OPTIONS,
+        placeholder: "스터디카페명을 선택하거나 입력하세요",
+      },
+      {
+        key: "url",
+        label: "위치 확인 URL",
+        hint: "위치 확인 페이지 URL을 입력해주세요. https://로 시작하는 주소만 입력할 수 있어요.",
+        options: [],
+        placeholder: "https://로 시작하는 URL을 입력해주세요",
+      },
+      {
+        key: "phone",
+        label: "고객센터 번호",
+        hint: "등록된 고객센터 번호를 불러왔어요. 목록에 없으면 직접 입력할 수 있어요.",
+        options: PHONE_OPTIONS,
+        placeholder: "전화번호를 입력해주세요",
+      },
+    ],
+    title: "{{branch}} 안내드립니다",
+    body: `(광고)[SKT]{{branch}} 안내드립니다.
 
 고객님 안녕하세요.
 
@@ -171,7 +171,7 @@ const MESSAGE_TEMPLATES: MessageTemplate[] = [
 감사합니다.
 
 무료 수신거부 1504`,
-},
+  },
 ];
 
 function renderTemplateText(text: string, variables: TemplateVariable[], values: Record<string, string>): ReactNode[] {
@@ -229,10 +229,15 @@ function addDays(date: Date, days: number): Date {
   return result;
 }
 
-// 주말만 휴일로 판단(프로토타입 간소화). 실서비스는 business_calendar(공휴일 테이블) 조회로 대체.
+const HOLIDAYS = new Set([
+  "2026-08-17", // 광복절(8/15, 토) 대체공휴일
+]);
+
+// 주말+공휴일을 휴일로 판단(프로토타입 간소화). 실서비스는 business_calendar(공휴일 테이블) 조회로 대체.
 function isBusinessDay(date: Date): boolean {
   const day = date.getDay();
-  return day !== 0 && day !== 6;
+  if (day === 0 || day === 6) return false;
+  return !HOLIDAYS.has(formatDate(date));
 }
 function isValidHttpsUrl(value: string): boolean {
   try {
@@ -491,9 +496,8 @@ function SideNav({ onGoToCampaign, open, onClose, cashBalance, onOpenCharge }: S
         if (label === "우리가게 광고하기") onGoToCampaign();
         onClose();
       }}
-      className={`tw-text-sm tw-px-2.5 tw-py-2 tw-rounded-lg tw-cursor-pointer tw-flex tw-items-center tw-gap-1.5 tw-mb-0.5 ${
-        active ? "tw-bg-[#EEF4FF] tw-text-[#2C5FF6] tw-font-medium" : "tw-text-[#4A4F59]"
-      }`}
+      className={`tw-text-sm tw-px-2.5 tw-py-2 tw-rounded-lg tw-cursor-pointer tw-flex tw-items-center tw-gap-1.5 tw-mb-0.5 ${active ? "tw-bg-[#EEF4FF] tw-text-[#2C5FF6] tw-font-medium" : "tw-text-[#4A4F59]"
+        }`}
     >
       {label}
       {badge && <span className="tw-text-[9.5px] tw-bg-[#2C5FF6] tw-text-white tw-rounded-full tw-px-1.5 tw-py-px tw-font-medium">{badge}</span>}
@@ -585,14 +589,12 @@ function StepBar({ current }: { current: number }) {
       {steps.map((label, i) => (
         <div key={label} className="tw-flex tw-items-center tw-gap-2">
           <div
-            className={`tw-flex tw-items-center tw-gap-1.5 tw-px-3 tw-py-1.5 tw-rounded-full tw-text-[13px] tw-font-medium ${
-              i === current ? "tw-bg-[#2C5FF6] tw-text-white" : "tw-bg-[#F1F2F5] tw-text-[#8A8F99]"
-            }`}
+            className={`tw-flex tw-items-center tw-gap-1.5 tw-px-3 tw-py-1.5 tw-rounded-full tw-text-[13px] tw-font-medium ${i === current ? "tw-bg-[#2C5FF6] tw-text-white" : "tw-bg-[#F1F2F5] tw-text-[#8A8F99]"
+              }`}
           >
             <span
-              className={`tw-w-[18px] tw-h-[18px] tw-rounded-full tw-inline-flex tw-items-center tw-justify-center tw-text-[11px] ${
-                i === current ? "tw-bg-white/25 tw-text-white" : "tw-bg-[#DFE1E6] tw-text-[#8A8F99]"
-              }`}
+              className={`tw-w-[18px] tw-h-[18px] tw-rounded-full tw-inline-flex tw-items-center tw-justify-center tw-text-[11px] ${i === current ? "tw-bg-white/25 tw-text-white" : "tw-bg-[#DFE1E6] tw-text-[#8A8F99]"
+                }`}
             >
               {i + 1}
             </span>
@@ -692,16 +694,15 @@ function PaymentWindow({ cashBalance, cost, onCharge, onClose }: PaymentWindowPr
                 key={p}
                 type="button"
                 onClick={() => setSelected(p)}
-                className={`tw-text-[13px] tw-font-medium tw-rounded-lg tw-py-2.5 tw-border tw-cursor-pointer ${
-                  selected === p ? "tw-bg-[#1F2A5C] tw-text-white tw-border-[#1F2A5C]" : "tw-bg-white tw-text-[#4A4F59] tw-border-[#E1E3E8]"
-                }`}
+                className={`tw-text-[13px] tw-font-medium tw-rounded-lg tw-py-2.5 tw-border tw-cursor-pointer ${selected === p ? "tw-bg-[#1F2A5C] tw-text-white tw-border-[#1F2A5C]" : "tw-bg-white tw-text-[#4A4F59] tw-border-[#E1E3E8]"
+                  }`}
               >
                 {p.toLocaleString()} 캐시
               </button>
             ))}
           </div>
 
-                  <div className="tw-bg-[#FAFBFC] tw-border tw-border-[#EEF0F3] tw-rounded-lg tw-p-3 tw-mb-4">
+          <div className="tw-bg-[#FAFBFC] tw-border tw-border-[#EEF0F3] tw-rounded-lg tw-p-3 tw-mb-4">
             <div className="tw-text-[13px] tw-font-medium tw-text-[#1F2430] tw-mb-2">메시지 타입 별 발송 가능 건수</div>
             <div className="tw-text-[13px] tw-text-[#1F2430] tw-mb-2">
               비즈팅 <b className="tw-text-[#5B4FE0]">{Math.floor(selected / BIZTALKING_UNIT_PRICE).toLocaleString()}건</b>
@@ -735,9 +736,8 @@ function PaymentWindow({ cashBalance, cost, onCharge, onClose }: PaymentWindowPr
                 key={m.key}
                 type="button"
                 onClick={() => setMethod(m.key as typeof method)}
-                className={`tw-text-[11.5px] tw-font-medium tw-rounded-lg tw-py-2 tw-border tw-cursor-pointer ${
-                  method === m.key ? "tw-bg-[#1F2A5C] tw-text-white tw-border-[#1F2A5C]" : "tw-bg-white tw-text-[#4A4F59] tw-border-[#E1E3E8]"
-                }`}
+                className={`tw-text-[11.5px] tw-font-medium tw-rounded-lg tw-py-2 tw-border tw-cursor-pointer ${method === m.key ? "tw-bg-[#1F2A5C] tw-text-white tw-border-[#1F2A5C]" : "tw-bg-white tw-text-[#4A4F59] tw-border-[#E1E3E8]"
+                  }`}
               >
                 {m.label}
               </button>
@@ -756,9 +756,8 @@ function PaymentWindow({ cashBalance, cost, onCharge, onClose }: PaymentWindowPr
           </label>
 
           <button
-            className={`tw-w-full tw-py-[13px] tw-rounded-lg tw-text-white tw-text-sm tw-font-medium tw-border-none ${
-              agreed ? "tw-bg-[#1F2A5C] tw-cursor-pointer" : "tw-bg-[#C7CBD6] tw-cursor-not-allowed"
-            }`}
+            className={`tw-w-full tw-py-[13px] tw-rounded-lg tw-text-white tw-text-sm tw-font-medium tw-border-none ${agreed ? "tw-bg-[#1F2A5C] tw-cursor-pointer" : "tw-bg-[#C7CBD6] tw-cursor-not-allowed"
+              }`}
             disabled={!agreed}
             onClick={() => agreed && onCharge(selected)}
           >
@@ -865,13 +864,13 @@ export default function PotentialCustomerFlow() {
   const isLocked = isActive;
 
   const today = useMemo(() => new Date(), []);
-  const sendDateObj = useMemo(() => addBusinessDays(today, APPROVAL_LEAD_BUSINESS_DAYS), [today]);
+  const sendDateObj = useMemo(() => addBusinessDays(addDays(today, 1), APPROVAL_LEAD_BUSINESS_DAYS), [today]);
   const sendDate = useMemo(() => formatDate(sendDateObj), [sendDateObj]);
   const sendDateTime = `${sendDate} 오전 10시`;
   // No.44: 발송일로부터 2일(달력일) 경과 시점에 통계 집계 + 알림톡
   const statsNotifyDate = useMemo(() => formatDate(addDays(sendDateObj, STATS_NOTIFY_DAYS)), [sendDateObj]);
-  // No.45: 발송 후 14일째 다음 회차 생성을 미리 시도하며 캐시를 사전 확인(부족 시 안내 알림톡)
-  const cashPrecheckDate = useMemo(() => formatDate(addDays(sendDateObj, CASH_PRECHECK_DAYS)), [sendDateObj]);
+  /*  // No.45: 발송 후 14일째 다음 회차 생성을 미리 시도하며 캐시를 사전 확인(부족 시 안내 알림톡)
+   const cashPrecheckDate = useMemo(() => formatDate(addDays(sendDateObj, CASH_PRECHECK_DAYS)), [sendDateObj]); */
   // P-04~P-07: 초회 발송일의 '일(day)'을 anchor_day로 고정해 다음 달 동일 기준일 계산(28일 고정 아님)
   const anchorDay = sendDateObj.getDate();
   const nextRecurringDate = useMemo(() => formatDate(nextMonthlyRecurringDate(sendDateObj)), [sendDateObj]);
@@ -911,17 +910,17 @@ export default function PotentialCustomerFlow() {
     if (hasAgreed) setShowConfirmRegister(true);
     else setShowConsent(true);
   };
-const hasEmptyRequiredField = template.variables.some((v) => {
-  const value = (variableValues[v.key] ?? "").trim();
+  const hasEmptyRequiredField = template.variables.some((v) => {
+    const value = (variableValues[v.key] ?? "").trim();
 
-  if (!value) return true;
+    if (!value) return true;
 
-  if (v.key === "url" && !isValidHttpsUrl(value)) {
-    return true;
-  }
+    if (v.key === "url" && !isValidHttpsUrl(value)) {
+      return true;
+    }
 
-  return false;
-});
+    return false;
+  });
 
   const handlePayClick = () => {
     if (hasEmptyRequiredField) {
@@ -1022,311 +1021,316 @@ const hasEmptyRequiredField = template.variables.some((v) => {
 
           {step === "landing" && (
             <div className="tw-flex-1 tw-flex tw-items-center tw-justify-center tw-py-4">
-            <div className={`hero-card ${cardCls} tw-p-10 tw-max-w-[1040px] tw-w-full tw-relative tw-overflow-hidden`}>
-              <div className="landing-split tw-relative">
-                <div className="tw-min-w-0">
-                  <span className={eyebrowBadgeCls}>✦ 광고 시작하기 전에</span>
-                  <div className="tw-text-[32px] tw-font-medium tw-text-[#1F2430] tw-mt-3 tw-mb-3 tw-leading-tight">
-                    우리 가게 잠재고객은<br />몇 명일까?
-                  </div>
-                  <div className="tw-text-sm tw-text-[#767C88] tw-mb-7 tw-leading-relaxed">
-                    주변 상권에서 우리 가게에 관심 가질 만한 고객만 골라
-                    <br />실시간으로 몇 명인지 먼저 확인해보세요.
-                  </div>
-
-                  <div className="tw-flex tw-flex-col tw-gap-2.5 tw-mb-8">
-                    {[
-                      { icon: "⚡", text: "실시간으로 관심 고객군을 분석해요" },
-                      { icon: "📍", text: "우리 동네 상권에 맞춰 타겟팅해요" },
-                      { icon: "🆓", text: "지금 내 가게 잠재고객을 무료로 확인해보세요!" },
-                    ].map((f) => (
-                      <div key={f.text} className="tw-flex tw-items-center tw-gap-2.5">
-                        <span className="tw-w-7 tw-h-7 tw-rounded-full tw-bg-[#EEF4FF] tw-flex tw-items-center tw-justify-center tw-text-[13px] tw-shrink-0">{f.icon}</span>
-                        <span className="tw-text-[13px] tw-text-[#4A4F59]">{f.text}</span>
-                      </div>
-                    ))}
-                  </div>
-
-                  <button className={`${primaryBtnCls} tw-inline-flex tw-items-center tw-gap-2`} onClick={startExtraction} disabled={isLoading}>
-                    {isLoading ? "조회 중..." : "우리 가게 잠재고객은 몇 명일까?"}
-                    {!isLoading && <span>→</span>}
-                  </button>
-                </div>
-
-                <div className="tw-bg-[#F6F9FF] tw-rounded-2xl tw-p-6 tw-min-w-0">
-                  <Hero />
-                  <div className={`${cardCls} tw-bg-white tw-p-4 tw-mt-1`}>
-                    <div className="tw-flex tw-items-center tw-justify-between tw-mb-2">
-                      <span className="tw-text-[11px] tw-text-[#9AA0AC]">이렇게 확인돼요</span>
-                     
+              <div className={`hero-card ${cardCls} tw-p-10 tw-max-w-[1040px] tw-w-full tw-relative tw-overflow-hidden`}>
+                <div className="landing-split tw-relative">
+                  <div className="tw-min-w-0">
+                    <span className={eyebrowBadgeCls}>✦ 광고 시작하기 전에</span>
+                    <div className="tw-text-[32px] tw-font-medium tw-text-[#1F2430] tw-mt-3 tw-mb-3 tw-leading-tight">
+                      우리 가게 잠재고객은<br />몇 명일까?
                     </div>
-                    <div className="tw-flex tw-items-baseline tw-gap-1 tw-mb-3">
-                      <span className="tw-text-[26px] tw-font-medium tw-text-[#2C5FF6]">1,248</span>
-                      <span className="tw-text-sm tw-text-[#1F2430]">명</span>
+                    <div className="tw-text-sm tw-text-[#767C88] tw-mb-7 tw-leading-relaxed">
+                      주변 상권에서 우리 가게에 관심 가질 만한 고객만 골라
+                      <br />실시간으로 몇 명인지 먼저 확인해보세요.
                     </div>
-                    <div className="tw-flex tw-gap-1.5 tw-flex-wrap">
-                      <span className={chipCls}>📍 서울특별시 강남구</span>
-                      {INTEREST_SEGMENTS.map((s) => (
-                        <span key={s} className={`${chipCls} tw-bg-[#EEF4FF] tw-text-[#1F4FD6] tw-border-[#D7E4FF]`}>{s}</span>
+
+                    <div className="tw-flex tw-flex-col tw-gap-2.5 tw-mb-8">
+                      {[
+                        { icon: "⚡", text: "실시간으로 관심 고객군을 분석해요" },
+                        { icon: "📍", text: "우리 동네 상권에 맞춰 타겟팅해요" },
+                        { icon: "🆓", text: "지금 내 가게 잠재고객을 무료로 확인해보세요!" },
+                      ].map((f) => (
+                        <div key={f.text} className="tw-flex tw-items-center tw-gap-2.5">
+                          <span className="tw-w-7 tw-h-7 tw-rounded-full tw-bg-[#EEF4FF] tw-flex tw-items-center tw-justify-center tw-text-[13px] tw-shrink-0">{f.icon}</span>
+                          <span className="tw-text-[13px] tw-text-[#4A4F59]">{f.text}</span>
+                        </div>
                       ))}
+                    </div>
+
+                    <button className={`${primaryBtnCls} tw-inline-flex tw-items-center tw-gap-2`} onClick={startExtraction} disabled={isLoading}>
+                      {isLoading ? "조회 중..." : "우리 가게 잠재고객은 몇 명일까?"}
+                      {!isLoading && <span>→</span>}
+                    </button>
+                  </div>
+
+                  <div className="tw-bg-[#F6F9FF] tw-rounded-2xl tw-p-6 tw-min-w-0">
+                    <Hero />
+                    <div className={`${cardCls} tw-bg-white tw-p-4 tw-mt-1`}>
+                      <div className="tw-flex tw-items-center tw-justify-between tw-mb-2">
+                        <span className="tw-text-[11px] tw-text-[#9AA0AC]">이렇게 확인돼요</span>
+
+                      </div>
+                      <div className="tw-flex tw-items-baseline tw-gap-1 tw-mb-3">
+                        <span className="tw-text-[26px] tw-font-medium tw-text-[#2C5FF6]">1,248</span>
+                        <span className="tw-text-sm tw-text-[#1F2430]">명</span>
+                      </div>
+                      <div className="tw-flex tw-gap-1.5 tw-flex-wrap">
+                        <span className={chipCls}>📍 서울특별시 강남구</span>
+                        {INTEREST_SEGMENTS.map((s) => (
+                          <span key={s} className={`${chipCls} tw-bg-[#EEF4FF] tw-text-[#1F4FD6] tw-border-[#D7E4FF]`}>{s}</span>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
             </div>
           )}
 
           {step === "result" && (
             <div className="tw-flex-1 tw-flex tw-items-center tw-justify-center tw-py-4">
-            <div className={`hero-card ${cardCls} tw-pt-10 tw-px-8 tw-pb-10 tw-max-w-[620px] tw-w-full tw-relative tw-overflow-hidden`}>
-              <div className="tw-absolute -tw-top-[50px] -tw-left-[50px] tw-w-[130px] tw-h-[130px] tw-rounded-full tw-bg-[#F6F9FF]" />
-              <div className="tw-relative">
-                <div className={infoBoxCls}>우리 가게에 관심이 있을 법한 타겟군만 골라, 실시간으로 관심 고객을 추출합니다.</div>
-                <div className="tw-text-center tw-my-8">
-                  <div className="tw-text-[13px] tw-text-[#9AA0AC] tw-mb-1.5">예상 잠재고객 수</div>
-                  <div className="tw-text-[44px] tw-font-medium tw-text-[#2C5FF6]">
-                    {animatedAudience.toLocaleString()}<span className="tw-text-lg tw-ml-1 tw-text-[#1F2430]">명</span>
-                  </div>
-                </div>
-                <div className="tw-mb-7">
-                  <div className={`tw-flex tw-gap-1.5 tw-justify-center tw-flex-wrap ${regionMatched ? "tw-mb-2.5" : "tw-mb-1.5"}`}>
-                    {regionMatched && <span className={chipCls}>📍 {sido} {gu} {dong}</span>}
-                  </div>
-                  <div className="tw-flex tw-gap-1.5 tw-justify-center tw-flex-wrap">
-                    <InterestChips />
-                  </div>
-                  {!regionMatched && (
-                    <div className="tw-text-[11.5px] tw-text-[#B58A1E] tw-text-center tw-mt-2">
-                      ‼ 등록된 지역 정보가 없어 관심고객군 기준으로만 추출했어요.
+              <div className={`hero-card ${cardCls} tw-pt-10 tw-px-8 tw-pb-10 tw-max-w-[620px] tw-w-full tw-relative tw-overflow-hidden`}>
+                <div className="tw-absolute -tw-top-[50px] -tw-left-[50px] tw-w-[130px] tw-h-[130px] tw-rounded-full tw-bg-[#F6F9FF]" />
+                <div className="tw-relative">
+                  <div className={infoBoxCls}>우리 가게에 관심이 있을 법한 타겟군만 골라, 실시간으로 관심 고객을 추출합니다.</div>
+                  <div className="tw-text-center tw-my-8">
+                    <div className="tw-text-[13px] tw-text-[#9AA0AC] tw-mb-1.5">예상 잠재고객 수</div>
+                    <div className="tw-text-[44px] tw-font-medium tw-text-[#2C5FF6]">
+                      {animatedAudience.toLocaleString()}<span className="tw-text-lg tw-ml-1 tw-text-[#1F2430]">명</span>
                     </div>
-                  )}
+                  </div>
+                  <div className="tw-mb-7">
+                    <div className={`tw-flex tw-gap-1.5 tw-justify-center tw-flex-wrap ${regionMatched ? "tw-mb-2.5" : "tw-mb-1.5"}`}>
+                      {regionMatched && <span className={chipCls}>📍 {sido} {gu} {dong}</span>}
+                    </div>
+                    <div className="tw-flex tw-gap-1.5 tw-justify-center tw-flex-wrap">
+                      <InterestChips />
+                    </div>
+                    {!regionMatched && (
+                      <div className="tw-text-[11.5px] tw-text-[#B58A1E] tw-text-center tw-mt-2">
+                        ‼ 등록된 지역 정보가 없어 관심고객군 기준으로만 추출했어요.
+                      </div>
+                    )}
+                  </div>
+                  <button className={`${primaryBtnCls} tw-w-full tw-py-[13px]`} onClick={() => setStep("setup")}>우리 가게 잠재고객에게 우리 가게 알리기</button>
                 </div>
-                <button className={`${primaryBtnCls} tw-w-full tw-py-[13px]`} onClick={() => setStep("setup")}>우리 가게 잠재고객에게 우리 가게 알리기</button>
               </div>
-            </div>
             </div>
           )}
 
           {step === "setup" && (
             <>
               <div className="tw-max-w-[1040px] tw-mx-auto">
-              <div className="setup-grid tw-grid tw-grid-cols-[1fr_300px] tw-gap-4 tw-items-start">
-                <div className={`${cardCls} tw-p-6`}>
-                  <div className={sectionTitleCls}>메시지 구성 &amp; 타겟조건</div>
+                <div className="setup-grid tw-grid tw-grid-cols-[1fr_300px] tw-gap-4 tw-items-start">
+                  <div className={`${cardCls} tw-p-6`}>
+                    <div className={sectionTitleCls}>메시지 구성 &amp; 타겟조건</div>
 
-                  {isLocked && (
-                    <div className="tw-flex tw-items-center tw-gap-1.5 tw-text-[12.5px] tw-font-medium tw-text-[#2C5FF6] tw-bg-[#EEF4FF] tw-rounded-lg tw-px-3 tw-py-2.5 tw-mt-3.5">
-                      🔒 이미 등록된 캠페인의 발송 문구예요. 문구를 바꾸려면 정기발송을 종료한 뒤 다시 시작해주세요.
-                    </div>
-                  )}
-
-                  <div className="tw-mt-3.5 tw-mb-4">
-                    <FieldLabel hint="템플릿마다 아래 가변영역 항목이 달라져요.">템플릿 선택</FieldLabel>
-                    <div className="tw-flex tw-flex-wrap tw-gap-1.5">
-                      {MESSAGE_TEMPLATES.map((t) => (
-                        <button
-                          key={t.id}
-                          type="button"
-                          onClick={() => !isLocked && handleTemplateChange(t.id)}
-                          disabled={isLocked}
-                          className={`tw-text-[12.5px] tw-font-medium tw-rounded-full tw-px-3.5 tw-py-1.5 tw-border ${isLocked ? "tw-cursor-not-allowed tw-opacity-70" : "tw-cursor-pointer"} ${
-                            t.id === templateId
-                              ? "tw-bg-[#2C5FF6] tw-text-white tw-border-[#2C5FF6]"
-                              : "tw-bg-[#F5F6FA] tw-text-[#4A4F59] tw-border-[#ECEDF1]"
-                          }`}
-                        >
-                          {t.name}
-                        </button>
-                      ))}
-                    </div>
-                    {templateId === "branch-intro" && (
-                      <div className="tw-text-[12px] tw-font-medium tw-text-[#D94848] tw-mt-2 tw-leading-relaxed">
-                        해당 템플릿은 URL이 포함되지 않아 반응률 확인이 어렵습니다.<br />
-                        반응률을 확인하시려면 동일한 내용의 '성과측정 O' 템플릿을 이용해 주세요.
+                    {isLocked && (
+                      <div className="tw-flex tw-items-center tw-gap-1.5 tw-text-[12.5px] tw-font-medium tw-text-[#2C5FF6] tw-bg-[#EEF4FF] tw-rounded-lg tw-px-3 tw-py-2.5 tw-mt-3.5">
+                        🔒 이미 등록된 캠페인의 발송 문구예요. 문구를 바꾸려면 정기발송을 종료한 뒤 다시 시작해주세요.
                       </div>
                     )}
-                  </div>
-                  <div className="tw-w-[432px] tw-bg-[#EDEFF2] tw-rounded-xl tw-p-4 tw-mb-4 tw-mx-auto">
-                    <SktMessageMockup phoneNumber={previewPhoneNumber} title={renderTemplateTitle(template, variableValues)} titleLength={renderedTitle.length}>
-                      {renderTemplateBody(template, variableValues)}
-                    </SktMessageMockup>
-                  </div>
 
-                  <FieldLabel hint="이 템플릿의 가변영역이에요. 값을 바꾸면 위 제목·본문 미리보기에 바로 반영돼요. 모든 항목은 필수 입력입니다.">가변영역</FieldLabel>
-                  <div className="tw-flex tw-flex-col tw-gap-3.5 tw-mb-5">
-                   {template.variables.map((v) => {
-  const value = variableValues[v.key] ?? "";
-  const isEmpty = value.trim() === "";
-  const autoLoadable = v.options.length > 0;
-
-  const isInvalidUrl =
-    v.key === "url" &&
-    value.trim() !== "" &&
-    !isValidHttpsUrl(value);
-
-  const isInvalid = isEmpty || isInvalidUrl;
-                      return (
-                        <div key={v.key}>
-                          <div className="tw-flex tw-items-center tw-gap-1 tw-mb-1">
-                            <span className="tw-text-[12.5px] tw-text-[#4A4F59]">{v.label}</span>
-                            {!isLocked && <span className="tw-text-[10.5px] tw-text-[#D94848] tw-font-medium">*필수</span>}
-                          </div>
-                          <DatalistField
-                            listId={`var-${template.id}-${v.key}`}
-                            value={value}
-                            onChange={(val) => setVariable(v.key, val)}
-                            options={v.options}
-                            placeholder={`{${v.label}}`}
-                            className=""
-                            invalid={isInvalid && !isLocked}
+                    <div className="tw-mt-3.5 tw-mb-4">
+                      <FieldLabel hint="템플릿마다 아래 가변영역 항목이 달라져요.">템플릿 선택</FieldLabel>
+                      <div className="tw-flex tw-flex-wrap tw-gap-1.5">
+                        {MESSAGE_TEMPLATES.map((t) => (
+                          <button
+                            key={t.id}
+                            type="button"
+                            onClick={() => !isLocked && handleTemplateChange(t.id)}
                             disabled={isLocked}
-                            onBlur={v.key === "branch" ? checkTitleLength : undefined}
+                            className={`tw-text-[12.5px] tw-font-medium tw-rounded-full tw-px-3.5 tw-py-1.5 tw-border ${isLocked ? "tw-cursor-not-allowed tw-opacity-70" : "tw-cursor-pointer"} ${t.id === templateId
+                                ? "tw-bg-[#2C5FF6] tw-text-white tw-border-[#2C5FF6]"
+                                : "tw-bg-[#F5F6FA] tw-text-[#4A4F59] tw-border-[#ECEDF1]"
+                              }`}
+                          >
+                            {t.name}
+                          </button>
+                        ))}
+                      </div>
+                      {templateId === "branch-intro" && (
+                        <div className="tw-text-[12px] tw-font-medium tw-text-[#D94848] tw-mt-2 tw-leading-relaxed">
+                          해당 템플릿은 URL이 포함되지 않아 반응률 확인이 어렵습니다.<br />
+                          반응률을 확인하시려면 동일한 내용의 '성과측정 O' 템플릿을 이용해 주세요.
+                        </div>
+                      )}
+                    </div>
+                    <div className="tw-w-[432px] tw-bg-[#EDEFF2] tw-rounded-xl tw-p-4 tw-mb-4 tw-mx-auto">
+                      <SktMessageMockup phoneNumber={previewPhoneNumber} title={renderTemplateTitle(template, variableValues)} titleLength={renderedTitle.length}>
+                        {renderTemplateBody(template, variableValues)}
+                      </SktMessageMockup>
+                    </div>
+
+                    <FieldLabel hint="이 템플릿의 가변영역이에요. 값을 바꾸면 위 제목·본문 미리보기에 바로 반영돼요. 모든 항목은 필수 입력입니다.">가변영역</FieldLabel>
+                    <div className="tw-flex tw-flex-col tw-gap-3.5 tw-mb-5">
+                      {template.variables.map((v) => {
+                        const value = variableValues[v.key] ?? "";
+                        const isEmpty = value.trim() === "";
+                        const autoLoadable = v.options.length > 0;
+
+                        const isInvalidUrl =
+                          v.key === "url" &&
+                          value.trim() !== "" &&
+                          !isValidHttpsUrl(value);
+
+                        const isInvalid = isEmpty || isInvalidUrl;
+                        return (
+                          <div key={v.key}>
+                            <div className="tw-flex tw-items-center tw-gap-1 tw-mb-1">
+                              <span className="tw-text-[12.5px] tw-text-[#4A4F59]">{v.label}</span>
+                              {!isLocked && <span className="tw-text-[10.5px] tw-text-[#D94848] tw-font-medium">*필수</span>}
+                            </div>
+                            <DatalistField
+                              listId={`var-${template.id}-${v.key}`}
+                              value={value}
+                              onChange={(val) => setVariable(v.key, val)}
+                              options={v.options}
+                              placeholder={`{${v.label}}`}
+                              className=""
+                              invalid={isInvalid && !isLocked}
+                              disabled={isLocked}
+                              onBlur={v.key === "branch" ? checkTitleLength : undefined}
+                            />
+                            {isLocked ? (
+                              <div className="tw-text-[11px] tw-text-[#9AA0AC] tw-mt-1">
+                                🔒 발송 확정된 값이에요.
+                              </div>
+                            ) : isInvalidUrl ? (
+                              <div className="tw-text-[11px] tw-text-[#D94848] tw-mt-1">
+                                ⚠ https://로 시작하는 올바른 URL을 입력해주세요.
+                              </div>
+                            ) : isEmpty ? (
+                              <div className="tw-text-[11px] tw-text-[#D94848] tw-mt-1">
+                                ⚠ {autoLoadable ? "등록된 값을 불러오지 못했어요." : "자동으로 불러올 수 없는 값이에요."} 직접 입력해주세요.
+                              </div>
+                            ) : (
+                              <div className="tw-text-[11px] tw-text-[#9AA0AC] tw-mt-1">
+                                {v.hint}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    <div className="tw-border-t tw-border-[#EEF0F3] tw-pt-4">
+                      <FieldLabel>관심고객군</FieldLabel>
+                      <div className={interestBoxCls}><InterestChips /></div>
+                      <div className="tw-text-[11.5px] tw-text-[#9AA0AC] tw-mt-1 tw-mb-4">우리 가게에 관심 가질 확률이 높은 고객군이에요. 예상 잠재고객 수를 결정하는 핵심 조건입니다.</div>
+
+                      {regionAutoLoaded ? (
+                        <>
+                          <LockedField
+                            label="지역"
+                            hint={isLocked ? undefined : "등록된 매장 주소를 자동으로 불러왔어요. 다른 주소로 보내려면 직접 선택할 수 있어요."}
+                            value={<>📍 {sido} {gu} {dong}</>}
+                            locked
+                            className="tw-mb-1.5"
                           />
-                          {isLocked ? (
-  <div className="tw-text-[11px] tw-text-[#9AA0AC] tw-mt-1">
-    🔒 발송 확정된 값이에요.
-  </div>
-) : isInvalidUrl ? (
-  <div className="tw-text-[11px] tw-text-[#D94848] tw-mt-1">
-    ⚠ https://로 시작하는 올바른 URL을 입력해주세요.
-  </div>
-) : isEmpty ? (
-  <div className="tw-text-[11px] tw-text-[#D94848] tw-mt-1">
-    ⚠ {autoLoadable ? "등록된 값을 불러오지 못했어요." : "자동으로 불러올 수 없는 값이에요."} 직접 입력해주세요.
-  </div>
-) : (
-  <div className="tw-text-[11px] tw-text-[#9AA0AC] tw-mt-1">
-    {v.hint}
-  </div>
-)}
-                        </div>
-                      );
-                    })}
+                          {!isLocked && (
+                            <button
+                              type="button"
+                              className="tw-text-[11.5px] tw-text-[#2C5FF6] tw-bg-transparent tw-border-none tw-p-0 tw-cursor-pointer tw-mb-3"
+                              onClick={() => setRegionAutoLoaded(false)}
+                            >
+                              다른 지역인가요? 직접 선택하기 →
+                            </button>
+                          )}
+                        </>
+                      ) : (
+                        <>
+                          <FieldLabel hint="등록된 매장 주소를 자동으로 불러왔어요. 다른 주소로 보내려면 직접 선택할 수 있어요.">지역</FieldLabel>
+                          <div className="tw-flex tw-gap-1.5 tw-mb-1">
+                            <select
+                              className={fieldCls}
+                              value={sido}
+                              disabled={isLocked}
+                              onChange={(e) => {
+                                const v = e.target.value;
+                                setSido(v);
+                                const firstGu = Object.keys(REGION_DATA[v])[0];
+                                setGu(firstGu);
+                                setDong(REGION_DATA[v][firstGu][0]);
+                              }}
+                            >
+                              {Object.keys(REGION_DATA).map((s) => <option key={s} value={s}>{s}</option>)}
+                            </select>
+                            <select
+                              className={fieldCls}
+                              value={gu}
+                              disabled={isLocked}
+                              onChange={(e) => {
+                                const v = e.target.value;
+                                setGu(v);
+                                setDong(REGION_DATA[sido][v][0]);
+                              }}
+                            >
+                              {sidoGuOptions.map((g) => <option key={g} value={g}>{g}</option>)}
+                            </select>
+                            <select className={fieldCls} value={dong} disabled={isLocked} onChange={(e) => setDong(e.target.value)}>
+                              {dongOptions.map((d) => <option key={d} value={d}>{d}</option>)}
+                            </select>
+                          </div>
+                          <div className={`tw-text-[11.5px] tw-mb-4 ${regionMatched ? "tw-text-[#3B8A5A]" : "tw-text-[#B58A1E]"}`}>
+                            {regionMatched ? "✓ 지역이 설정되었습니다." : "‼ 등록된 지역 정보가 없어 관심고객군 기준으로 추출돼요."}
+                          </div>
+                        </>
+                      )}
+
+                      <LockedField label="발송 방식" value="RCS/일반 (텍스트)" />
+                      <LockedField label="발송 일시" value={sendDateTime} locked className="tw-mb-1" />
+                      <div className="tw-text-xs tw-text-[#B7BBC4] tw-mt-1.5">* 등록일 기준 영업일 +{APPROVAL_LEAD_BUSINESS_DAYS}일 뒤로 고정 발송됩니다.</div>
+                    </div>
                   </div>
 
-                  <div className="tw-border-t tw-border-[#EEF0F3] tw-pt-4">
-                    <FieldLabel>관심고객군</FieldLabel>
-                    <div className={interestBoxCls}><InterestChips /></div>
-                    <div className="tw-text-[11.5px] tw-text-[#9AA0AC] tw-mt-1 tw-mb-4">우리 가게에 관심 가질 확률이 높은 고객군이에요. 예상 잠재고객 수를 결정하는 핵심 조건입니다.</div>
+                  <div className={`${cardCls} tw-p-6`}>
+                    <div className={sectionTitleCls}>결제 정보</div>
 
-                    {regionAutoLoaded ? (
-                      <>
-                        <LockedField
-                          label="지역"
-                          hint="등록된 매장 주소를 자동으로 불러왔어요. 다른 주소로 보내려면 직접 선택할 수 있어요."
-                          value={<>📍 {sido} {gu} {dong}</>}
-                          locked
-                          className="tw-mb-1.5"
-                        />
-                        <button
-                          type="button"
-                          className="tw-text-[11.5px] tw-text-[#2C5FF6] tw-bg-transparent tw-border-none tw-p-0 tw-cursor-pointer tw-mb-3"
-                          onClick={() => setRegionAutoLoaded(false)}
-                        >
-                          다른 지역인가요? 직접 선택하기 →
-                        </button>
-                      </>
-                    ) : (
-                      <>
-                        <FieldLabel hint="등록된 매장 주소를 자동으로 불러왔어요. 다른 주소로 보내려면 직접 선택할 수 있어요.">지역</FieldLabel>
-                        <div className="tw-flex tw-gap-1.5 tw-mb-1">
-                          <select
-                            className={fieldCls}
-                            value={sido}
-                            onChange={(e) => {
-                              const v = e.target.value;
-                              setSido(v);
-                              const firstGu = Object.keys(REGION_DATA[v])[0];
-                              setGu(firstGu);
-                              setDong(REGION_DATA[v][firstGu][0]);
-                            }}
-                          >
-                            {Object.keys(REGION_DATA).map((s) => <option key={s} value={s}>{s}</option>)}
-                          </select>
-                          <select
-                            className={fieldCls}
-                            value={gu}
-                            onChange={(e) => {
-                              const v = e.target.value;
-                              setGu(v);
-                              setDong(REGION_DATA[sido][v][0]);
-                            }}
-                          >
-                            {sidoGuOptions.map((g) => <option key={g} value={g}>{g}</option>)}
-                          </select>
-                          <select className={fieldCls} value={dong} onChange={(e) => setDong(e.target.value)}>
-                            {dongOptions.map((d) => <option key={d} value={d}>{d}</option>)}
-                          </select>
-                        </div>
-                        <div className={`tw-text-[11.5px] tw-mb-4 ${regionMatched ? "tw-text-[#3B8A5A]" : "tw-text-[#B58A1E]"}`}>
-                          {regionMatched ? "✓ 지역이 설정되었습니다." : "‼ 등록된 지역 정보가 없어 관심고객군 기준으로 추출돼요."}
-                        </div>
-                      </>
-                    )}
+                    <div className="tw-flex tw-justify-between tw-items-center tw-mt-3.5 tw-mb-1.5">
+                      <span className="tw-text-[13.5px] tw-font-medium tw-text-[#1F2430]">정기발송</span>
+                      <button
+                        onClick={() => isActive && setShowStopRecurringConfirm(true)}
+                        className={`${toggleTrackCls} tw-bg-[#2C5FF6] ${isActive ? "tw-opacity-100 tw-cursor-pointer" : "tw-opacity-50 tw-cursor-not-allowed"}`}
+                        aria-label="정기발송 토글"
+                        disabled={!isActive}
+                      >
+                        <span className={toggleThumbCls} />
+                      </button>
+                    </div>
+                    <div className="tw-text-xs tw-text-[#9AA0AC] tw-mb-4.5 tw-leading-relaxed">
+                      {isActive
+                        ? "* 정기발송이 진행 중이에요. OFF 시 다음 회차부터 중단되고, 이미 등록된 회차는 예정대로 발송돼요."
+                        : "* 정기발송 전용 서비스예요. 결제하면 현재 정보로 정기발송이 바로 시작돼요."}
+                    </div>
 
-                    <LockedField label="발송 방식" value="RCS/일반 (텍스트)" />
-                    <LockedField label="발송 일시" value={sendDateTime} locked className="tw-mb-1" />
-                    <div className="tw-text-xs tw-text-[#B7BBC4] tw-mt-1.5">* 등록일 기준 영업일 +{APPROVAL_LEAD_BUSINESS_DAYS}일 뒤로 고정 발송됩니다.</div>
+                    <div className="tw-text-xs tw-text-[#9AA0AC] tw-mb-1">예상 발송 건수</div>
+                    <div className="tw-text-[22px] tw-font-medium tw-text-[#1F2430] tw-mb-4">{audience.toLocaleString()}건</div>
+                    <div className="tw-text-xs tw-text-[#9AA0AC] tw-mb-1">예상 금액</div>
+                    <div className="tw-text-[22px] tw-font-medium tw-text-[#2C5FF6] tw-mb-1">{cost.toLocaleString()}원</div>
+                    <div className="tw-text-xs tw-text-[#B7BBC4] tw-mb-5">(VAT 별도)</div>
+                    {!isActive && <button className={`${primaryBtnCls} tw-w-full tw-py-[13px]`} onClick={handlePayClick}>결제하기</button>}
                   </div>
                 </div>
 
-                <div className={`${cardCls} tw-p-6`}>
-                  <div className={sectionTitleCls}>결제 정보</div>
-
-                  <div className="tw-flex tw-justify-between tw-items-center tw-mt-3.5 tw-mb-1.5">
-                    <span className="tw-text-[13.5px] tw-font-medium tw-text-[#1F2430]">정기발송</span>
-                    <button
-                      onClick={() => isActive && setShowStopRecurringConfirm(true)}
-                      className={`${toggleTrackCls} tw-bg-[#2C5FF6] ${isActive ? "tw-opacity-100 tw-cursor-pointer" : "tw-opacity-50 tw-cursor-not-allowed"}`}
-                      aria-label="정기발송 토글"
-                      disabled={!isActive}
-                    >
-                      <span className={toggleThumbCls} />
-                    </button>
-                  </div>
-                  <div className="tw-text-xs tw-text-[#9AA0AC] tw-mb-4.5 tw-leading-relaxed">
-                    {isActive
-                      ? "* 정기발송이 진행 중이에요. OFF 시 다음 회차부터 중단되고, 이미 등록된 회차는 예정대로 발송돼요."
-                      : "* 정기발송 전용 서비스예요. 결제하면 현재 정보로 정기발송이 바로 시작돼요."}
-                  </div>
-
-                  <div className="tw-text-xs tw-text-[#9AA0AC] tw-mb-1">예상 발송 건수</div>
-                  <div className="tw-text-[22px] tw-font-medium tw-text-[#1F2430] tw-mb-4">{audience.toLocaleString()}건</div>
-                  <div className="tw-text-xs tw-text-[#9AA0AC] tw-mb-1">예상 금액</div>
-                  <div className="tw-text-[22px] tw-font-medium tw-text-[#2C5FF6] tw-mb-1">{cost.toLocaleString()}원</div>
-                  <div className="tw-text-xs tw-text-[#B7BBC4] tw-mb-5">(VAT 별도)</div>
-                  {!isActive && <button className={`${primaryBtnCls} tw-w-full tw-py-[13px]`} onClick={handlePayClick}>결제하기</button>}
+                <div className={`${cardCls} tw-mt-8 tw-p-6 tw-bg-[#FFF9EC] tw-border-[#F5E4B8]`}>
+                  <div className="tw-text-[13px] tw-font-medium tw-text-[#8A6100] tw-mb-2">안내사항</div>
+                  <ul className="tw-m-0 tw-pl-4.5 tw-text-[12.5px] tw-text-[#8A6100] tw-leading-loose tw-list-disc">
+                    <li>캠페인 집행 후 {STATS_NOTIFY_DAYS}일 뒤 통계가 알림톡으로 발송돼요.</li>
+                    <li>정기발송은 최초 발송일의 날짜를 기준으로 매월 같은 날짜에 진행돼요. 영업일 (해당 월에 그 날짜가 없으면 말일에 발송,영업일이 아닐 경우 가장 가까운 영업일에 발송)</li>
+                    <li>캐시가 부족하면 안내 알림톡이 발송되니 미리 충전해주세요.</li>
+                    <li>캐시 부족이 자동발송이 2회 스킵되면 정기발송이 중지돼요.</li>
+                    <li>정기발송을 증지하면 다음 회차부터 중단돼요 — 이미 등록된 회차는 예정대로 발송되며 취소가 어려워요.</li>
+                    <li>발송은 최대 {MAX_SEND.toLocaleString()}건까지 가능하며, 모수 추출 결과에 따라 변동될 수 있어요.</li>
+                    <li>성과측정X 템플릿은 URL이 포함되지 않아 반응률 확인이 어렵습니다. 반응률을 확인하시려면 동일한 내용의 ‘성과측정 O’ 템플릿을 이용해 주세요.</li>
+                    <li>정기발송 캠페인은 발송 시점부터 +14일, +21일차에 생성 시도를 하므로, 해당 일에 생성 시 최소가 불가능합니다. </li>
+                  </ul>
                 </div>
-              </div>
-
-              <div className={`${cardCls} tw-mt-8 tw-p-6 tw-bg-[#FFF9EC] tw-border-[#F5E4B8]`}>
-                <div className="tw-text-[13px] tw-font-medium tw-text-[#8A6100] tw-mb-2">안내사항</div>
-                <ul className="tw-m-0 tw-pl-4.5 tw-text-[12.5px] tw-text-[#8A6100] tw-leading-loose tw-list-disc">
-                  <li>캠페인 집행 후 {STATS_NOTIFY_DAYS}일 뒤 통계가 알림톡으로 발송돼요.</li>
-                  <li>정기발송은 최초 발송일의 날짜를 기준으로 매월 같은 날짜에 진행돼요. 영업일 (해당 월에 그 날짜가 없으면 말일에 발송,영업일이 아닐 경우 가장 가까운 영업일에 발송)</li>
-                  <li>캐시가 부족하면 안내 알림톡이 발송되니 미리 충전해주세요.</li>
-                  <li>캐시 부족이 자동발송이 2회 스킵되면 정기발송이 중지돼요.</li>
-                  <li>정기발송을 증지하면 다음 회차부터 중단돼요 — 이미 등록된 회차는 예정대로 발송되며 취소가 어려워요.</li>
-                  <li>발송은 최대 {MAX_SEND.toLocaleString()}건까지 가능하며, 모수 추출 결과에 따라 변동될 수 있어요.</li>
-                  <li>성과측정X 템플릿은 URL이 포함되지 않아 반응률 확인이 어렵습니다. 반응률을 확인하시려면 동일한 내용의 ‘성과측정 O’ 템플릿을 이용해 주세요.</li>
-                </ul>
-              </div>
               </div>
             </>
           )}
 
           {step === "done" && (
-            <div className={`${cardCls} tw-p-11 tw-max-w-[520px] tw-mx-auto`}>
+            <div className={`${cardCls} tw-p-11 tw-max-w-[600px] tw-mx-auto`}>
               <div className="tw-text-center tw-mb-6">
                 <div className="tw-w-11 tw-h-11 tw-rounded-full tw-bg-[#E9F2FF] tw-flex tw-items-center tw-justify-center tw-mx-auto tw-mb-4 tw-text-[#2C5FF6] tw-text-xl tw-font-medium">✓</div>
                 <div className="tw-text-lg tw-font-medium tw-text-[#1F2430]">결제가 완료됐어요</div>
               </div>
 
               <div className={urgentBoxCls}>
-                <div className={urgentRowCls}>⚡ <b>{cashPrecheckDate}</b>에 다음 회차 캐시를 미리 확인해요. 부족하면 안내 알림톡이 발송되니 미리 충전해주세요.</div>
-                <div className={urgentRowCls}>⚡ 정기발송은 계속 진행되며, <b>2회 연속 캐시 부족 시 자동으로 중지돼요.</b></div>
+                <div className={urgentRowCls}>⚡ 다음회차부터 정기발송이 진행되며, <b>2회 연속 캐시 부족으로 발송이 스킵될 시 자동으로 중지돼요.</b></div>
                 <div className={urgentRowCls}>⚡ 등록된 캠페인은 <b>취소할 수 없어요.</b></div>
+                <div className={urgentRowCls}>⚡ 발송 통계는 카카오톡 <b>비즈팅 채널</b>로 발송됩니다.</div>
+                <div className={urgentRowCls}>⚡ 다음 정기발송일이 영업일이 아닌 경우, <b>가장 가까운 영업일</b>에 발송됩니다.</div>
               </div>
 
               <div className={`${cardCls} tw-bg-[#FAFBFC] tw-p-4 tw-mb-5`}>
@@ -1334,7 +1338,6 @@ const hasEmptyRequiredField = template.variables.some((v) => {
                 <ReadonlyRow label="발송 통계 알림톡" value={statsNotifyDate} />
                 <ReadonlyRow label="정기발송 기준일" value={`매월 ${anchorDay}일`} />
                 <ReadonlyRow label="다음 정기발송일" value={nextRecurringDate} />
-                <ReadonlyRow label="예상 발송 건수" value={`${audience.toLocaleString()}건`} />
               </div>
               <div className="tw-text-center">
                 <button className={secondaryBtnCls} onClick={() => setStep("setup")}>메시지 설정으로 돌아가기</button>
@@ -1373,7 +1376,7 @@ const hasEmptyRequiredField = template.variables.some((v) => {
           {showStillInsufficientAlert && (
             <AlertModal
               title="캐시가 아직 부족해요"
-              message={`충전했지만 캠페인 등록에 필요한 금액에는 아직 못 미쳐요. 등록은 진행되지 않았어요 — 결제 화면에서 조금 더 충전해주세요. (부족액 ${Math.max(cost - cashBalance, 0).toLocaleString()}원)`}
+              message={`충전 금액이 부족합니다. 추가충전을 진행해주세요. (부족액 ${Math.max(cost - cashBalance, 0).toLocaleString()}원)`}
               primaryLabel="확인" onPrimary={() => setShowStillInsufficientAlert(false)}
             />
           )}
@@ -1390,9 +1393,9 @@ const hasEmptyRequiredField = template.variables.some((v) => {
               title="정기발송을 종료할까요?"
               message={
                 <span className="tw-block tw-text-left">
-                  <b>현재 회차</b>: {sendDateTime} 예정대로 발송돼요.<br />
-                  <b>종료 적용 회차</b>: {nextRecurringDate} 부터 생성되지 않아요.<br />
-                  <b>마지막 계획 발송일</b>: {sendDate}
+                  <b>등록된 캠페인</b>: {sendDateTime} 예정대로 발송돼요.(취소 불가)<br />
+                  <b>발송중단 캠페인</b>: {nextRecurringDate} 부터 발송되지 않아요.<br />
+                  <b>마지막 발송일</b>: {sendDate}
                 </span>
               }
               secondaryLabel="취소" onSecondary={() => setShowStopRecurringConfirm(false)}
