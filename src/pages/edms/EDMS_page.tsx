@@ -936,16 +936,21 @@ export default function PotentialCustomerFlow() {
   };
 
   const completeRegistration = () => {
+    setCashBalance((prev) => prev - cost);
     setHasSentBefore(true);
     setRecurring(true);
     setStep("done");
   };
 
-  // 실제 캠페인 등록/결제가 이루어지는 지점 — 이미 구현되어 있는 실제 충전(결제) 화면을 그대로 띄운다.
+  // 캐시가 충분하면 결제창 없이 바로 등록을 완료하고, 부족하면 충전창을 띄운다.
   const confirmRegister = () => {
     setShowConfirmRegister(false);
-    setPaymentContext("register");
-    setShowPaymentWindow(true);
+    if (cashBalance >= cost) {
+      completeRegistration();
+    } else {
+      setPaymentContext("register");
+      setShowPaymentWindow(true);
+    }
   };
 
   // 결제창에서 충전을 완료했을 때 — 충분히 충전됐으면 캠페인 등록을 완료 처리한다.
@@ -1293,12 +1298,24 @@ export default function PotentialCustomerFlow() {
                         : "* 정기발송 전용 서비스예요. 결제하면 현재 정보로 정기발송이 바로 시작돼요."}
                     </div>
 
-                    <div className="tw-text-xs tw-text-[#9AA0AC] tw-mb-1">예상 발송 건수</div>
+                  <div className="tw-text-xs tw-text-[#9AA0AC] tw-mb-1">예상 발송 건수</div>
                     <div className="tw-text-[22px] tw-font-medium tw-text-[#1F2430] tw-mb-4">{audience.toLocaleString()}건</div>
                     <div className="tw-text-xs tw-text-[#9AA0AC] tw-mb-1">예상 금액</div>
                     <div className="tw-text-[22px] tw-font-medium tw-text-[#2C5FF6] tw-mb-1">{cost.toLocaleString()}원</div>
+                    <div className="tw-text-xs tw-text-[#9AA0AC] tw-mb-1">보유 캐시</div>
+                    <div className="tw-text-[13px] tw-font-medium tw-text-[#4A4F59] tw-mb-4">{cashBalance.toLocaleString()} 캐시</div>
                     <div className="tw-text-xs tw-text-[#B7BBC4] tw-mb-5">(VAT 별도)</div>
-                    {!isActive && <button className={`${primaryBtnCls} tw-w-full tw-py-[13px]`} onClick={handlePayClick}>결제하기</button>}
+
+                    {isActive && cashBalance < cost && (
+                      <div className="tw-bg-[#FDEBEC] tw-text-[#D94848] tw-text-[12px] tw-rounded-lg tw-px-3 tw-py-2.5 tw-mb-3 tw-leading-relaxed">
+                        ⚠ 다음 회차 발송에 필요한 캐시가 부족해요. 미리 충전해주세요. (부족액 {Math.max(cost - cashBalance, 0).toLocaleString()}원)
+                      </div>
+                    )}
+
+                    {!isActive && (
+                      <button className={`${primaryBtnCls} tw-w-full tw-py-[13px] tw-mb-2`} onClick={handlePayClick}>등록하기</button>
+                    )}
+                    <button className={`${secondaryBtnCls} tw-w-full tw-py-[13px]`} onClick={openChargeFromSidebar}>충전하기</button>
                   </div>
                 </div>
 
