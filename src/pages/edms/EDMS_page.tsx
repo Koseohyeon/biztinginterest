@@ -304,7 +304,7 @@ const fieldCls = "tw-w-full tw-h-[38px] tw-border tw-border-[#E1E3E8] tw-rounded
 const interestBoxCls = "tw-flex tw-flex-wrap tw-gap-1.5 tw-bg-[#F6F9FF] tw-border tw-border-[#DCE7FF] tw-rounded-lg tw-p-2.5";
 const interestChipCls = "tw-bg-[#2C5FF6] tw-text-white tw-text-xs tw-px-2.5 tw-py-[5px] tw-rounded-full tw-font-medium";
 const eyebrowBadgeCls = "tw-inline-block tw-text-xs tw-text-[#2C5FF6] tw-font-medium tw-bg-[#EEF4FF] tw-px-3 tw-py-[5px] tw-rounded-full tw-mb-1";
-const overlayCls = "tw-absolute tw-inset-0 tw-bg-black/45 tw-flex tw-items-center tw-justify-center tw-z-50";
+const overlayCls = "tw-fixed tw-inset-0 tw-bg-black/45 tw-flex tw-items-center tw-justify-center tw-z-50 tw-p-4 tw-overflow-y-auto";
 const toggleTrackCls = "tw-relative tw-w-9 tw-h-5 tw-rounded-full tw-border-none tw-p-0";
 const toggleThumbCls = "tw-absolute tw-top-0.5 tw-left-[18px] tw-w-4 tw-h-4 tw-rounded-full tw-bg-white tw-transition-[left] tw-duration-150";
 const consentRowCls = "tw-flex tw-items-center tw-gap-2 tw-text-sm tw-text-[#1F2430] tw-cursor-pointer";
@@ -622,7 +622,7 @@ interface AlertModalProps {
 function AlertModal({ icon = "!", iconBg = "#FFF3D6", iconColor = "#8A6100", title, message, primaryLabel, onPrimary, secondaryLabel, onSecondary }: AlertModalProps) {
   return (
     <div className={overlayCls}>
-      <div className={`${cardCls} tw-w-[320px] tw-text-center tw-p-6`}>
+      <div className={`${cardCls} tw-w-full tw-max-w-[320px] tw-text-center tw-p-6 tw-my-auto`}>
         <div
           className="tw-w-10 tw-h-10 tw-rounded-full tw-flex tw-items-center tw-justify-center tw-mx-auto tw-mb-3.5 tw-text-lg tw-font-medium"
           style={{ background: iconBg, color: iconColor }}
@@ -670,7 +670,7 @@ function PaymentWindow({ cashBalance, cost, onCharge, onClose }: PaymentWindowPr
 
   return (
     <div className={overlayCls}>
-      <div className="tw-bg-white tw-rounded-xl tw-border tw-border-[#E5E7EB] tw-w-[380px] tw-max-h-[90vh] tw-overflow-y-auto tw-shadow-[0_8px_30px_rgba(0,0,0,0.18)]">
+      <div className="tw-bg-white tw-rounded-xl tw-border tw-border-[#E5E7EB] tw-w-full tw-max-w-[380px] tw-max-h-[90vh] tw-overflow-y-auto tw-shadow-[0_8px_30px_rgba(0,0,0,0.18)] tw-my-auto">
         <div className="tw-flex tw-items-center tw-gap-2 tw-px-4 tw-py-2.5 tw-border-b tw-border-[#EEF0F3] tw-bg-[#F5F6FA] tw-rounded-t-xl">
           <span className="tw-w-2.5 tw-h-2.5 tw-rounded-full tw-bg-[#E1E3E8]" />
           <span className="tw-text-[11px] tw-text-[#767C88] tw-flex-1 tw-text-center">EDMS - Chrome</span>
@@ -736,7 +736,7 @@ function PaymentWindow({ cashBalance, cost, onCharge, onClose }: PaymentWindowPr
                 key={m.key}
                 type="button"
                 onClick={() => setMethod(m.key as typeof method)}
-                className={`tw-text-[11.5px] tw-font-medium tw-rounded-lg tw-py-2 tw-border tw-cursor-pointer ${method === m.key ? "tw-bg-[#1F2A5C] tw-text-white tw-border-[#1F2A5C]" : "tw-bg-white tw-text-[#4A4F59] tw-border-[#E1E3E8]"
+                className={`tw-text-[10.5px] sm:tw-text-[11.5px] tw-font-medium tw-rounded-lg tw-py-2 tw-px-1 tw-border tw-cursor-pointer tw-leading-tight tw-whitespace-nowrap tw-overflow-hidden tw-text-ellipsis ${method === m.key ? "tw-bg-[#1F2A5C] tw-text-white tw-border-[#1F2A5C]" : "tw-bg-white tw-text-[#4A4F59] tw-border-[#E1E3E8]"
                   }`}
               >
                 {m.label}
@@ -778,7 +778,7 @@ function ConsentModal({ onClose, onAgree }: { onClose: () => void; onAgree: (mar
 
   return (
     <div className={overlayCls}>
-      <div className={`${cardCls} tw-w-[380px] tw-px-[22px] tw-pt-[22px] tw-pb-5`}>
+      <div className={`${cardCls} tw-w-full tw-max-w-[380px] tw-px-[22px] tw-pt-[22px] tw-pb-5 tw-my-auto`}>
         <div className="tw-flex tw-justify-between tw-items-center tw-mb-4">
           <div className="tw-text-[15px] tw-font-medium tw-text-[#1F2430]">광고 집행 동의</div>
           <button onClick={onClose} aria-label="닫기" className="tw-bg-transparent tw-border-none tw-text-base tw-text-[#9AA0AC] tw-cursor-pointer">×</button>
@@ -832,6 +832,7 @@ export default function PotentialCustomerFlow() {
   const [showTitleLengthAlert, setShowTitleLengthAlert] = useState(false);
   const [showStopRecurringConfirm, setShowStopRecurringConfirm] = useState(false);
   const [showRequiredFieldsAlert, setShowRequiredFieldsAlert] = useState(false);
+  const [showEntryInsufficientAlert, setShowEntryInsufficientAlert] = useState(false);
   const [cashBalance, setCashBalance] = useState(20000);
   const [hasAgreed, setHasAgreed] = useState(false);
   const [hasSentBefore, setHasSentBefore] = useState(false);
@@ -893,6 +894,11 @@ export default function PotentialCustomerFlow() {
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
   }, [step, audience]);
+    useEffect(() => {
+    if (step === "setup" && isActive && cashBalance < cost) {
+      setShowEntryInsufficientAlert(true);
+    }
+  }, [step]);
 
   const goToCampaign = () => setStep(hasSentBefore ? "setup" : "landing");
 
@@ -942,7 +948,7 @@ export default function PotentialCustomerFlow() {
     setStep("done");
   };
 
-  // 캐시가 충분하면 결제창 없이 바로 등록을 완료하고, 부족하면 충전창을 띄운다.
+  // 캐시가 충분하면 결제창 없이 바로 등록을 완료하고, 부족하면 바로 충전창(결제창)을 띄운다.
   const confirmRegister = () => {
     setShowConfirmRegister(false);
     if (cashBalance >= cost) {
@@ -1002,10 +1008,15 @@ export default function PotentialCustomerFlow() {
         }
         .mobile-menu-btn, .mobile-close-btn { display: none; }
         .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(20,22,28,0.45); z-index: 55; }
-        .landing-split { display: flex; flex-direction: column; gap: 28px; }
+  .landing-split { display: flex; flex-direction: column; gap: 28px; }
         @media (min-width: 760px) {
           .landing-split { flex-direction: row; align-items: center; gap: 48px; }
           .landing-split > div { flex: 1; }
+        }
+        @media (max-width: 480px) {
+          .region-select-row { flex-direction: column !important; }
+          .payment-method-btn { font-size: 10px !important; padding-left: 4px !important; padding-right: 4px !important; }
+          .modal-box { max-width: 100% !important; }
         }
       `}</style>
 
@@ -1135,8 +1146,8 @@ export default function PotentialCustomerFlow() {
                             onClick={() => !isLocked && handleTemplateChange(t.id)}
                             disabled={isLocked}
                             className={`tw-text-[12.5px] tw-font-medium tw-rounded-full tw-px-3.5 tw-py-1.5 tw-border ${isLocked ? "tw-cursor-not-allowed tw-opacity-70" : "tw-cursor-pointer"} ${t.id === templateId
-                                ? "tw-bg-[#2C5FF6] tw-text-white tw-border-[#2C5FF6]"
-                                : "tw-bg-[#F5F6FA] tw-text-[#4A4F59] tw-border-[#ECEDF1]"
+                              ? "tw-bg-[#2C5FF6] tw-text-white tw-border-[#2C5FF6]"
+                              : "tw-bg-[#F5F6FA] tw-text-[#4A4F59] tw-border-[#ECEDF1]"
                               }`}
                           >
                             {t.name}
@@ -1150,7 +1161,7 @@ export default function PotentialCustomerFlow() {
                         </div>
                       )}
                     </div>
-                    <div className="tw-w-[432px] tw-bg-[#EDEFF2] tw-rounded-xl tw-p-4 tw-mb-4 tw-mx-auto">
+                    <div className="tw-w-full tw-max-w-[432px] tw-bg-[#EDEFF2] tw-rounded-xl tw-p-4 tw-mb-4 tw-mx-auto">
                       <SktMessageMockup phoneNumber={previewPhoneNumber} title={renderTemplateTitle(template, variableValues)} titleLength={renderedTitle.length}>
                         {renderTemplateBody(template, variableValues)}
                       </SktMessageMockup>
@@ -1235,7 +1246,7 @@ export default function PotentialCustomerFlow() {
                       ) : (
                         <>
                           <FieldLabel hint="등록된 매장 주소를 자동으로 불러왔어요. 다른 주소로 보내려면 직접 선택할 수 있어요.">지역</FieldLabel>
-                          <div className="tw-flex tw-gap-1.5 tw-mb-1">
+                          <div className="tw-flex tw-flex-col sm:tw-flex-row tw-gap-1.5 tw-mb-1">
                             <select
                               className={fieldCls}
                               value={sido}
@@ -1298,24 +1309,16 @@ export default function PotentialCustomerFlow() {
                         : "* 정기발송 전용 서비스예요. 결제하면 현재 정보로 정기발송이 바로 시작돼요."}
                     </div>
 
-                  <div className="tw-text-xs tw-text-[#9AA0AC] tw-mb-1">예상 발송 건수</div>
+                    <div className="tw-text-xs tw-text-[#9AA0AC] tw-mb-1">예상 발송 건수</div>
                     <div className="tw-text-[22px] tw-font-medium tw-text-[#1F2430] tw-mb-4">{audience.toLocaleString()}건</div>
                     <div className="tw-text-xs tw-text-[#9AA0AC] tw-mb-1">예상 금액</div>
                     <div className="tw-text-[22px] tw-font-medium tw-text-[#2C5FF6] tw-mb-1">{cost.toLocaleString()}원</div>
                     <div className="tw-text-xs tw-text-[#9AA0AC] tw-mb-1">보유 캐시</div>
                     <div className="tw-text-[13px] tw-font-medium tw-text-[#4A4F59] tw-mb-4">{cashBalance.toLocaleString()} 캐시</div>
                     <div className="tw-text-xs tw-text-[#B7BBC4] tw-mb-5">(VAT 별도)</div>
-
-                    {isActive && cashBalance < cost && (
-                      <div className="tw-bg-[#FDEBEC] tw-text-[#D94848] tw-text-[12px] tw-rounded-lg tw-px-3 tw-py-2.5 tw-mb-3 tw-leading-relaxed">
-                        ⚠ 다음 회차 발송에 필요한 캐시가 부족해요. 미리 충전해주세요. (부족액 {Math.max(cost - cashBalance, 0).toLocaleString()}원)
-                      </div>
-                    )}
-
                     {!isActive && (
                       <button className={`${primaryBtnCls} tw-w-full tw-py-[13px] tw-mb-2`} onClick={handlePayClick}>등록하기</button>
                     )}
-                    <button className={`${secondaryBtnCls} tw-w-full tw-py-[13px]`} onClick={openChargeFromSidebar}>충전하기</button>
                   </div>
                 </div>
 
@@ -1415,7 +1418,7 @@ export default function PotentialCustomerFlow() {
                   <b>마지막 발송일</b>: {sendDate}
                 </span>
               }
-              secondaryLabel="취소" onSecondary={() => setShowStopRecurringConfirm(false)}
+secondaryLabel="취소" onSecondary={() => setShowStopRecurringConfirm(false)}
               primaryLabel="정기발송 종료" onPrimary={() => { setRecurring(false); setShowStopRecurringConfirm(false); }}
             />
           )}
@@ -1426,6 +1429,21 @@ export default function PotentialCustomerFlow() {
               primaryLabel="확인" onPrimary={() => setShowRequiredFieldsAlert(false)}
             />
           )}
+          {showEntryInsufficientAlert && (
+            <AlertModal
+              iconBg="#FDEBEC" iconColor="#D94848"
+              title="캐시가 부족해요"
+              message={`캠페인 등록에 필요한 캐시가 부족해요. 미리 충전해주세요. (부족액 ${Math.max(cost - cashBalance, 0).toLocaleString()}원)`}
+              secondaryLabel="닫기" onSecondary={() => setShowEntryInsufficientAlert(false)}
+              primaryLabel="충전하러 가기"
+              onPrimary={() => {
+                setShowEntryInsufficientAlert(false);
+                setPaymentContext("sidebar");
+                setShowPaymentWindow(true);
+              }}
+            />
+          )}
+
         </div>
       </div>
     </div>
