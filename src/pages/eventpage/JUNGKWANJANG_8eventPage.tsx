@@ -791,7 +791,7 @@ const ChuseokEventPage: React.FC = () => {
                     <Reveal>
                         <SectionTitle
                             eyebrow="COMBO GIFT · 함께 사면 커지는 선물"
-                            title="따로 살 제품, 함께 담으면 사은품이 커집니다"
+                            title="세트 구매로 더 많은 혜택 받기!"
                             desc="아래 조합으로 구매하시면, 결제 후 사은품을 별도로 챙겨드립니다."
                         />
                     </Reveal>
@@ -859,7 +859,7 @@ const ChuseokEventPage: React.FC = () => {
             <section className="tw-bg-[#EEF1F6] tw-px-5 tw-py-16 sm:tw-py-20">
                 <div className="tw-mx-auto tw-max-w-[680px]">
                     <Reveal>
-                        <Eyebrow>TODAY'S PICK · 놓치면 아쉬운 특가</Eyebrow>
+                        <Eyebrow>다시는 없을 절호의 기회! 놓치면 아쉬운 특가</Eyebrow>
                     </Reveal>
 
                     <Reveal delay={80}>
