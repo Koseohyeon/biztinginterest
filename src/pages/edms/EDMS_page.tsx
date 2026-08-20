@@ -683,7 +683,7 @@ function PaymentWindow({ cashBalance, cost, onCharge, onClose }: PaymentWindowPr
 
           {insufficient && (
             <div className="tw-bg-[#FDEBEC] tw-text-[#D94848] tw-text-[12px] tw-rounded-lg tw-px-3 tw-py-2.5 tw-mb-4">
-              ⚠ 금액이 부족합니다. 충전해주세요. (부족액 {Math.max(cost! - cashBalance, 0).toLocaleString()}원)
+              ⚠ 금액이 부족합니다. 충전해주세요. (부족액 {Math.max(cost! - cashBalance, 0).toLocaleString()}캐시)
             </div>
           )}
 
@@ -1312,7 +1312,7 @@ export default function PotentialCustomerFlow() {
                     <div className="tw-text-xs tw-text-[#9AA0AC] tw-mb-1">예상 발송 건수</div>
                     <div className="tw-text-[22px] tw-font-medium tw-text-[#1F2430] tw-mb-4">{audience.toLocaleString()}건</div>
                     <div className="tw-text-xs tw-text-[#9AA0AC] tw-mb-1">예상 금액</div>
-                    <div className="tw-text-[22px] tw-font-medium tw-text-[#2C5FF6] tw-mb-1">{cost.toLocaleString()}원</div>
+                    <div className="tw-text-[22px] tw-font-medium tw-text-[#2C5FF6] tw-mb-1">{cost.toLocaleString()}캐시</div>
                     <div className="tw-text-xs tw-text-[#9AA0AC] tw-mb-1">보유 캐시</div>
                     <div className="tw-text-[13px] tw-font-medium tw-text-[#4A4F59] tw-mb-4">{cashBalance.toLocaleString()} 캐시</div>
                     <div className="tw-text-xs tw-text-[#B7BBC4] tw-mb-5">(VAT 별도)</div>
@@ -1333,6 +1333,7 @@ export default function PotentialCustomerFlow() {
                     <li>발송은 최대 {MAX_SEND.toLocaleString()}건까지 가능하며, 모수 추출 결과에 따라 변동될 수 있어요.</li>
                     <li>성과측정X 템플릿은 URL이 포함되지 않아 반응률 확인이 어렵습니다. 반응률을 확인하시려면 동일한 내용의 ‘성과측정 O’ 템플릿을 이용해 주세요.</li>
                     <li> 정기발송 캠페인 등록일: 발송 시점부터 +14일, +21일차에 생성 시도를 하므로, 해당 일에 자동 생성 시 최소가 불가능합니다. </li>
+                    <li> 캠페인 등록 후, 문구 수정이 필요하다면 1:1문의를 남겨주세요. 다만 SKT 승인요청 이후에는 변경 불가능 하므로, 빠른 시일 내 1:1문의를 부탁드립니다.</li>
                   </ul>
                 </div>
               </div>
@@ -1396,7 +1397,7 @@ export default function PotentialCustomerFlow() {
           {showStillInsufficientAlert && (
             <AlertModal
               title="캐시가 아직 부족해요"
-              message={`충전 금액이 부족합니다. 추가충전을 진행해주세요. (부족액 ${Math.max(cost - cashBalance, 0).toLocaleString()}원)`}
+              message={`충전 금액이 부족합니다. 추가충전을 진행해주세요. (부족액 ${Math.max(cost - cashBalance, 0).toLocaleString()}캐시)`}
               primaryLabel="확인" onPrimary={() => setShowStillInsufficientAlert(false)}
             />
           )}
@@ -1433,7 +1434,7 @@ secondaryLabel="취소" onSecondary={() => setShowStopRecurringConfirm(false)}
             <AlertModal
               iconBg="#FDEBEC" iconColor="#D94848"
               title="캐시가 부족해요"
-              message={`캠페인 등록에 필요한 캐시가 부족해요. 미리 충전해주세요. (부족액 ${Math.max(cost - cashBalance, 0).toLocaleString()}원)`}
+              message={`캠페인 등록에 필요한 캐시가 부족해요. 미리 충전해주세요. (부족액 ${Math.max(cost - cashBalance, 0).toLocaleString()}캐시)`}
               secondaryLabel="닫기" onSecondary={() => setShowEntryInsufficientAlert(false)}
               primaryLabel="충전하러 가기"
               onPrimary={() => {
