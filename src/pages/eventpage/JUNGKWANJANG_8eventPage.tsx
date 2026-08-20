@@ -675,7 +675,7 @@ const ChuseokEventPage: React.FC = () => {
                             title={
                                 <>
                                     지금 구매하시면
-                                    <br />보름달만큼 더 크게 채워드리는 포인트!
+                                    <br />보름달만큼 더 크게 채워드리는 포인트
                                 </>
                             }
                             desc="8/27일부터 14일 동안, 구매 금액이 커질수록 달도 포인트도 함께 차오릅니다."
@@ -791,7 +791,7 @@ const ChuseokEventPage: React.FC = () => {
                     <Reveal>
                         <SectionTitle
                             eyebrow="COMBO GIFT · 함께 사면 커지는 선물"
-                            title="세트 구매로 더 많은 혜택 받기!"
+                            title="세트 구매로 더 많은 혜택 받기"
                             desc="아래 조합으로 구매하시면, 결제 후 사은품을 별도로 챙겨드립니다."
                         />
                     </Reveal>
