@@ -27,6 +27,7 @@ import LatteEventPage from "./pages/client/LatteEventPage"
 //JungKwangJang
 import JUNGKWANJANG_6eventPage from "./pages/eventpage/JUNGKWANJANG_6eventPage"
 import JKJEventPage from "./pages/eventpage/JUNGKWANJANG_6eventPage";
+import JUNGKWANJANG_8eventPage from "./pages/eventpage/JUNGKWANJANG_8eventPage"
 
 //Mart
 import Mart_example from "./pages/eventpage/Mart_example"
@@ -87,6 +88,7 @@ export default function App() {
 
         {/* 정관장 */}
         <Route path="/eventpage/JUNGKWANJANG_6eventPage" element={<JUNGKWANJANG_6eventPage />} />
+        <Route path="/eventpage/JUNGKWANJANG_8eventPage" element={<JUNGKWANJANG_8eventPage />} />
         <Route path="/eventpage/JKJEventPage" element={<JKJEventPage />} />
 
         {/* 마트 */}
