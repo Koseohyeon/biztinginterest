@@ -3,11 +3,6 @@ import heroPoster from "../../assets/hero-poster.jpg";
 import giftBox from "../../assets/gift-box-cutout.jpg";
 import brandLogo from "../../assets/brand-logo.png";
 
-/* ============================================================================
- * 0. 공통 상수 / 데이터
- * ==========================================================================*/
-
-/** 온라인 유입 링크를 걷어내고, 오프라인 매장 방문으로 안내하는 단일 문구 */
 const STORE_VISIT_COPY = "가까운 정관장 매장에 방문하여 풍성한 혜택 받아보세요";
 
 const COLOR = {
@@ -101,36 +96,6 @@ const POINT_TIERS: PointTier[] = [
     },
 ];
 
-interface ComboGift {
-    condition: string;
-    detail: string[];
-    enumerate?: boolean;
-    reward: string;
-}
-
-const COMBO_GIFTS: ComboGift[] = [
-    {
-        condition: "아래 조합으로 3개 구매 시",
-        detail: [
-            "홍삼톤골드 + 화애락 진/후",
-            "홍삼톤골드 + RXGIN 홍천옹/홍삼오일",
-            "화애락 진/후 + RXGIN 홍천옹/홍삼오일",
-        ],
-        enumerate: true,
-        reward: "홍삼정 100g 증정",
-    },
-    {
-        condition: "화애락 진 3개 구매 시",
-        detail: ["동일 제품 3개 구매", "(구형 재고 포함 가능)"],
-        reward: "이너제틱 클렌즈 60포",
-    },
-    {
-        condition: "화애락 후 3개 구매 시",
-        detail: ["동일 제품 3개 구매", "(구형 재고 포함 가능)"],
-        reward: "이너제틱 콜라겐 60포",
-    },
-];
-
 interface CardBenefit {
     bank: string;
     headline: string;
@@ -157,7 +122,6 @@ const CARD_BENEFITS: CardBenefit[] = [
  * 1. 유틸 · 훅
  * ==========================================================================*/
 
-/** 스크롤 진입 시 부드럽게 드러나는 연출. prefers-reduced-motion을 존중합니다. */
 function useReveal<T extends HTMLElement>() {
     const ref = useRef<T | null>(null);
     const [visible, setVisible] = useState(false);
@@ -209,16 +173,6 @@ const Reveal: React.FC<{ children: ReactNode; delay?: number; className?: string
     );
 };
 
-/* ============================================================================
- * 2. 작은 시각 부품들 (아이콘 · 서명 요소)
- * ==========================================================================*/
-
-/**
- * 달-게이지(Moon Gauge)
- * 이 페이지의 시그니처 요소입니다. 추석 = 보름달이라는 소재를 그대로 가져와,
- * "혜택이 커질수록 달이 차오른다"는 규칙으로 할인율·포인트 구간을 표현합니다.
- * 단순 장식이 아니라 fill 값 자체가 혜택의 크기를 나타내는 정보 장치입니다.
- */
 const MoonGauge: React.FC<{ fill: number; size?: number; children?: ReactNode }> = ({
     fill,
     size = 84,
@@ -319,35 +273,6 @@ const IconCard: React.FC<{ className?: string }> = ({ className = "" }) => (
     </svg>
 );
 
-const IconGift: React.FC<{ className?: string }> = ({ className = "" }) => (
-    <svg viewBox="0 0 24 24" className={className} fill="none" aria-hidden="true">
-        <rect x="3" y="9.5" width="18" height="11" rx="1.4" stroke="currentColor" strokeWidth="1.8" />
-        <path d="M3 13.2h18" stroke="currentColor" strokeWidth="1.8" />
-        <path d="M12 9.5v11" stroke="currentColor" strokeWidth="1.8" />
-        <path
-            d="M12 9.5c0-2.6-1.8-4.6-4-4.6-1.5 0-2.6 1-2.6 2.3S6.5 9.5 8 9.5h4Z"
-            stroke="currentColor"
-            strokeWidth="1.8"
-            strokeLinejoin="round"
-        />
-        <path
-            d="M12 9.5c0-2.6 1.8-4.6 4-4.6 1.5 0 2.6 1 2.6 2.3S16.5 9.5 15 9.5h-3Z"
-            stroke="currentColor"
-            strokeWidth="1.8"
-            strokeLinejoin="round"
-        />
-    </svg>
-);
-
-/* ============================================================================
- * 3. 반복 구조 부품
- * ==========================================================================*/
-
-/**
- * 매장 방문 안내 — 기존 링크 버튼(멤버스 가입 / 정몰 구매)이 있던 자리를 대체합니다.
- * 클릭할 곳이 없으므로 버튼이 아닌 안내 문구로 두되, 히어로에서는 시선이 머물도록
- * 크림색 보더 배지 형태로 강조합니다.
- */
 const StoreVisitNote: React.FC<{
     tone?: "onNavy" | "onPaper";
     emphasis?: "band" | "plain";
@@ -369,8 +294,8 @@ const StoreVisitNote: React.FC<{
     return (
         <p
             className={`tw-inline-flex tw-items-center tw-justify-center tw-gap-2.5 tw-rounded-full tw-border tw-px-6 tw-py-3.5 sm:tw-px-7 sm:tw-py-4 tw-text-center tw-text-[15.5px] sm:tw-text-[17px] tw-font-bold tw-leading-7 ${isNavy
-                    ? "tw-border-[#F1E4C0]/45 tw-bg-white/[0.04] tw-text-[#F1E4C0]"
-                    : "tw-border-[#0E1E3F]/15 tw-bg-white tw-text-[#0E1E3F]"
+                ? "tw-border-[#F1E4C0]/45 tw-bg-white/[0.04] tw-text-[#F1E4C0]"
+                : "tw-border-[#0E1E3F]/15 tw-bg-white tw-text-[#0E1E3F]"
                 } ${className}`}
         >
             <span
@@ -383,7 +308,6 @@ const StoreVisitNote: React.FC<{
     );
 };
 
-/** 큰 글씨 우선 원칙에 맞춘 접고 펼치는 상세 정보 박스(고령 사용자를 위한 정보 분리) */
 const Disclosure: React.FC<{
     title: string;
     children: ReactNode;
@@ -431,7 +355,6 @@ const Disclosure: React.FC<{
     );
 };
 
-/** 브랜드 칩 목록 — 6개 이상이면 "더보기"로 접어 화면 과부하를 줄입니다 */
 const ChipList: React.FC<{ items: string[] }> = ({ items }) => {
     const [expanded, setExpanded] = useState(false);
     const LIMIT = 6;
@@ -462,7 +385,6 @@ const ChipList: React.FC<{ items: string[] }> = ({ items }) => {
     );
 };
 
-/** 섹션 상단에 반복되는 "번호 없는" 라벨 — 순서가 아니라 구분을 위한 표식 */
 const Eyebrow: React.FC<{ children: ReactNode; tone?: "onNavy" | "onPaper" }> = ({
     children,
     tone = "onPaper",
@@ -524,9 +446,6 @@ const ChuseokEventPage: React.FC = () => {
         }
       `}</style>
 
-            {/* ============================================================
-          HERO — 포스터 원본을 그대로 살리고, 하단에 기간·안내 바를 덧댐
-         ============================================================ */}
             <header className="tw-relative">
                 <div className="tw-relative tw-mx-auto tw-max-w-[720px]">
                     <img
@@ -534,7 +453,6 @@ const ChuseokEventPage: React.FC = () => {
                         alt="추석엔 건강운, 좋게 선물하세요 — JUNG KWAN JANG 정관장. 보름달 아래 붉은 선물가방을 들고 활짝 웃는 모델."
                         className="tw-w-full tw-h-auto tw-block"
                     />
-                    {/* 히어로 하단 그라데이션은 이미지 자체의 밤하늘과 자연스럽게 이어지도록 */}
                     <div className="tw-absolute tw-inset-x-0 tw-bottom-0 tw-h-24 tw-bg-gradient-to-t tw-from-[#0E1E3F] tw-to-transparent tw-pointer-events-none" />
                 </div>
 
@@ -556,10 +474,6 @@ const ChuseokEventPage: React.FC = () => {
                     </div>
                 </div>
             </header>
-
-            {/* ============================================================
-          도입부 카피 — 보름달 모티프를 다음 섹션들의 규칙으로 예고
-         ============================================================ */}
             <section className="tw-relative tw-overflow-hidden tw-bg-[#0E1E3F] tw-px-5 tw-tw-pt-8 tw-pb-14 sm:tw-pt-10 sm:tw-pb-16">
                 <span className="chuseok-star tw-absolute tw-top-10 tw-left-10 tw-h-1 tw-w-1 tw-rounded-full tw-bg-white/70" />
                 <span
@@ -674,8 +588,8 @@ const ChuseokEventPage: React.FC = () => {
                             <Reveal key={tier.range} delay={i * 90}>
                                 <div
                                     className={`tw-flex tw-items-center tw-gap-5 tw-rounded-[26px] tw-p-5 sm:tw-p-6 ${i === POINT_TIERS.length - 1
-                                            ? "tw-bg-[#F1E4C0] tw-ring-2 tw-ring-[#C4202E] tw-shadow-[0_16px_44px_-16px_rgba(241,228,192,0.35)]"
-                                            : "tw-bg-white/[0.06] tw-ring-1 tw-ring-white/10"
+                                        ? "tw-bg-[#F1E4C0] tw-ring-2 tw-ring-[#C4202E] tw-shadow-[0_16px_44px_-16px_rgba(241,228,192,0.35)]"
+                                        : "tw-bg-white/[0.06] tw-ring-1 tw-ring-white/10"
                                         }`}
                                     style={{ transform: i % 2 === 0 ? "rotate(-0.25deg)" : "rotate(0.25deg)" }}
                                 >
@@ -720,7 +634,7 @@ const ChuseokEventPage: React.FC = () => {
             </section>
 
             {/* ============================================================
-          SECTION 3 — 신규 회원 특전 (선물 가방 비주얼 포인트)
+          SECTION 3 — 신규 회원 특전
          ============================================================ */}
             <section className="tw-bg-[#EEF1F6] tw-px-5 tw-py-16 sm:tw-py-20">
                 <div className="tw-mx-auto tw-max-w-[680px]">
