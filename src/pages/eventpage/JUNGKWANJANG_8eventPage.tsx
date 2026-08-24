@@ -1,5 +1,4 @@
-
-import React, { useEffect, useRef, useState, type ReactNode } from "react";
+import React, { useRef, useState, useEffect, type ReactNode } from "react";
 import heroPoster from "../../assets/hero-poster.jpg";
 import giftBox from "../../assets/gift-box-cutout.jpg";
 import brandLogo from "../../assets/brand-logo.png";
@@ -8,8 +7,8 @@ import brandLogo from "../../assets/brand-logo.png";
  * 0. 공통 상수 / 데이터
  * ==========================================================================*/
 
-const MEMBERS_URL = "https://members.kgc.co.kr/";
-const SHOP_URL = "https://www.kgcshop.co.kr/";
+/** 온라인 유입 링크를 걷어내고, 오프라인 매장 방문으로 안내하는 단일 문구 */
+const STORE_VISIT_COPY = "가까운 정관장 매장에 방문하여 풍성한 혜택 받아보세요";
 
 const COLOR = {
     navy: "#0E1E3F",
@@ -65,7 +64,7 @@ const DISCOUNT_TIERS: DiscountTier[] = [
             "알파",
             "진고",
             "봉밀",
-            "기호 차류",
+            "차류",
             "활기단",
         ],
     },
@@ -78,11 +77,9 @@ const DISCOUNT_TIERS: DiscountTier[] = [
 ];
 
 const EXCLUDED_ITEMS = [
-    "뿌리삼(전삼)",
+    "뿌리삼(천삼)",
     "천삼달임액",
-    "굿베이스 유기농 블루베리 퓨레",
-    "홍삼정 100g",
-    "동인비(별도 프로모션 예정)",
+    "굿베이스 유기농 블루베리 퓨레"
 ];
 
 interface PointTier {
@@ -346,6 +343,46 @@ const IconGift: React.FC<{ className?: string }> = ({ className = "" }) => (
  * 3. 반복 구조 부품
  * ==========================================================================*/
 
+/**
+ * 매장 방문 안내 — 기존 링크 버튼(멤버스 가입 / 정몰 구매)이 있던 자리를 대체합니다.
+ * 클릭할 곳이 없으므로 버튼이 아닌 안내 문구로 두되, 히어로에서는 시선이 머물도록
+ * 크림색 보더 배지 형태로 강조합니다.
+ */
+const StoreVisitNote: React.FC<{
+    tone?: "onNavy" | "onPaper";
+    emphasis?: "band" | "plain";
+    className?: string;
+}> = ({ tone = "onPaper", emphasis = "band", className = "" }) => {
+    const isNavy = tone === "onNavy";
+
+    if (emphasis === "plain") {
+        return (
+            <p
+                className={`tw-text-[15.5px] sm:tw-text-[17px] tw-font-semibold tw-leading-8 ${isNavy ? "tw-text-[#F1E4C0]/85" : "tw-text-[#0E1E3F]/75"
+                    } ${className}`}
+            >
+                {STORE_VISIT_COPY}
+            </p>
+        );
+    }
+
+    return (
+        <p
+            className={`tw-inline-flex tw-items-center tw-justify-center tw-gap-2.5 tw-rounded-full tw-border tw-px-6 tw-py-3.5 sm:tw-px-7 sm:tw-py-4 tw-text-center tw-text-[15.5px] sm:tw-text-[17px] tw-font-bold tw-leading-7 ${isNavy
+                    ? "tw-border-[#F1E4C0]/45 tw-bg-white/[0.04] tw-text-[#F1E4C0]"
+                    : "tw-border-[#0E1E3F]/15 tw-bg-white tw-text-[#0E1E3F]"
+                } ${className}`}
+        >
+            <span
+                className={`tw-h-[7px] tw-w-[7px] tw-shrink-0 tw-rounded-full ${isNavy ? "tw-bg-[#C4202E]" : "tw-bg-[#C4202E]"
+                    }`}
+                aria-hidden="true"
+            />
+            {STORE_VISIT_COPY}
+        </p>
+    );
+};
+
 /** 큰 글씨 우선 원칙에 맞춘 접고 펼치는 상세 정보 박스(고령 사용자를 위한 정보 분리) */
 const Disclosure: React.FC<{
     title: string;
@@ -467,48 +504,11 @@ const SectionTitle: React.FC<{
     </div>
 );
 
-const PillButton: React.FC<{
-    href: string;
-    children: ReactNode;
-    variant?: "solid" | "outline" | "ghost";
-    className?: string;
-}> = ({ href, children, variant = "solid", className = "" }) => {
-    const base =
-        "tw-inline-flex tw-items-center tw-justify-center tw-gap-2 tw-rounded-full tw-px-6 tw-py-3.5 sm:tw-py-4 tw-text-[15.5px] sm:tw-text-base tw-font-bold tw-transition tw-duration-200 active:tw-scale-[0.98] tw-whitespace-nowrap";
-    const variants: Record<string, string> = {
-        solid:
-            "tw-bg-[#C4202E] tw-text-white tw-shadow-[0_10px_24px_-8px_rgba(196,32,46,0.65)] hover:tw-bg-[#A81B27]",
-        outline:
-            "tw-border-2 tw-border-white/70 tw-text-white hover:tw-bg-white/10",
-        ghost:
-            "tw-border-2 tw-border-[#0E1E3F] tw-text-[#0E1E3F] hover:tw-bg-[#0E1E3F] hover:tw-text-white",
-    };
-    return (
-        <a
-            href={href}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={`${base} ${variants[variant]} ${className}`}
-        >
-            {children}
-        </a>
-    );
-};
-
 /* ============================================================================
  * 4. 메인 컴포넌트
  * ==========================================================================*/
 
 const ChuseokEventPage: React.FC = () => {
-    const [stickyVisible, setStickyVisible] = useState(false);
-
-    useEffect(() => {
-        const onScroll = () => setStickyVisible(window.scrollY > 560);
-        onScroll();
-        window.addEventListener("scroll", onScroll, { passive: true });
-        return () => window.removeEventListener("scroll", onScroll);
-    }, []);
-
     return (
         <div className="tw-min-h-screen tw-bg-[#EEF1F6] tw-font-body tw-text-[#161B2E] tw-antialiased">
             {/* 폰트 & 로컬 스타일 -------------------------------------------------- */}
@@ -525,7 +525,7 @@ const ChuseokEventPage: React.FC = () => {
       `}</style>
 
             {/* ============================================================
-          HERO — 포스터 원본을 그대로 살리고, 하단에 기간·CTA 바를 덧댐
+          HERO — 포스터 원본을 그대로 살리고, 하단에 기간·안내 바를 덧댐
          ============================================================ */}
             <header className="tw-relative">
                 <div className="tw-relative tw-mx-auto tw-max-w-[720px]">
@@ -538,8 +538,8 @@ const ChuseokEventPage: React.FC = () => {
                     <div className="tw-absolute tw-inset-x-0 tw-bottom-0 tw-h-24 tw-bg-gradient-to-t tw-from-[#0E1E3F] tw-to-transparent tw-pointer-events-none" />
                 </div>
 
-                {/* 기간 + CTA 바 */}
-                <div className="tw-bg-[#0E1E3F] tw-px-5 tw-pb-7 tw-pt-1 sm:tw-pt-2">
+                {/* 기간 + 매장 방문 안내 바 */}
+                <div className="tw-bg-[#0E1E3F] tw-px-5 tw-pt-1 sm:tw-pt-2">
                     <div className="tw-mx-auto tw-max-w-[640px] tw-flex tw-flex-col tw-items-center tw-text-center">
                         <p className="tw-text-[#F1E4C0] tw-text-[15px] sm:tw-text-base tw-font-semibold tw-tracking-wide">
                             2026 정관장 추석 프로모션
@@ -550,13 +550,8 @@ const ChuseokEventPage: React.FC = () => {
                                 32일간 진행
                             </span>
                         </p>
-                        <div className="tw-mt-6 tw-flex tw-w-full tw-flex-col sm:tw-flex-row tw-gap-3 sm:tw-justify-center">
-                            <PillButton href={MEMBERS_URL} variant="solid" className="tw-w-full sm:tw-w-auto">
-                                정관장 멤버스 가입하기
-                            </PillButton>
-                            <PillButton href={SHOP_URL} variant="outline" className="tw-w-full sm:tw-w-auto">
-                                정몰에서 선물 구매하기
-                            </PillButton>
+                        <div className="tw-mt-6 tw-w-full tw-flex tw-justify-center">
+                            <StoreVisitNote tone="onNavy" />
                         </div>
                     </div>
                 </div>
@@ -565,7 +560,7 @@ const ChuseokEventPage: React.FC = () => {
             {/* ============================================================
           도입부 카피 — 보름달 모티프를 다음 섹션들의 규칙으로 예고
          ============================================================ */}
-            <section className="tw-relative tw-overflow-hidden tw-bg-[#0E1E3F] tw-px-5 tw-py-14 sm:tw-py-16">
+            <section className="tw-relative tw-overflow-hidden tw-bg-[#0E1E3F] tw-px-5 tw-tw-pt-8 tw-pb-14 sm:tw-pt-10 sm:tw-pb-16">
                 <span className="chuseok-star tw-absolute tw-top-10 tw-left-10 tw-h-1 tw-w-1 tw-rounded-full tw-bg-white/70" />
                 <span
                     className="chuseok-star tw-absolute tw-top-24 tw-left-24 tw-h-[3px] tw-w-[3px] tw-rounded-full tw-bg-white/60"
@@ -650,14 +645,6 @@ const ChuseokEventPage: React.FC = () => {
                             </p>
                         </Disclosure>
                     </Reveal>
-
-                    <Reveal>
-                        <div className="tw-mt-8">
-                            <PillButton href={SHOP_URL} variant="solid" className="tw-w-full sm:tw-w-auto">
-                                정몰에서 할인 상품 보러가기
-                            </PillButton>
-                        </div>
-                    </Reveal>
                 </div>
             </section>
 
@@ -729,14 +716,6 @@ const ChuseokEventPage: React.FC = () => {
                             적립된 포인트의 유효기간은 적립일로부터 3개월입니다.
                         </div>
                     </Reveal>
-
-                    <Reveal>
-                        <div className="tw-mt-8">
-                            <PillButton href={MEMBERS_URL} variant="outline" className="tw-w-full sm:tw-w-auto">
-                                멤버스 가입하고 포인트 받기
-                            </PillButton>
-                        </div>
-                    </Reveal>
                 </div>
             </section>
 
@@ -767,12 +746,6 @@ const ChuseokEventPage: React.FC = () => {
                                 정관장 멤버스에 새로 가입하고 5만 원 이상 구매하시면, 정성 담은{" "}
                                 <strong className="tw-text-[#C4202E]">천녹톤(3포)</strong>를 챙겨드립니다.
                             </p>
-                            <div className="tw-mt-7 tw-flex tw-flex-col sm:tw-flex-row tw-gap-3">
-                                <PillButton href={MEMBERS_URL} variant="solid" className="tw-w-full sm:tw-w-auto">
-                                    <IconGift className="tw-w-5 tw-h-5" />
-                                    멤버스 가입하고 선물 받기
-                                </PillButton>
-                            </div>
                             <p className="tw-mt-5 tw-text-[13.5px] sm:tw-text-[14px] tw-text-[#161B2E]/40">
                                 멤버스 1인 1회 · SMS 수신 동의 시에만 증정됩니다.
                             </p>
@@ -782,76 +755,6 @@ const ChuseokEventPage: React.FC = () => {
             </section>
 
             <OrbitDivider />
-
-            {/* ============================================================
-          SECTION 4 — 결합구매 사은품
-         ============================================================ */}
-            <section className="tw-bg-white tw-px-5 tw-py-16 sm:tw-py-20">
-                <div className="tw-mx-auto tw-max-w-[680px]">
-                    <Reveal>
-                        <SectionTitle
-                            eyebrow="COMBO GIFT · 함께 사면 커지는 선물"
-                            title="세트 구매로 더 많은 혜택 받기"
-                            desc="아래 조합으로 구매하시면, 결제 후 사은품을 별도로 챙겨드립니다."
-                        />
-                    </Reveal>
-
-                    <div className="tw-grid tw-gap-5 sm:tw-grid-cols-3">
-                        {COMBO_GIFTS.map((combo, i) => (
-                            <Reveal key={combo.reward} delay={i * 100}>
-                                <div
-                                    className="tw-flex tw-h-full tw-flex-col tw-rounded-[24px] tw-border tw-border-[#0E1E3F]/[0.08] tw-p-6"
-                                    style={{ transform: i === 1 ? "rotate(0deg)" : i === 0 ? "rotate(-0.4deg)" : "rotate(0.4deg)" }}
-                                >
-                                    <span className="tw-inline-flex tw-w-fit tw-items-center tw-rounded-full tw-bg-[#C4202E]/[0.08] tw-px-3 tw-py-1 tw-text-[12.5px] tw-font-bold tw-text-[#C4202E]">
-                                        {combo.condition}
-                                    </span>
-                                    {combo.enumerate ? (
-                                        <ol className="tw-mt-4 tw-w-full tw-flex-1 tw-space-y-1 tw-pl-0 tw-text-left">
-                                            {combo.detail.map((line, idx) => (
-                                                <li key={line} className="tw-flex tw-gap-1.5 tw-text-[15px] sm:tw-text-[15px] tw-leading-6 tw-text-[#161B2E]/55">
-                                                    <span className="tw-shrink-0 tw-font-semibold tw-text-[#C4202E]">{idx + 1}.</span>
-                                                    <span>{line}</span>
-                                                </li>
-                                            ))}
-                                        </ol>
-                                    ) : (
-                                        <p className="tw-mt-4 tw-text-[15px] sm:tw-text-[15px] tw-leading-6 tw-text-[#161B2E]/55 tw-flex-1">
-                                            {combo.detail.map((line, idx) => (
-                                                <React.Fragment key={line}>
-                                                    {line}
-                                                    {idx < combo.detail.length - 1 && <br />}
-                                                </React.Fragment>
-                                            ))}
-                                        </p>
-                                    )}
-                                    <div className="tw-mt-5 tw-flex tw-items-start tw-gap-2 tw-border-t tw-border-[#0E1E3F]/[0.08] tw-pt-4">
-                                        <IconGift className="tw-mt-0.5 tw-w-5 tw-h-5 tw-text-[#0E1E3F]/70 tw-shrink-0" />
-                                        <p className="tw-font-display tw-text-[16px] sm:tw-text-[17px] tw-font-bold tw-leading-snug tw-text-[#0E1E3F]">
-                                            {combo.reward}
-                                        </p>
-                                    </div>
-                                </div>
-                            </Reveal>
-                        ))}
-                    </div>
-
-                    <Reveal>
-                        <p className="tw-mt-6 tw-text-[13.5px] sm:tw-text-[14px] tw-leading-6 tw-text-[#161B2E]/40">
-                            조합별로 멤버스 1인 1회, 비연속 적용됩니다. 증정 수량은 추후 정산됩니다.
-                            구형 재고가 포함될 수 있습니다 (화애락 진 → 터닝미 · 화애락 후 → 와이즈미/액티브미 · 홍천옹 건 → RXGIN 홍천옹).
-                        </p>
-                    </Reveal>
-
-                    <Reveal>
-                        <div className="tw-mt-8">
-                            <PillButton href={SHOP_URL} variant="ghost" className="tw-w-full sm:tw-w-auto">
-                                정몰에서 조합 상품 담으러가기
-                            </PillButton>
-                        </div>
-                    </Reveal>
-                </div>
-            </section>
 
             {/* ============================================================
           SECTION 5 — 로스리더 특가 (놓치면 아쉬운 특가)
@@ -886,11 +789,6 @@ const ChuseokEventPage: React.FC = () => {
                                     20% 할인
                                 </span>
                                 <HandCircle className="-tw-inset-x-4 -tw-inset-y-2.5 tw-w-[calc(100%+32px)] tw-h-[calc(100%+20px)] tw-z-0" color={COLOR.cream} />
-                            </div>
-                            <div className="tw-mt-7">
-                                <PillButton href={SHOP_URL} variant="outline">
-                                    정몰에서 특가로 구매하기
-                                </PillButton>
                             </div>
                         </div>
                     </Reveal>
@@ -932,19 +830,11 @@ const ChuseokEventPage: React.FC = () => {
                             </Reveal>
                         ))}
                     </div>
-
-                    <Reveal>
-                        <div className="tw-mt-8">
-                            <PillButton href={SHOP_URL} variant="ghost" className="tw-w-full sm:tw-w-auto">
-                                정몰에서 카드 혜택으로 구매하기
-                            </PillButton>
-                        </div>
-                    </Reveal>
                 </div>
             </section>
 
             {/* ============================================================
-          FOOTER — 클로징 CTA + 브랜드 마크
+          FOOTER — 클로징 문구 + 브랜드 마크
          ============================================================ */}
             <footer className="tw-relative tw-overflow-hidden tw-bg-[#081226] tw-px-5 tw-py-16 sm:tw-py-20">
                 <div className="tw-relative tw-mx-auto tw-max-w-[640px] tw-text-center">
@@ -961,14 +851,6 @@ const ChuseokEventPage: React.FC = () => {
                             <br />
                             건강운 좋게 선물하세요
                         </p>
-                        <div className="tw-mt-8 tw-flex tw-flex-col sm:tw-flex-row tw-gap-3 sm:tw-justify-center">
-                            <PillButton href={MEMBERS_URL} variant="solid" className="tw-w-full sm:tw-w-auto">
-                                멤버스 가입하기
-                            </PillButton>
-                            <PillButton href={SHOP_URL} variant="outline" className="tw-w-full sm:tw-w-auto">
-                                정몰 쇼핑하기
-                            </PillButton>
-                        </div>
                     </Reveal>
 
                     <Reveal delay={120}>
@@ -991,18 +873,6 @@ const ChuseokEventPage: React.FC = () => {
                     </p>
                 </div>
             </footer>
-
-            {/* ============================================================
-          모바일 고정 하단 CTA — 스크롤 후 노출, 되돌아가지 않아도 바로 이동
-         ============================================================ */}
-            <div
-                className={`tw-fixed tw-inset-x-0 tw-bottom-0 tw-z-50 tw-px-4 tw-pb-4 tw-pt-3 tw-transition-transform tw-duration-300 sm:tw-hidden ${stickyVisible ? "tw-translate-y-0" : "tw-translate-y-full"
-                    }`}
-            >
-            </div>
-
-            {/* 고정 바에 가려지지 않도록 모바일 하단 여백 확보 */}
-            <div className="tw-h-24 sm:tw-h-0" aria-hidden="true" />
         </div>
     );
 };
