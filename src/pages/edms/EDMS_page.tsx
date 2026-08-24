@@ -247,6 +247,54 @@ function isValidHttpsUrl(value: string): boolean {
     return false;
   }
 }
+
+/** 010으로 시작하는 개인 휴대전화번호 형식인지 판별(하이픈·공백 유무 무관) — 이 경우 연락처 표시 동의가 별도로 필요하다. */
+function isKoreanMobileNumber(value: string): boolean {
+  const digits = value.replace(/[^0-9]/g, "");
+  return digits.startsWith("010") && digits.length >= 10 && digits.length <= 11;
+}
+
+interface SpecialTermRow {
+  label: string;
+  content: string;
+}
+
+const SPECIAL_TERMS_ROWS: SpecialTermRow[] = [
+  { label: "발송 방식", content: "SKT 광고 발송 가능 모수를 대상으로 매월 1회 자동 발송" },
+  { label: "발송일", content: "최초 발송 기준일에 따라 산정하며, 오후 3시 이후 또는 비영업일 접수 건은 다음 영업일 기준으로 처리" },
+  { label: "이용요금", content: "회차별 캠페인 생성 시 EDMS 캐시 자동 차감" },
+  { label: "정기발송 중단", content: "토글 OFF 시 향후 회차 생성 중지" },
+  { label: "이미 생성된 회차", content: "매체 예약이 확정된 회차는 취소 제한" },
+  { label: "캐시 부족", content: "D-14 및 D-7 확인 후 부족 시 해당 회차 스킵" },
+  { label: "자동 종료", content: "캐시 부족으로 연속 2회 스킵 시 정기발송 종료" },
+  { label: "입력정보", content: "지점명·고객센터 연락처·URL 및 연결 페이지 정보가 정기발송 기간 동안 정확하고 유효하도록 관리" },
+];
+
+/** '전문보기'를 눌렀을 때 펼쳐지는 비즈팅 정기발송 특별약관 요약표 */
+function SpecialTermsTable() {
+  return (
+    <div className="tw-border tw-border-[#EEF0F3] tw-rounded-md tw-overflow-hidden tw-mt-2">
+      <div className="tw-max-h-[220px] tw-overflow-y-auto">
+        <table className="tw-w-full tw-border-collapse tw-text-[11px]">
+          <thead>
+            <tr className="tw-bg-[#F5F6FA]">
+              <th className="tw-text-left tw-text-[#4A4F59] tw-font-medium tw-px-2.5 tw-py-2 tw-border-b tw-border-[#EEF0F3] tw-w-[76px]">주요 사항</th>
+              <th className="tw-text-left tw-text-[#4A4F59] tw-font-medium tw-px-2.5 tw-py-2 tw-border-b tw-border-[#EEF0F3]">내용</th>
+            </tr>
+          </thead>
+          <tbody>
+            {SPECIAL_TERMS_ROWS.map((row) => (
+              <tr key={row.label} className="tw-border-b tw-border-[#F1F2F4] last:tw-border-0">
+                <td className="tw-align-top tw-px-2.5 tw-py-2 tw-text-[#4A4F59] tw-font-medium tw-whitespace-nowrap">{row.label}</td>
+                <td className="tw-align-top tw-px-2.5 tw-py-2 tw-text-[#767C88] tw-leading-relaxed">{row.content}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
 function nextBusinessDay(date: Date): Date {
   let d = new Date(date);
   while (!isBusinessDay(d)) d.setDate(d.getDate() + 1);
@@ -771,10 +819,14 @@ function PaymentWindow({ cashBalance, cost, onCharge, onClose }: PaymentWindowPr
 
 function ConsentModal({ onClose, onAgree }: { onClose: () => void; onAgree: (marketing: boolean) => void }) {
   const [all, setAll] = useState(false);
-  const [terms, setTerms] = useState(false);
+  const [specialTerms, setSpecialTerms] = useState(false);
+  const [contentConfirmed, setContentConfirmed] = useState(false);
+  const [showFullSpecialTerms, setShowFullSpecialTerms] = useState(false);
   const [marketing, setMarketing] = useState(false);
-  const toggleAll = (v: boolean) => { setAll(v); setTerms(v); setMarketing(v); };
-  useEffect(() => { setAll(terms && marketing); }, [terms, marketing]);
+  const toggleAll = (v: boolean) => { setAll(v); setSpecialTerms(v); setContentConfirmed(v); setMarketing(v); };
+  useEffect(() => { setAll(specialTerms && contentConfirmed && marketing); }, [specialTerms, contentConfirmed, marketing]);
+
+  const canProceed = specialTerms && contentConfirmed;
 
   return (
     <div className={overlayCls}>
@@ -790,14 +842,37 @@ function ConsentModal({ onClose, onAgree }: { onClose: () => void; onAgree: (mar
           전체 동의하기
         </label>
         <div className="tw-border-t tw-border-[#EEF0F3] tw-my-2.5" />
-        <label className={consentRowCls}>
-          <input type="checkbox" checked={terms} onChange={(e) => setTerms(e.target.checked)} />
-          서비스 이용약관 동의 <span className="tw-text-[#D94848] tw-ml-0.5">(필수)</span>
+
+        <div className="tw-text-[12px] tw-font-medium tw-text-[#1F2430] tw-mb-1">비즈팅 정기발송 이용 전 확인해 주세요</div>
+        <SpecialTermsTable />
+
+        <label className={`${consentRowCls} tw-mt-3`}>
+          <input type="checkbox" checked={specialTerms} onChange={(e) => setSpecialTerms(e.target.checked)} />
+          <span>
+            비즈팅 서비스 이용 특별약관에 동의합니다&nbsp;<span className="tw-text-[#D94848] tw-whitespace-nowrap">(필수)</span>
+          </span>
         </label>
-        <div className={consentBoxCls}>
-          본 서비스는 등록된 매장 정보와 타겟팅 조건을 바탕으로 문자 메시지 광고를 자동 발송합니다. 이용자는 발송 전 메시지 내용과 타겟팅 조건을 확인할 책임이 있으며, 관련 법령 및 통신사 정책을 준수해야 합니다. 발송된 메시지는 취소가 불가하며, 결제된 캐시는 발송 건수에 따라 차감됩니다. (예시 약관 문구입니다.)
-        </div>
+        <button
+          type="button"
+          onClick={() => setShowFullSpecialTerms((v) => !v)}
+          className="tw-text-[11.5px] tw-text-[#2C5FF6] tw-bg-transparent tw-border-none tw-p-0 tw-cursor-pointer tw-mt-1 tw-mb-1"
+        >
+          전문보기 {showFullSpecialTerms ? "▲" : "▼"}
+        </button>
+        {showFullSpecialTerms && (
+          <div className={consentBoxCls}>
+            본 서비스는 등록된 매장 정보와 타겟팅 조건을 바탕으로 문자 메시지 광고를 자동 발송합니다. 이용자는 발송 전 메시지 내용과 타겟팅 조건을 확인할 책임이 있으며, 관련 법령 및 통신사 정책을 준수해야 합니다. 발송된 메시지는 취소가 불가하며, 결제된 캐시는 발송 건수에 따라 차감됩니다. (예시 약관 문구입니다.)
+          </div>
+        )}
         <label className={`${consentRowCls} tw-mt-2.5`}>
+          <input type="checkbox" checked={contentConfirmed} onChange={(e) => setContentConfirmed(e.target.checked)} />
+          <span className="tw-text-[#D94848]">
+            정기발송 및 회차별 캐시 자동 차감 등 주요 내용을 확인하였습니다&nbsp;<span className="tw-whitespace-nowrap">(필수)</span>
+          </span>
+        </label>
+
+        <div className="tw-border-t tw-border-[#EEF0F3] tw-my-2.5" />
+        <label className={consentRowCls}>
           <input type="checkbox" checked={marketing} onChange={(e) => setMarketing(e.target.checked)} />
           마케팅 정보 수신 동의 <span className="tw-text-[#9AA0AC] tw-ml-0.5">(선택)</span>
         </label>
@@ -807,11 +882,45 @@ function ConsentModal({ onClose, onAgree }: { onClose: () => void; onAgree: (mar
         <div className="tw-flex tw-gap-2 tw-mt-4.5">
           <button className={`${secondaryBtnCls} tw-flex-1`} onClick={onClose}>취소</button>
           <button
-            className={`${primaryBtnCls} tw-flex-1 tw-py-[11px] ${terms ? "" : "tw-opacity-40 tw-cursor-not-allowed"}`}
-            disabled={!terms}
-            onClick={() => terms && onAgree(marketing)}
+            className={`${primaryBtnCls} tw-flex-1 tw-py-[11px] ${canProceed ? "" : "tw-opacity-40 tw-cursor-not-allowed"}`}
+            disabled={!canProceed}
+            onClick={() => canProceed && onAgree(marketing)}
           >
             동의하고 결제 계속하기
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function PhoneConsentModal({ phoneNumber, onAgree, onCancel }: { phoneNumber: string; onAgree: () => void; onCancel: () => void }) {
+  const [agreed, setAgreed] = useState(false);
+  return (
+    <div className={overlayCls}>
+      <div className={`${cardCls} tw-w-full tw-max-w-[380px] tw-px-[22px] tw-pt-[22px] tw-pb-5 tw-my-auto`}>
+        <div className="tw-flex tw-justify-between tw-items-center tw-mb-3.5">
+          <div className="tw-text-[15px] tw-font-medium tw-text-[#1F2430]">고객센터 연락처 표시 동의</div>
+          <button onClick={onCancel} aria-label="닫기" className="tw-bg-transparent tw-border-none tw-text-base tw-text-[#9AA0AC] tw-cursor-pointer">×</button>
+        </div>
+        <div className="tw-text-[12.5px] tw-text-[#4A4F59] tw-mb-2">
+          입력하신 번호(<b className="tw-text-[#1F2430]">{phoneNumber}</b>)는 개인 휴대전화번호 형식이에요.
+        </div>
+        <div className="tw-text-[12px] tw-text-[#767C88] tw-leading-relaxed tw-bg-[#FAFBFC] tw-border tw-border-[#EEF0F3] tw-rounded-md tw-p-3 tw-mb-4">
+          입력하신 연락처는 광고 메시지의 고객센터 연락처로 수신자에게 표시됩니다. 개인 휴대전화번호를 입력하는 경우 본인 또는 적법한 사용·공개 권한을 확보한 번호만 입력해 주세요.
+        </div>
+        <label className={consentRowCls}>
+          <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} />
+          해당 연락처를 광고 메시지에 표시할 권한이 있음을 확인합니다&nbsp;<span className="tw-text-[#D94848] tw-ml-0.5 tw-whitespace-nowrap">(필수)</span>
+        </label>
+        <div className="tw-flex tw-gap-2 tw-mt-4.5">
+          <button className={`${secondaryBtnCls} tw-flex-1`} onClick={onCancel}>취소</button>
+          <button
+            className={`${primaryBtnCls} tw-flex-1 tw-py-[11px] ${agreed ? "" : "tw-opacity-40 tw-cursor-not-allowed"}`}
+            disabled={!agreed}
+            onClick={() => agreed && onAgree()}
+          >
+            동의하기
           </button>
         </div>
       </div>
@@ -835,6 +944,9 @@ export default function PotentialCustomerFlow() {
   const [showEntryInsufficientAlert, setShowEntryInsufficientAlert] = useState(false);
   const [cashBalance, setCashBalance] = useState(20000);
   const [hasAgreed, setHasAgreed] = useState(false);
+  const [showPhoneConsentModal, setShowPhoneConsentModal] = useState(false);
+  // 마지막으로 "광고 메시지에 표시할 권한이 있음"을 동의받은 번호. 이 번호와 현재 입력값이 다르면(=DB에서 새로 불러왔거나 직접 수정한 경우) 다시 동의를 받아야 한다.
+  const [phoneAuthorizedNumber, setPhoneAuthorizedNumber] = useState<string | null>(null);
   const [hasSentBefore, setHasSentBefore] = useState(false);
   const [recurring, setRecurring] = useState(true);
 
@@ -856,6 +968,30 @@ export default function PotentialCustomerFlow() {
   };
 
   const setVariable = (key: string, value: string) => setVariableValues((prev) => ({ ...prev, [key]: value }));
+
+  // 고객센터 번호가 010으로 시작하는 개인 휴대전화번호 형식이면(DB에서 자동으로 불러온 값이라도) 표시 권한 동의를 받아야 한다.
+  const phoneValue = variableValues["phone"] ?? "";
+  const phoneIsMobile = isKoreanMobileNumber(phoneValue);
+  const phoneNeedsConsent = phoneIsMobile && phoneAuthorizedNumber !== phoneValue;
+
+  const handlePhoneBlur = () => {
+    if (isKoreanMobileNumber(phoneValue) && phoneAuthorizedNumber !== phoneValue) {
+      setShowPhoneConsentModal(true);
+    }
+  };
+  const agreePhoneConsent = () => {
+    setPhoneAuthorizedNumber(phoneValue);
+    setShowPhoneConsentModal(false);
+  };
+
+  // DB에서 자동으로 불러온 값이 010 번호인 경우(사용자가 직접 타이핑하지 않은 경우)를 대비해,
+  // 설정 화면 진입 시 및 템플릿 변경 시에도 동일하게 동의 여부를 확인한다.
+  useEffect(() => {
+    if (step === "setup" && isKoreanMobileNumber(phoneValue) && phoneAuthorizedNumber !== phoneValue) {
+      setShowPhoneConsentModal(true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [step, templateId]);
 
   const dongOptions = REGION_DATA[sido]?.[gu] ?? [];
   const sidoGuOptions = REGION_DATA[sido] ? Object.keys(REGION_DATA[sido]) : [];
@@ -931,6 +1067,10 @@ export default function PotentialCustomerFlow() {
   const handlePayClick = () => {
     if (hasEmptyRequiredField) {
       setShowRequiredFieldsAlert(true);
+      return;
+    }
+    if (phoneNeedsConsent) {
+      setShowPhoneConsentModal(true);
       return;
     }
     proceedToPayment();
@@ -1195,7 +1335,7 @@ export default function PotentialCustomerFlow() {
                               className=""
                               invalid={isInvalid && !isLocked}
                               disabled={isLocked}
-                              onBlur={v.key === "branch" ? checkTitleLength : undefined}
+                              onBlur={v.key === "branch" ? checkTitleLength : v.key === "phone" ? handlePhoneBlur : undefined}
                             />
                             {isLocked ? (
                               <div className="tw-text-[11px] tw-text-[#9AA0AC] tw-mt-1">
@@ -1209,6 +1349,18 @@ export default function PotentialCustomerFlow() {
                               <div className="tw-text-[11px] tw-text-[#D94848] tw-mt-1">
                                 ⚠ {autoLoadable ? "등록된 값을 불러오지 못했어요." : "자동으로 불러올 수 없는 값이에요."} 직접 입력해주세요.
                               </div>
+                            ) : v.key === "phone" && phoneIsMobile ? (
+                              phoneNeedsConsent ? (
+                                <button
+                                  type="button"
+                                  onClick={() => setShowPhoneConsentModal(true)}
+                                  className="tw-text-[11px] tw-text-[#D94848] tw-mt-1 tw-bg-transparent tw-border-none tw-p-0 tw-cursor-pointer tw-text-left tw-underline"
+                                >
+                                  ⚠ 개인 휴대전화번호예요. 연락처 표시 동의가 필요해요.
+                                </button>
+                              ) : (
+                                <div className="tw-text-[11px] tw-text-[#3B8A5A] tw-mt-1">✓ 연락처 표시 동의를 완료했어요.</div>
+                              )
                             ) : (
                               <div className="tw-text-[11px] tw-text-[#9AA0AC] tw-mt-1">
                                 {v.hint}
@@ -1378,6 +1530,13 @@ export default function PotentialCustomerFlow() {
           )}
           {showConsent && (
             <ConsentModal onClose={() => setShowConsent(false)} onAgree={() => { setHasAgreed(true); setShowConsent(false); setShowConfirmRegister(true); }} />
+          )}
+          {showPhoneConsentModal && (
+            <PhoneConsentModal
+              phoneNumber={phoneValue}
+              onAgree={agreePhoneConsent}
+              onCancel={() => setShowPhoneConsentModal(false)}
+            />
           )}
           {showConfirmRegister && (
             <AlertModal
