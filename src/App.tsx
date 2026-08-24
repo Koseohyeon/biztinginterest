@@ -20,6 +20,8 @@ import NPassPrivacyPolicy from "./privacy/NPassPrivacyPolicy"
 import NPassPrivacyPolicy2 from "./privacy/NPassPrivacyPolicy1.1";
 import PrivacyV11Document2 from "./privacy/PrivacyV11Document1.1";
 import ClauseStaticDocument from "./privacy/ClauseStaticDocument";
+import Isms_BiztingPrivacy from "./privacy/isms_BiztingPrivacyv1.0";
+import Isms_NpassPrivacy from "./privacy/isms_N-PassPrivacyv1.0";
 
 //Latte
 import LatteEventPage from "./pages/client/LatteEventPage"
@@ -85,6 +87,8 @@ export default function App() {
         <Route path="/pricacy/NPassPrivacyPolicy2" element={<NPassPrivacyPolicy2 />} />
         <Route path="/pricacy/PrivacyV11Document2" element={<PrivacyV11Document2 />} />
         <Route path="/pricacy/ClauseStaticDocument" element={<ClauseStaticDocument />} />
+        <Route path="/pricacy/isms_BiztingPrivacy" element={<Isms_BiztingPrivacy/>} />
+        <Route path="/pricacy/ismsNpassPrivacy" element={<Isms_NpassPrivacy />} />
 
         {/* 정관장 */}
         <Route path="/eventpage/JUNGKWANJANG_6eventPage" element={<JUNGKWANJANG_6eventPage />} />
