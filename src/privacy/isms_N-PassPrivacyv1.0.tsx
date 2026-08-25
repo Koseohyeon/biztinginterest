@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import CurrentNPassPrivacyPolicy from "./NPassPrivacyPolicy";
-import { NPASS_V11_EFFECTIVE_AT, NPASS_V11_NOTICE_START_AT } from "./clauseVersionDates";
+import { NPASS_V12_EFFECTIVE_AT, NPASS_V12_NOTICE_START_AT } from "./clauseVersionDates";
 
 // ── Types ──────────────────────────────────────────────
 interface SectionProps {
@@ -123,6 +123,15 @@ const SubHeading = ({ children }: { children: ReactNode }) => (
 
 // ── Badge Components ──────────────────────────────────────
 
+
+// ── Modal Data ──────────────────────────────────────
+const CHANGE_ROWS: [string, string][] = [
+  ["수집항목 안내방식 개편", "목적별 서술형 안내를 동의 여부 기준 표(동의 없이 처리/동의받아 처리)로 재구성"],
+  ["자동 수집 정보 조항 신설", "서비스 이용 중 자동 생성·수집되는 정보(IP주소, 접속일시, 서비스이용기록) 안내 신설"],
+  ["제3자 제공 안내 정비", "중복 기재되어 있던 제3자 제공 안내를 단일 표로 통합 정리"],
+  ["안전성 확보조치 강화", "전산실·자료보관실 출입통제, 잠금장치 보관 등 물리적 조치 신설"],
+  ["보안 담당자 수정", "보안 담당자 수정"],
+];
 
 // ── Modal Component ──────────────────────────────────────
 const ChangeModal = ({ onClose }: { onClose: () => void }) => (
@@ -315,7 +324,6 @@ const ChangeModal = ({ onClose }: { onClose: () => void }) => (
           <div className="modal-header-bar-inner">
             <button className="modal-close-btn" onClick={onClose}>✕</button>
             <h2>이전 버전 대비 변경사항 요약</h2>
-            <p>2026년 5월 1일 시행 버전 → 2026년 6월 5일 시행 버전</p>
             <p>시행 전에는 참고용으로 열람하실 수 있으며, 법적 적용·효력 발생은 시행일 이후에 이루어집니다.</p>
           </div>
         </div>
@@ -324,8 +332,8 @@ const ChangeModal = ({ onClose }: { onClose: () => void }) => (
         <div className="modal-body-scroll">
           {/* 공고/시행일 */}
           <div className="date-bar">
-            <span><span className="lbl">공고일자</span>2026. MM. DD.</span>
-            <span><span className="lbl">시행일자</span>2026. MM. DD.</span>
+            <span><span className="lbl">공고일자</span>2026. 08. 26.</span>
+            <span><span className="lbl">시행일자</span>2026. 09. 26.</span>
           </div>
 
           {/* Section 1 — 변경 내용 표 */}
@@ -337,96 +345,17 @@ const ChangeModal = ({ onClose }: { onClose: () => void }) => (
             <table className="modal-tbl-custom">
               <thead>
                 <tr>
-                  <th style={{ width: "32%" }}>조항</th>
+                  <th style={{ width: "32%" }}>변경 항목</th>
                   <th>변경 내용</th>
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td>
-                    <strong>제1조</strong><br />
-                    <span style={{ fontWeight: 400, fontSize: "11.5px", color: "#94a3b8" }}>개인정보의 처리 목적 등</span>
-                  </td>
-                  <td>
-                    목차 1~4항 통합 — 처리 목적·수집 항목·보유기간을 단일 조항으로 재편
-                  
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <strong>제2조</strong><br />
-                    <span style={{ fontWeight: 400, fontSize: "11.5px", color: "#94a3b8" }}>자동 수집 장치</span>
-                  </td>
-                  <td>
-                    자동 수집되는 정보 항목 신설 / 브라우저·모바일별 쿠키 삭제·차단 방법 상세 안내로 확대
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <strong>제3조</strong><br />
-                    <span style={{ fontWeight: 400, fontSize: "11.5px", color: "#94a3b8" }}>개인정보의 제3자 제공</span>
-                  </td>
-                  <td>
-                    법적 근거(개인정보보호법 제17조 제1항 제1호) 명시 및 제공 현황 표를 제공받는 자·목적·항목·기간·근거 형식으로 개편
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <strong>제4조</strong><br />
-                    <span style={{ fontWeight: 400, fontSize: "11.5px", color: "#94a3b8" }}>개인정보 처리업무의 위탁</span>
-                  </td>
-                  <td>
-                    알림톡(카카오), 문자·RCS 발송(LGU+·인포뱅크·BGF네트웍스·센드소프트) 수탁사 추가
-                  
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <strong>제5조</strong><br />
-                    <span style={{ fontWeight: 400, fontSize: "11.5px", color: "#94a3b8" }}>개인정보의 국외 이전</span>
-                  </td>
-                  <td>
-                    국외 이전 조항 신설 — 현재 국외 이전 없음, 향후 이전 시 고지 의무 명시
-                 
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <strong>제6조</strong><br />
-                    <span style={{ fontWeight: 400, fontSize: "11.5px", color: "#94a3b8" }}>개인정보의 파기 절차 및 방법</span>
-                  </td>
-                  <td>
-                    통계 목적 비식별 보관 명시 / 관계 법령에 따른 별도 DB 보관 근거 추가
-                  
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <strong>제7조</strong><br />
-                    <span style={{ fontWeight: 400, fontSize: "11.5px", color: "#94a3b8" }}>안전성 확보조치</span>
-                  </td>
-                  <td>
-                    물리적 조치 항목 신설 — 전산실·자료보관실 출입통제, 보관 매체 시건장치, 파기 시 복구 방지 조치 명시
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <strong>제8조</strong><br />
-                    <span style={{ fontWeight: 400, fontSize: "11.5px", color: "#94a3b8" }}>정보주체의 권리</span>
-                  </td>
-                  <td>
-                    자동화된 의사결정 없음 명시 / 위임장 고시번호 제2025-5호로 업데이트
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <strong>제9조</strong><br />
-                    <span style={{ fontWeight: 400, fontSize: "11.5px", color: "#94a3b8" }}>개인정보 보호책임자</span>
-                  </td>
-                  <td>
-                    개인정보 보호담당자 변경 — 박영하(매니저) → 김기욱(파트장)
-                  </td>
-                </tr>
+                {CHANGE_ROWS.map(([label, text], i) => (
+                  <tr key={i}>
+                    <td><strong>{label}</strong></td>
+                    <td>{text}</td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
@@ -441,18 +370,19 @@ const ChangeModal = ({ onClose }: { onClose: () => void }) => (
 export default function NPassPrivacyPolicy() {
   const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
-  const now = new Date();
-  const isNPassV11NoticeStarted = now >= NPASS_V11_NOTICE_START_AT;
-  const isNPassV11Effective = now >= NPASS_V11_EFFECTIVE_AT;
+ /* const now = new Date("2026-08-27T00:00:00+09:00"); */
+ const now = new Date();
+  const isNPassV12NoticeStarted = now >= NPASS_V12_NOTICE_START_AT;
+  const isNPassV12Effective = now >= NPASS_V12_EFFECTIVE_AT;
 
   // 페이지 로딩 시 자동으로 모달 오픈
   useEffect(() => {
-    if (!isNPassV11Effective) {
+    if (isNPassV12NoticeStarted && !isNPassV12Effective) {
       setShowModal(true);
     }
-  }, [isNPassV11Effective]);
+  }, [isNPassV12NoticeStarted, isNPassV12Effective]);
 
-  if (!isNPassV11NoticeStarted) {
+  if (!isNPassV12NoticeStarted) {
     return <CurrentNPassPrivacyPolicy />;
   }
 
@@ -491,14 +421,14 @@ export default function NPassPrivacyPolicy() {
             className="tw-border-0 tw-bg-[#2563eb] tw-text-white tw-rounded-full tw-px-4 tw-py-2 tw-text-[13px] tw-font-semibold tw-cursor-pointer"
             onClick={() => navigate("/clause/sender/privacy")}
           >
-            {isNPassV11Effective ? "현재 버전" : "예정 버전"}
+            {isNPassV12Effective ? "현재 버전" : "예정 버전"}
           </button>
           <button
             type="button"
             className="tw-border-0 tw-bg-white tw-text-slate-700 tw-rounded-full tw-px-4 tw-py-2 tw-text-[13px] tw-font-semibold tw-cursor-pointer"
             onClick={() => navigate("/clause/sender/privacy/v1.0")}
           >
-            {isNPassV11Effective ? "이전 버전" : "현재 버전"}
+            {isNPassV12Effective ? "이전 버전" : "현재 버전"}
           </button>
         </div>
 

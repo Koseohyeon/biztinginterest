@@ -87,8 +87,8 @@ export default function App() {
         <Route path="/pricacy/NPassPrivacyPolicy2" element={<NPassPrivacyPolicy2 />} />
         <Route path="/pricacy/PrivacyV11Document2" element={<PrivacyV11Document2 />} />
         <Route path="/pricacy/ClauseStaticDocument" element={<ClauseStaticDocument />} />
-        <Route path="/pricacy/isms_BiztingPrivacy" element={<Isms_BiztingPrivacy/>} />
-        <Route path="/pricacy/ismsNpassPrivacy" element={<Isms_NpassPrivacy />} />
+        <Route path="/privacy/isms_BiztingPrivacy" element={<Isms_BiztingPrivacy/>} />
+        <Route path="/privacy/isms_NpassPrivacy" element={<Isms_NpassPrivacy />} />
 
         {/* 정관장 */}
         <Route path="/eventpage/JUNGKWANJANG_6eventPage" element={<JUNGKWANJANG_6eventPage />} />

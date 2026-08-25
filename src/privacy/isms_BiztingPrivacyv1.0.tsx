@@ -1,6 +1,8 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import type { CSSProperties, ReactNode } from "react";
 import ClauseStaticDocument from "./ClauseStaticDocument";
+import ClauseVersionModal from "./ClauseVersionModal";
+import { PRIVACY_V13_NOTICE_START_AT, PRIVACY_V13_EFFECTIVE_AT } from "./clauseVersionDates";
 
 const styles = `
     :root {
@@ -18,6 +20,7 @@ const styles = `
       --new-badge-text: #1a6ef5;
       --warn: #fff8f0;
       --warn-border: #f0a030;
+      }
     
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -693,12 +696,37 @@ const S10_OFFICER_ROWS: ReactNode[][] = [
   ["개인정보 보호담당자", "비즈톡㈜", "파트장", "김기욱", "070-8896-7359", "biztalk_privacy@biztalk.co.kr"],
 ];
 
+/* ────────────────────────────────────────────────────────
+   변경사항 모달 데이터 (간략 요약)
+──────────────────────────────────────────────────────── */
+const CHANGE_ROWS: [string, string][] = [
+  ["수집항목 안내방식 개편", "목적별 서술형 안내를 동의 여부 기준 표(동의 없이 처리/동의받아 처리)로 재구성"],
+  ["연계정보(CI) 처리 근거 신설", "본인확인 목적의 연계정보(CI) 수집·이용 및 보유기간(즉시 파기), 안전조치 의무 등을 신설 안내"],
+  ["제3자 제공 안내 정비", "동의철회 방법 및 절차 명확화"],
+  ["안전성 확보조치 강화", "고객사 대시보드 접근통제(MFA), 개인정보 마스킹, 다운로드 통제 등 관리조치 신설"],
+  ["자동수집정보 항목 확대", "자동 수집되는 정보에 쿠키, 방문일시, 불량 이용기록 추가"],
+  ["보안 담당자 수정", "보안 담당자 수정"],
+];
+
 type PrivacyV12DocumentProps = {
   modal?: React.ComponentProps<typeof ClauseStaticDocument>["modal"];
   mode?: "scheduled" | "current";
 };
 
 const PrivacyV12Document = ({ modal, mode = "scheduled" }: PrivacyV12DocumentProps) => {
+  const [changeModalOpen, setChangeModalOpen] = useState(false);
+  /* const now = new Date("2026-08-27T00:00:00+09:00"); */
+  const now = new Date(); 
+  const isPrivacyV13NoticeStarted = now >= PRIVACY_V13_NOTICE_START_AT;
+  const isPrivacyV13Effective = now >= PRIVACY_V13_EFFECTIVE_AT;
+
+  // 고지 시작 이후 ~ 시행 전 기간에만 페이지 로딩 시 자동으로 모달 오픈
+  useEffect(() => {
+    if (isPrivacyV13NoticeStarted && !isPrivacyV13Effective) {
+      setChangeModalOpen(true);
+    }
+  }, [isPrivacyV13NoticeStarted, isPrivacyV13Effective]);
+
   return (
     <ClauseStaticDocument styles={styles} modal={modal}>
       <div className="page-wrap">
@@ -1088,11 +1116,11 @@ const PrivacyV12Document = ({ modal, mode = "scheduled" }: PrivacyV12DocumentPro
           <div className="effective-strip">
             <span>
               <span className="label">{"공고일자"}</span>
-              {" 2026. MM. DD."}
+              {" 2026.08.26."}
             </span>
             <span>
               <span className="label">{"시행일자"}</span>
-              {" 2026. MM. DD."}
+              {" 2026.09.26."}
             </span>
           </div>
           <div style={{ marginTop: "16px" }}>
@@ -1106,6 +1134,28 @@ const PrivacyV12Document = ({ modal, mode = "scheduled" }: PrivacyV12DocumentPro
         </Section>
 
       </div>
+
+      {/* ── 변경사항 모달 (간략 요약, 페이지 로드 시 자동 표시) ── */}
+      <ClauseVersionModal
+        open={changeModalOpen}
+        title="이전 버전 대비 변경사항 요약"
+        subtitle="시행 전 참고용이며, 법적 효력은 시행일 이후 발생합니다."
+        ctaLabel="확인"
+        onClose={() => setChangeModalOpen(false)}
+        onConfirm={() => setChangeModalOpen(false)}
+      >
+        <div className="modal-section">
+          <div className="modal-section-title">{"주요 변경 조항"}</div>
+          <table className="modal-tbl">
+            <thead><tr><th>{"조항"}</th><th>{"내용"}</th></tr></thead>
+            <tbody>
+              {CHANGE_ROWS.map(([tag, text], i) => (
+                <tr key={i}><td style={{ fontWeight: 600 }}>{tag}</td><td>{text}</td></tr>
+              ))}
+            </tbody>
+          </table>
+        </div>      
+      </ClauseVersionModal>
     </ClauseStaticDocument>
   );
 };
