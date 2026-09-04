@@ -22,6 +22,7 @@ import PrivacyV11Document2 from "./privacy/PrivacyV11Document1.1";
 import ClauseStaticDocument from "./privacy/ClauseStaticDocument";
 import Isms_BiztingPrivacy from "./privacy/isms_BiztingPrivacyv1.0";
 import Isms_NpassPrivacy from "./privacy/isms_N-PassPrivacyv1.0";
+import SignUp from "./pages/client/SignUp_v1.0";
 
 //Latte
 import LatteEventPage from "./pages/client/LatteEventPage"
@@ -89,6 +90,7 @@ export default function App() {
         <Route path="/pricacy/ClauseStaticDocument" element={<ClauseStaticDocument />} />
         <Route path="/privacy/isms_BiztingPrivacy" element={<Isms_BiztingPrivacy/>} />
         <Route path="/privacy/isms_NpassPrivacy" element={<Isms_NpassPrivacy />} />
+        <Route path="/client/SignUp_v1.0" element={<SignUp />} />
 
         {/* 정관장 */}
         <Route path="/eventpage/JUNGKWANJANG_6eventPage" element={<JUNGKWANJANG_6eventPage />} />
