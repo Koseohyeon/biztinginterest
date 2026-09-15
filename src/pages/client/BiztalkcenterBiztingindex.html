@@ -1,0 +1,266 @@
+<!DOCTYPE html><html lang="ko" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>비즈팅(Bizting) - 빅데이터 타겟 마케팅 솔루션</title>
+<!-- Tailwind CSS v3 with Plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration -->
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f0f5ff',
+              100: '#e5edff',
+              200: '#cddbfe',
+              300: '#b4c6fc',
+              400: '#8da2fb',
+              500: '#4361ee',
+              600: '#2f49d1',
+              700: '#2338a8',
+              800: '#1b2c86',
+              900: '#152269',
+            },
+            kakao: '#FEE500',
+            skt: '#004fe5',
+            kb: '#6d5a49',
+            cj: '#22553b',
+            lpoint: '#00a3e0'
+          },
+          fontFamily: {
+            sans: ['Pretendard', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+          },
+          boxShadow: {
+            'soft-card': '0 20px 40px -15px rgba(67, 97, 238, 0.08), 0 0 1px 1px rgba(67, 97, 238, 0.05)',
+            'glow-blue': '0 0 35px -5px rgba(67, 97, 238, 0.35)',
+            'float-node': '0 12px 28px rgba(35, 56, 168, 0.12), 0 2px 8px rgba(0, 0, 0, 0.04)',
+          }
+        }
+      }
+    }
+  </script>
+<!-- BEGIN: Custom Styling -->
+<style data-purpose="grid-background">
+    /* Subtle Grid Background Pattern as seen in reference image */
+    .bg-grid-pattern {
+      background-size: 32px 32px;
+      background-image: 
+        linear-gradient(to right, rgba(67, 97, 238, 0.06) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(67, 97, 238, 0.06) 1px, transparent 1px);
+    }
+    
+    .radial-gradient-mesh {
+      background: radial-gradient(circle at 65% 25%, rgba(67, 97, 238, 0.09) 0%, rgba(229, 237, 255, 0.4) 40%, rgba(255, 255, 255, 0.95) 85%);
+    }
+  </style>
+<style data-purpose="animated-effects">
+    /* Subtle pulsing effect for central core and interactive nodes */
+    @keyframes pulse-ring {
+      0% { transform: scale(0.95); opacity: 0.8; }
+      50% { transform: scale(1.08); opacity: 0.3; }
+      100% { transform: scale(0.95); opacity: 0.8; }
+    }
+    .pulse-ring-anim {
+      animation: pulse-ring 3.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+
+    /* Flow line animation for connecting channels */
+    @keyframes dash {
+      to {
+        stroke-dashoffset: -40;
+      }
+    }
+    .flow-line {
+      stroke-dasharray: 6, 6;
+      animation: dash 2.5s linear infinite;
+    }
+  </style>
+<!-- END: Custom Styling -->
+</head>
+<body class="bg-[#F8FAFD] text-slate-800 font-sans antialiased overflow-x-hidden relative selection:bg-brand-100 selection:text-brand-700">
+<!-- BEGIN: Hero & Main Visualization Section -->
+<section class="relative min-h-[920px] w-full pt-12 pb-24 px-6 md:px-12 lg:px-20 bg-grid-pattern radial-gradient-mesh border-b border-brand-100/60" data-purpose="hero-overview">
+<div class="max-w-[1480px] mx-auto grid grid-cols-1 xl:grid-cols-12 gap-12 lg:gap-16 items-center">
+<!-- BEGIN: Left Content Block -->
+<div class="xl:col-span-5 flex flex-col justify-center space-y-7 z-10" data-purpose="hero-text-content">
+<!-- Breadcrumb / Category Tag -->
+<div class="flex items-center space-x-2 text-xs font-semibold text-brand-600 tracking-wider">
+<span class="hover:text-brand-700 transition cursor-pointer">서비스</span>
+<span class="text-slate-300">—</span>
+<span class="bg-brand-50 px-2.5 py-1 rounded-full text-brand-700 font-medium">비즈팅</span>
+</div>
+<!-- Brand Identity Logo & Name -->
+<div class="flex items-center space-x-3.5">
+<div class="w-12 h-12 bg-gradient-to-tr from-brand-600 to-brand-500 rounded-2xl flex items-center justify-center shadow-lg shadow-brand-500/25 text-white">
+<!-- Speech Bubble Icon matching reference design -->
+<svg class="w-7 h-7" fill="currentColor" viewBox="0 0 24 24">
+<path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-3 9H7V9h10v2zm-4 4H7v-2h6v2zm4-8H7V5h10v2z"></path>
+</svg>
+</div>
+<div>
+<span class="text-3xl lg:text-4xl font-black tracking-tight text-slate-900 block leading-tight">비즈팅</span>
+
+</div>
+</div>
+<!-- Subheading Tag -->
+<div class="flex items-center space-x-2">
+<span class="h-1 w-6 bg-brand-600 rounded-full inline-block"></span>
+<p class="text-xs lg:text-sm font-bold tracking-widest text-brand-600 uppercase">빅데이터 기반 타겟 광고 서비스</p>
+</div>
+<!-- Main Headlines -->
+<div class="space-y-4">
+<h1 class="text-3xl sm:text-4xl lg:text-[42px] font-extrabold text-slate-950 leading-[1.28] tracking-tight">
+            잠재고객을 찾고,<br>
+<span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-indigo-600">관심고객과 연결</span>합니다.
+          </h1>
+<p class="text-sm sm:text-base text-slate-600 font-normal leading-relaxed max-w-lg">
+            각 매체사별 특성을 극대화한 <strong class="text-slate-800 font-semibold">신개념 빅데이터 타겟마케팅</strong>.<br>
+            자체 고객 DB가 없어도 통신사·카드사·캌오의 실시간 행동·위치·결제 데이터를 활용해 가장 반응 확률이 높은 고관여 고객에게<br>직접 도달합니다.
+          </p>
+</div>
+<!-- 3-Step Flow Pipeline Indicator -->
+
+<!-- CTA Button Group -->
+<div class="pt-2 flex items-center space-x-4">
+<a class="group inline-flex items-center justify-center px-7 py-3.5 text-sm sm:text-base font-semibold text-white bg-brand-600 hover:bg-brand-700 rounded-xl shadow-lg shadow-brand-500/30 hover:shadow-brand-500/50 hover:-translate-y-0.5 transition-all duration-200" href="#inquiry">
+<span class="">도입 문의</span>
+<svg class="w-4 h-4 ml-2.5 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+<path d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</a>
+
+</div>
+</div>
+<!-- END: Left Content Block -->
+<!-- BEGIN: Right Core Visual Infographic Diagram -->
+<div class="xl:col-span-7 relative w-full" data-purpose="infographic-diagram-canvas"><div class="relative bg-white/95 backdrop-blur-md rounded-3xl p-6 sm:p-8 border border-white shadow-soft-card overflow-hidden"><div class="absolute inset-0 bg-grid-pattern opacity-30 pointer-events-none"></div><div class="absolute -right-20 -top-20 w-72 h-72 bg-brand-200/30 rounded-full blur-3xl pointer-events-none"></div><div class="absolute -left-20 -bottom-20 w-72 h-72 bg-blue-100/40 rounded-full blur-3xl pointer-events-none"></div><div class="relative flex flex-wrap items-center justify-between gap-3 mb-6 pb-4 border-b border-slate-100"><div class="flex items-center space-x-2.5"><span class="flex h-2.5 w-2.5 relative"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-brand-600"></span></span><span class="text-xs sm:text-sm font-bold text-slate-800 tracking-wide">빅데이터 기반 정밀 타겟 추출 프로세스</span></div><span class="text-xs font-bold bg-brand-50 text-brand-700 px-3 py-1 rounded-full border border-brand-200/60 flex items-center gap-1.5"><svg class="w-3.5 h-3.5 text-emerald-500" fill="currentColor" viewBox="0 0 20 20"><path clip-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" fill-rule="evenodd"></path></svg>자사 DB 없이 고관여 고객군 선별 가능</span></div><div class="relative grid grid-cols-1 md:grid-cols-12 gap-8 items-center py-4"><div class="md:col-span-7 flex flex-col space-y-3 z-10"><div class="flex items-center justify-between mb-1"><span class="text-xs font-extrabold text-brand-600 uppercase tracking-wider flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-brand-600"></span>&nbsp;1. 매체사별 빅데이터 특성</span></div><div class="space-y-2.5"><div class="p-3 bg-[#FBFDFF] rounded-xl border border-blue-100 hover:border-brand-400 hover:shadow-xs transition-all flex items-center gap-3"><div class="w-8 h-8 rounded-lg bg-[#FEE500] flex items-center justify-center font-bold text-xs text-slate-900 flex-shrink-0 shadow-xs"><svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 3c-5.52 0-10 3.58-10 8 0 2.82 1.84 5.3 4.64 6.72l-1.18 4.35c-.1.38.33.68.66.47l5.12-3.41c.25.02.5.03.76.03 5.52 0 10-3.58 10-8s-4.48-8-10-8z"></path></svg></div><div class="min-w-0 flex-1"><div class="flex items-center justify-between"><span class="text-xs font-bold text-slate-900">카카오</span><span class="text-[10px] px-2 py-0.5 bg-amber-50 text-amber-700 rounded-full font-semibold border border-amber-100">AI 관심·행동</span></div><p class="text-[11px] text-slate-500 truncate mt-0.5">쇼핑·선물하기 등 카카오 생태계 기반 고객군 타겟팅 가능</p></div></div><div class="p-3 bg-[#FBFDFF] rounded-xl border border-blue-100 hover:border-brand-400 hover:shadow-xs transition-all flex items-center gap-3"><div class="w-8 h-8 rounded-lg bg-[#004fe5] flex items-center justify-center font-black text-xs text-white flex-shrink-0 shadow-xs">T</div><div class="min-w-0 flex-1"><div class="flex items-center justify-between"><span class="text-xs font-bold text-slate-900">SK텔레콤</span><span class="text-[10px] px-2 py-0.5 bg-blue-50 text-brand-700 rounded-full font-semibold border border-blue-100">단말기 기반</span></div><p class="text-[11px] text-slate-500 truncate mt-0.5">실시간체류, 웹앱, 통화, 관심사 기반 정밀 타겟팅 가능</p></div></div><div class="p-3 bg-[#FBFDFF] rounded-xl border border-blue-100 hover:border-brand-400 hover:shadow-xs transition-all flex items-center gap-3"><div class="w-8 h-8 rounded-lg bg-[#6d5a49] flex items-center justify-center font-bold text-xs text-amber-200 flex-shrink-0 shadow-xs">KB</div><div class="min-w-0 flex-1"><div class="flex items-center justify-between"><span class="text-xs font-bold text-slate-900">KB국민카드</span><span class="text-[10px] px-2 py-0.5 bg-amber-50 text-amber-700 rounded-full font-semibold border border-amber-100">결제 이력</span></div><p class="text-[11px] text-slate-500 truncate mt-0.5">카드, 브랜드, 상품 결재 기반 타겟팅 가능</p></div></div><div class="p-3 bg-[#FBFDFF] rounded-xl border border-blue-100 hover:border-brand-400 hover:shadow-xs transition-all flex items-center gap-3"><div class="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center font-bold text-xs text-white flex-shrink-0 shadow-xs">CJ</div><div class="min-w-0 flex-1"><div class="flex items-center justify-between"><span class="text-xs font-bold text-slate-900">CJ ONE</span><span class="text-[10px] px-2 py-0.5 bg-emerald-50 text-emerald-700 rounded-full font-semibold border border-emerald-100">라이프스타일 소비</span></div><p class="text-[11px] text-slate-500 truncate mt-0.5">맴버십, 관심사, 소비정보, 구매이력 기반 타겟팅 가능</p></div></div><div class="p-3 bg-[#FBFDFF] rounded-xl border border-blue-100 hover:border-brand-400 hover:shadow-xs transition-all flex items-center gap-3"><div class="w-8 h-8 rounded-lg bg-sky-500 flex items-center justify-center font-bold text-xs text-white flex-shrink-0 shadow-xs">L</div><div class="min-w-0 flex-1"><div class="flex items-center justify-between"><span class="text-xs font-bold text-slate-900">L.POINT</span><span class="text-[10px] px-2 py-0.5 bg-blue-50 text-sky-700 rounded-full font-semibold border border-blue-100">라이프 스타일 소비</span></div><p class="text-[11px] text-slate-500 truncate mt-0.5">맴버십, 관심사, 소비정보, 구매이력 기반 타겟팅 가능</p></div></div></div></div><div class="md:col-span-5 flex flex-col items-center justify-center text-center relative py-4 z-20"><div class="text-xs font-extrabold text-brand-600 uppercase tracking-wider mb-4 flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-brand-600"></span>2. 정밀 타겟 추출</div><div class="relative flex items-center justify-center my-3"><div class="absolute w-36 h-36 rounded-full border-2 border-dashed border-brand-300 animate-spin" style="animation-duration: 25s;"></div><div class="absolute w-28 h-28 rounded-full bg-brand-500/15 pulse-ring-anim pointer-events-none"></div><div class="relative w-24 h-24 rounded-full bg-gradient-to-tr from-brand-700 via-brand-600 to-indigo-600 p-0.5 shadow-xl flex items-center justify-center text-white"><div class="w-full h-full rounded-full bg-slate-900/40 backdrop-blur-xs flex flex-col items-center justify-center p-2"><svg class="w-9 h-9 text-white drop-shadow" fill="currentColor" viewBox="0 0 20 20"><path clip-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" fill-rule="evenodd"></path></svg><span class="text-[10px] font-extrabold text-brand-200 mt-1 tracking-tight">1:1 TARGET</span></div></div><div class="absolute -top-1 -right-1 bg-emerald-500 text-white text-[10px] font-black w-6 h-6 rounded-full flex items-center justify-center shadow-md border border-white">✓</div></div><div class="mt-4 max-w-[210px]"><span class="inline-block text-xs font-extrabold text-slate-900 bg-brand-50 px-3 py-1.5 rounded-full border border-brand-200">고관여 정밀 타겟 고객</span><p class="text-xs text-slate-500 mt-2 leading-relaxed font-medium">각 채널 별<br>반응 확률 극대화 고객 추출</p></div></div></div><div class="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500 font-medium px-2"></div></div></div>
+<!-- END: Right Core Visual Infographic Diagram -->
+</div>
+</section><section class="py-16 px-6 md:px-12 lg:px-20 bg-slate-50 border-b border-brand-100/60 relative overflow-hidden" data-purpose="step3-channel-dispatch"><div class="max-w-[1480px] mx-auto"><div class="flex flex-col lg:flex-row lg:items-end justify-between mb-10 pb-4 border-b border-slate-200/80"><div class="space-y-2"><div class="inline-flex items-center space-x-2"><span class="w-2 h-2 rounded-full bg-brand-600"></span><span class="text-xs font-extrabold tracking-widest text-brand-600 uppercase">3. 공식 인증 채널 발송 &amp; 성과 검증</span></div><h2 class="text-2xl sm:text-3xl font-extrabold text-slate-950 tracking-tight">검증된 공식 발신망으로 고객 신뢰와 반응률을 동시에 확보합니다</h2></div><div class="flex items-center gap-3 mt-4 lg:mt-0"><span class="text-xs font-bold text-slate-600 bg-white px-3 py-1.5 rounded-full border border-slate-200 shadow-xs flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-500"></span>100% 공식&nbsp; 채널 발신</span></div></div><div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch"><div class="bg-white rounded-2xl border border-slate-200/80 shadow-md p-5 flex flex-col justify-between hover:border-brand-300 transition-all h-full"><div class="bg-[#ABC1D1]/25 p-3 rounded-xl border border-slate-200/60 mb-3"><div class="flex items-center justify-between pb-2 mb-2 border-b border-slate-200/60"><div class="flex items-center gap-2"><div class="w-7 h-7 rounded-full bg-[#FEE500] flex items-center justify-center text-xs font-black text-slate-900 shadow-xs">K</div><div><div class="text-xs font-bold text-slate-900 flex items-center gap-1">카카오 브랜드픽 <span class="w-3.5 h-3.5 bg-brand-600 text-white rounded-full flex items-center justify-center text-[8px] font-black">✓</span></div><span class="text-[9px] text-slate-500 font-medium">카카오 브랜드픽 채널 발송</span></div></div><span class="text-[10px] text-slate-400">오전 10:24</span></div><div class="bg-white rounded-xl p-3 border border-slate-100 shadow-xs space-y-2"><div class="flex items-center justify-between"><span class="text-[9px] text-slate-400 font-medium">광고</span></div><div><p class="text-xs font-bold text-slate-900 leading-snug">(광고) OO상품 특별 할인 안내</p><p class="text-[10px] text-slate-500 mt-0.5 leading-normal">실시간 관심사·행동 기반 정밀 1:1 맞춤 바우처 안내</p></div><button class="w-full py-2 bg-[#FEE500] hover:bg-[#FDD835] text-slate-900 font-bold text-xs rounded-lg shadow-xs transition flex items-center justify-center gap-1.5" type="button">30%할인 쿠폰 받기-</button></div></div><div class="space-y-1.5 pt-2 border-t border-slate-100"><div class="flex items-center justify-between text-xs font-medium"><span class="text-slate-600 flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-[#FEE500]"></span>카카오톡 비즈니스 채널</span><span class="font-bold text-brand-700">도달률 99.8%</span></div><p class="text-[11px] text-slate-500">친구 추가 없는 유저에게도 카카오 공인 메시지 형태로 안전 도달</p></div></div><div class="bg-white rounded-2xl border border-slate-200/80 shadow-md p-5 flex flex-col justify-between hover:border-brand-300 transition-all h-full"><div class="bg-blue-50/40 p-3 rounded-xl border border-blue-100 mb-3"><div class="flex items-center justify-between pb-2 mb-2 border-b border-slate-200/60"><div class="flex items-center gap-2"><div class="w-7 h-7 rounded-full bg-blue-600 flex items-center justify-center text-xs font-bold text-white shadow-xs"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" stroke-linecap="round" stroke-linejoin="round"></path></svg></div><div><div class="text-xs font-bold text-slate-900 flex items-center gap-1">공식 인증 발신번호<span class="w-3.5 h-3.5 bg-emerald-500 text-white rounded-full flex items-center justify-center text-[8px] font-black">✓</span></div><span class="text-[9px] text-brand-700 font-semibold">SKT · 카드사 · 포인트사 공식</span></div></div><span class="text-[10px] text-slate-400">오전 10:25</span></div><div class="bg-white rounded-xl p-3 border border-slate-100 shadow-xs space-y-2"><div class="flex items-center justify-between"><span class="text-[9px] text-emerald-600 font-semibold">안심 마크 적용</span></div><div><p class="text-xs font-bold text-slate-900 leading-snug">(광고) 고객님을 위한 제휴 특별 혜택</p><p class="text-[10px] text-slate-500 mt-0.5 leading-normal">고객님 안녕하세요.<br>OO상품 특별 할인 안내드립니다.</p></div><button class="w-full py-2 bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs rounded-lg shadow-xs transition flex items-center justify-center gap-1.5" type="button">프로모션 확인하기 →</button></div></div><div class="space-y-1.5 pt-2 border-t border-slate-100"><div class="flex items-center justify-between text-xs font-medium"><span class="text-slate-600 flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-blue-500"></span>통신사/카드사 공식 발신</span><span class="font-bold text-emerald-600">스팸 차단 자동 예외</span></div><p class="text-[11px] text-slate-500">검증된 공식 대표번호 및 안심 인증 배지로 클릭 전환 극대화</p></div></div><div class="bg-white rounded-2xl border border-slate-200/80 shadow-md p-5 flex flex-col justify-between hover:border-brand-300 transition-all h-full"><div class="flex items-center justify-between pb-2 mb-2 border-b border-slate-100"><h4 class="text-xs font-extrabold text-slate-900 uppercase tracking-wider flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-500"></span>실제 캠페인 평균 성과 지표</h4><span class="text-[10px] font-bold text-brand-700 bg-brand-50 px-2 py-0.5 rounded-full border border-brand-200/60">검증 데이터</span></div><div class="flex-1 flex flex-col justify-between gap-2.5 my-1"><div class="bg-gradient-to-r from-brand-50 to-white px-3.5 py-2.5 rounded-xl border border-brand-200/70 flex items-center justify-between"><div class="space-y-0.5"><span class="text-xs text-slate-700 font-semibold block">일반 타겟 광고 대비</span><span class="text-[10px] text-slate-400">반응률 기준</span></div><div class="text-right"><span class="text-xl font-black text-brand-600 leading-none block">최소 3배 ↑</span><span class="text-[9px] text-brand-700 font-bold mt-0.5 block">반응률 상승</span></div></div><div class="bg-gradient-to-r from-brand-50 to-white px-3.5 py-2.5 rounded-xl border border-brand-200/70 flex items-center justify-between"><div class="space-y-0.5"><span class="text-xs text-slate-700 font-semibold block">자체 고객 DB 보유량</span><span class="text-[10px] text-slate-400">고객 정보 미보유 시</span></div><div class="text-right"><span class="text-xl font-black text-slate-900 leading-none block">0%</span><span class="text-[9px] text-slate-500 font-bold mt-0.5 block">즉시 캠페인 세팅</span></div></div><div class="bg-gradient-to-r from-brand-50 to-white px-3.5 py-2.5 rounded-xl border border-brand-200/70 flex items-center justify-between"><div class="space-y-0.5"><span class="text-xs text-slate-700 font-semibold block">공식 채널 발송 안심률</span><span class="text-[10px] text-slate-400">카카오톡 &amp; 통신사 공식</span></div><div class="text-right"><span class="text-xl font-black text-emerald-600 leading-none block">100%</span><span class="text-[9px] text-emerald-700 font-bold mt-0.5 block">스팸 발송 X</span></div></div></div><div class="space-y-1.5 pt-2 border-t border-slate-100"><div class="flex items-center justify-between text-xs font-medium"><span class="text-slate-600 flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-500"></span>공식 채널 성과 보장</span><span class="font-bold text-emerald-600">효율 극대화</span></div><p class="text-[11px] text-slate-500">정밀 타겟 추출과 결합되어 최상의 도달 효율 및 전환율 확보</p></div></div></div></div></section>
+<!-- END: Hero & Main Visualization Section -->
+<!-- BEGIN: Integrated Flow & Feature Detail Section -->
+<section class="py-20 px-6 md:px-12 lg:px-20 bg-white relative" data-purpose="integrated-marketing-flow">
+<div class="max-w-[1480px] mx-auto">
+<!-- Section Header -->
+<div class="flex flex-col lg:flex-row lg:items-end justify-between mb-14 pb-6 border-b border-slate-100">
+<div class="space-y-3">
+<div class="inline-flex items-center space-x-2">
+<span class="w-1.5 h-1.5 rounded-full bg-brand-600"></span>
+<span class="text-xs font-extrabold tracking-widest text-brand-600 uppercase">다양한 타겟팅 범위</span>
+</div>
+<h2 class="text-3xl sm:text-4xl font-extrabold text-slate-950 tracking-tight">다양한 타겟팅 조건으로<div class="">신규 고객을 효율적으로 유치 할 수있습니다.</div></h2>
+</div>
+<p class="text-sm sm:text-base text-slate-500 max-w-md mt-4 lg:mt-0 leading-relaxed">다양한 타겟팅 시나리오를 통해 최적의 시나리오를 확보하고</p><div class="">성과 좋은 시나리오로 지속적으로 마케팅을 할 수 있습니다.</div><p></p>
+</div>
+<!-- 4 Core Media Targeting Method Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+<!-- Feature Card 1: SKT 실시간 기지국 위치 -->
+<div class="group relative bg-[#FBFDFF] hover:bg-white rounded-2xl p-6 border border-slate-200/80 hover:border-brand-400 hover:shadow-soft-card transition-all duration-300 flex flex-col justify-between">
+<div class="space-y-4">
+<div class="w-12 h-12 rounded-xl bg-blue-50 text-brand-600 flex items-center justify-center group-hover:scale-105 group-hover:bg-brand-600 group-hover:text-white transition-all">
+<!-- Location Map Pin Icon -->
+<svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+<path d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<div>
+<span class="text-[11px] font-bold text-brand-600 uppercase tracking-wider">[skt] 위치 기반</span>
+<h3 class="text-lg font-bold text-slate-900 mt-1">실시간 상권 &amp; 체류 위치</h3>
+</div>
+<p class="text-xs text-slate-600 leading-relaxed">
+              기지국 신호 기반 반경 500m~3km 내 실제 체류 고객을 대상으로 즉시 정밀 타겟팅.
+            </p>
+</div>
+<div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500 font-medium">
+<span class="">실시간 체류 위치 기반</span>
+<span class="text-brand-600 font-semibold">반경 500m 단위</span>
+</div>
+</div>
+<!-- Feature Card 2: 앱 실행 & 검색 인텐트 -->
+<div class="group relative bg-[#FBFDFF] hover:bg-white rounded-2xl p-6 border border-slate-200/80 hover:border-brand-400 hover:shadow-soft-card transition-all duration-300 flex flex-col justify-between">
+<div class="space-y-4">
+<div class="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center group-hover:scale-105 group-hover:bg-indigo-600 group-hover:text-white transition-all">
+<!-- App / Device Icon -->
+<svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+<path d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<div>
+<span class="text-[11px] font-bold text-indigo-600 uppercase tracking-wider">[SKT] 모바일 사용 기반</span>
+<h3 class="text-lg font-bold text-slate-900 mt-1">앱웹 접속 &amp; 통화 &amp; 관심사</h3>
+</div>
+<p class="text-xs text-slate-600 leading-relaxed">
+              동종 업종, 유사 서비스를 최근 30일 이내 접속하거나 경쟁사에 통화한 이력이 있는 고객군, SKT 내부 ai 시스템으로 세그먼트 된 관심사 기반 정밀 타겟팅.</p>
+</div>
+<div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500 font-medium">
+<span class="">고관여 유저&nbsp;</span>
+<span class="text-indigo-600 font-semibold">경쟁/관심 타겟팅</span>
+</div>
+</div>
+<!-- Feature Card 3: KB국민카드 & 유통 실결제 -->
+<div class="group relative bg-[#FBFDFF] hover:bg-white rounded-2xl p-6 border border-slate-200/80 hover:border-brand-400 hover:shadow-soft-card transition-all duration-300 flex flex-col justify-between">
+<div class="space-y-4">
+<div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center group-hover:scale-105 group-hover:bg-amber-600 group-hover:text-white transition-all">
+<!-- Credit Card Payment Icon -->
+<svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+<path d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15A2.25 2.25 0 002.25 6.75v10.5A2.25 2.25 0 004.5 19.5z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<div>
+<span class="text-[11px] font-bold text-amber-700 uppercase tracking-wider">금융 결제 데이터</span>
+<h3 class="text-lg font-bold text-slate-900 mt-1">실결제 업종 &amp; 소비 파워</h3>
+</div>
+<p class="text-xs text-slate-600 leading-relaxed">결제이력, 올리브영·CGV 구매 이력, 롯데 계열사 소비 정보 등 결제 데이터를 통한 실제<br>구매력 기반 타겟팅.
+            </p>
+</div>
+<div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500 font-medium">
+<span class="">결제 데이터</span>
+<span class="text-amber-700 font-semibold">&nbsp;실구매 이력</span>
+</div>
+</div>
+<!-- Feature Card 4: 카카오 브랜드픽 AI 매칭 -->
+<div class="group relative bg-[#FBFDFF] hover:bg-white rounded-2xl p-6 border border-slate-200/80 hover:border-brand-400 hover:shadow-soft-card transition-all duration-300 flex flex-col justify-between">
+<div class="space-y-4">
+<div class="w-12 h-12 rounded-xl bg-yellow-50 text-slate-900 flex items-center justify-center group-hover:scale-105 group-hover:bg-[#FEE500] transition-all">
+<!-- Kakao / Chat AI Icon -->
+<svg class="w-6 h-6 fill-current" viewBox="0 0 24 24">
+<path d="M12 3c-5.52 0-10 3.58-10 8 0 2.82 1.84 5.3 4.64 6.72l-1.18 4.35c-.1.38.33.68.66.47l5.12-3.41c.25.02.5.03.76.03 5.52 0 10-3.58 10-8s-4.48-8-10-8z"></path>
+</svg>
+</div>
+<div>
+<span class="text-[11px] font-bold text-slate-700 uppercase tracking-wider">카카오 브랜드픽</span>
+<h3 class="text-lg font-bold text-slate-900 mt-1">카카오 AI 기반 추천 타겟군</h3>
+</div>
+<p class="text-xs text-slate-600 leading-relaxed">
+              카카오 시스탬 내 ai를 통해 최적의 반응 잠재 고객을 추출하여 카카오 브랜드픽 공식 채널로 정밀타겟팅 가능</p>
+</div>
+<div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500 font-medium">
+<span class="">카카오 생태계 활용&nbsp;</span>
+<span class="text-brand-600 font-semibold">카카오 채널 활용성↑</span>
+</div>
+</div>
+</div>
+<!-- Bottom Banner: Consultation Direct Trigger -->
+
+</div>
+</section>
+<!-- END: Integrated Flow & Feature Detail Section -->
+<!-- BEGIN: Simple Footer -->
+<footer class="py-8 bg-slate-50 border-t border-slate-200/60 text-center text-xs text-slate-400">
+<div class="max-w-[1480px] mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+<div class="flex items-center space-x-2">
+
+
+
+</div>
+
+</div>
+</footer>
+<!-- END: Simple Footer -->
+
+
+
+
+</body></html>

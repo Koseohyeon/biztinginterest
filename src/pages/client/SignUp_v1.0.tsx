@@ -105,7 +105,7 @@ function PrivacyContent({ compact }: { compact: boolean }) {
   return (
     <div>
       <p className={`tw-mb-[10px] tw-leading-[1.6] tw-text-[#374151] ${compact ? "tw-text-xs" : "tw-text-[13.5px]"}`}>
-        비즈팅 주식회사는 회원가입 및 서비스 제공을 위해 다음과 같이 개인정보를 수집·이용합니다.
+        비즈팅은 회원가입 및 서비스 제공을 위해 다음과 같이 개인정보를 수집·이용합니다.
       </p>
 
       <p className={`tw-mt-3 tw-mb-[6px] tw-font-medium tw-text-[#111827] ${compact ? "tw-text-xs" : "tw-text-[13px]"}`}>

@@ -26,6 +26,7 @@ import SignUp from "./pages/client/SignUp_v1.0";
 
 //Latte
 import LatteEventPage from "./pages/client/LatteEventPage"
+import BiztalkcenterBiztingindex from "./pages/client/BiztalkcenterBiztingindex"
 
 //JungKwangJang
 import JUNGKWANJANG_6eventPage from "./pages/eventpage/JUNGKWANJANG_6eventPage"
@@ -118,6 +119,9 @@ export default function App() {
 
         {/* EDMS */}
         <Route path="/edms/EDMS_page" element={<EDMS_page />} />
+
+        {/* index */}
+        <Route path="/client/BiztalkcenterBiztingindex" element={<BiztalkcenterBiztingindex />} />
         
       </Routes>
     </HashRouter>
