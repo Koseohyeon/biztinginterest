@@ -92,7 +92,7 @@ export default function App() {
         <Route path="/pricacy/ClauseStaticDocument" element={<ClauseStaticDocument />} />
         <Route path="/privacy/isms_BiztingPrivacy" element={<Isms_BiztingPrivacy/>} />
         <Route path="/privacy/isms_NpassPrivacy" element={<Isms_NpassPrivacy />} />
-        <Route path="/privacy/isms_BiztingTerms" element={<Isms_BiztingTerms />} />
+        <Route path="/privacy/BiztingTerms" element={<Isms_BiztingTerms />} />
         <Route path="/client/SignUp_v1.0" element={<SignUp />} />
 
         {/* 정관장 */}
