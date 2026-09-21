@@ -764,14 +764,14 @@ const BiztingTermsDocument = () => {
           <div className="item-list">
             <div className="item-row">
               <span className="item-circle">{"(1)"}</span>
-              <span>{"회원에 대한 통지를 하는 경우 회사는 회원이 등록한 E-mail 주소 또는 SMS, 기타 전자적 전송매체를 통해 할 수 있습니다."}</span>
+              <span>{"(현재)회원에 대한 통지를 하는 경우 회사는 회원이 등록한 E-mail 주소 또는 SMS, 기타 전자적 전송매체를 통해 할 수 있습니다."}</span>
             </div>
             <div className="item-row">
               <span className="item-circle">{"(1)"}</span>
               <span>
    
                 <mark className="hl-add">
-                  {"회원에 대한 통지를 하는 경우 회사는 회원이 등록한 E-mail 주소 또는 SMS, 기타 전자적 전송매체(카카오메시지 등)를 통해 할 수 있습니다."}
+                  {"(수정)회원에 대한 통지를 하는 경우 회사는 회원이 등록한 E-mail 주소 또는 SMS, 기타 전자적 전송매체(카카오메시지 등)를 통해 할 수 있습니다."}
                 </mark>
               </span>
             </div>
