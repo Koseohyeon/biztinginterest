@@ -507,7 +507,7 @@ export default function NPassPrivacyPolicy() {
               headers={["목적", "항목", "보유 및 이용기간", "법적 근거"]}
               rows={[
                 [
-                  "N-Pass 솔루션을 통한 관심 고객 모집, 이벤트 혜택 안내 및 타겟 마케팅 서비스 제공",
+                  <mark style={{ backgroundColor: "#ffeb3b", color: "inherit", padding: "0 2px" }}>N-Pass 솔루션을 통한 관심 고객 모집, 이벤트 혜택 안내</mark>,
                   "이름, 휴대전화번호, 이메일 ",
                   "마케팅 수신 동의 철회 또는 회원 탈퇴 시까지",
                   "개인정보 보호법 제15조(정보주체의 동의) 제1항 제1호",

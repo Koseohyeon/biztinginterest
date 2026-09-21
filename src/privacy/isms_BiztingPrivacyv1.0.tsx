@@ -479,6 +479,11 @@ const Section = ({ num, title, children }: { num: number; title: string; childre
   </div>
 );
 
+/** 수정·추가 반영 부분 형광펜(노란색) 표시 */
+const Hl = ({ children }: { children: ReactNode }) => (
+  <mark style={{ backgroundColor: "#ffeb3b", color: "inherit", padding: "0 2px" }}>{children}</mark>
+);
+
 const SubHeading = ({ children }: { children: ReactNode }) => <div className="sub-heading">{children}</div>;
 
 const NoteBox = ({ children, style }: { children: ReactNode; style?: CSSProperties }) => (
@@ -619,13 +624,18 @@ const S1_NO_CONSENT_ROWS: ReactNode[][] = [
   ],
 ];
 
-/* 주의: '항목' 셀은 문서 원문에도 공란으로 되어 있습니다(원문 그대로 반영). */
 const S1_CONSENT_ROWS: ReactNode[][] = [
   [
-    "N-Pass 솔루션을 통한 관심 고객 모집, 이벤트 혜택 안내 및 타겟 마케팅 서비스 제공",
-    "",
+    <Hl>{"N-Pass 솔루션을 통한 관심고객 정보를 캠페인을 집행한 고객사에게 전달"}</Hl>,
+    <Hl>{"이름, 전화번호, 이메일, 네이버회원 식별정보"}</Hl>,
     "개인정보 수집·이용 동의일로부터 서비스 이용 기간 동안 보유·이용하며, 회원 탈퇴 시 파기",
     "개인정보 보호법 제15조 (정보주체의 동의) 제1항 제1호",
+  ],
+   [
+    <Hl>{"신규 서비스 출시 안내, 이벤트 및 프로모션 정보 제공, 맞춤형 혜택 안내 등 광고성 정보 전달 (이메일, 문자메시지, 카카오 메시지)"}</Hl>,
+    <Hl>{"[선택] 서비스 담당자 정보(성명, 전화번호, E-mail)"}</Hl>,
+    <Hl>{"마케팅 수신 동의 철회 또는 회원 탈퇴 시까지"}</Hl>,
+    <Hl>{"개인정보 보호법 제15조 제1항 제1호"}</Hl>,
   ],
 ];
 
@@ -681,10 +691,10 @@ const S3_ENTRUST_ROWS: ReactNode[][] = [
 const S4_THIRD_PARTY_ROWS: ReactNode[][] = [
   [
     "비즈팅 N-Pass 서비스 이용 고객사(광고주) 구체적인 명칭은 동의 화면에 별도 고지",
-    "개인정보 수집·이용 동의일로부터 서비스 이용 기간 동안 수집된 정보",
+    <Hl>{"관심 고객 정보 전달, 이벤트 안내"}</Hl>,
     "이름, 휴대전화번호, 이메일",
     <>{"개인정보는 고객사의 이용 목적 달성 또는 동의 철회 시까지 보관되며, 이후 지체 없이 파기됩니다."}<br />{"(동의 거부 및 철회 시 즉시 파기)"}</>,
-    "개인정보 보호법 제15조 (정보주체의 동의) 제1항 제1호",
+    <Hl>{"개인정보 보호법 제17조 제1항 제1호"}</Hl>,
   ],
 ];
 
@@ -706,6 +716,9 @@ const CHANGE_ROWS: [string, string][] = [
   ["안전성 확보조치 강화", "고객사 대시보드 접근통제(MFA), 개인정보 마스킹, 다운로드 통제 등 관리조치 신설"],
   ["자동수집정보 항목 확대", "자동 수집되는 정보에 쿠키, 방문일시, 불량 이용기록 추가"],
   ["보안 담당자 수정", "보안 담당자 수정"],
+  ["[NEW] 관심고객 정보 전달 항목 추가", "관심고객 정보 전달(이름, 전화번호, 이메일, 네이버회원 식별정보) 추가"],
+  ["[NEW] 광고성 정보 수신(선택) 추가", "신규 서비스·이벤트·프로모션 등 광고성 정보 전달"],
+  ["[NEW] 제3자 제공 항목 수정", "제공 목적(관심 고객 정보 전달, 이벤트 안내) 및 법적 근거(제17조 제1항 제1호) 수정"],
 ];
 
 type PrivacyV12DocumentProps = {
@@ -1150,11 +1163,14 @@ const PrivacyV12Document = ({ modal, mode = "scheduled" }: PrivacyV12DocumentPro
             <thead><tr><th>{"조항"}</th><th>{"내용"}</th></tr></thead>
             <tbody>
               {CHANGE_ROWS.map(([tag, text], i) => (
-                <tr key={i}><td style={{ fontWeight: 600 }}>{tag}</td><td>{text}</td></tr>
+                <tr key={i}>
+                  <td style={{ fontWeight: 600 }}>{tag.startsWith("[NEW]") ? <Hl>{tag}</Hl> : tag}</td>
+                  <td>{tag.startsWith("[NEW]") ? <Hl>{text}</Hl> : text}</td>
+                </tr>
               ))}
             </tbody>
           </table>
-        </div>      
+        </div>
       </ClauseVersionModal>
     </ClauseStaticDocument>
   );
