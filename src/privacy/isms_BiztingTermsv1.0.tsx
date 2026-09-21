@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useEffect } from "react";
 import type { ReactNode } from "react";
 import ClauseStaticDocument from "./ClauseStaticDocument";
 import ClauseVersionModal from "./ClauseVersionModal";
+import { TERMS_V12_NOTICE_START_AT, TERMS_V12_EFFECTIVE_AT } from "./clauseVersionDates";
 
 const styles = `
     :root {
@@ -402,10 +403,26 @@ const TOC_ITEMS: { id: string; num: string; label: string }[] = [
 /* ────────────────────────────────────────────────────────
    변경사항 모달 데이터 (이번 개정분 요약)
 ──────────────────────────────────────────────────────── */
-const CHANGE_ROWS: [string, string][] = [
-  ["제3조(4) 신설", "약관 변경 시 변경 사유·시행일 사전 공지 및 전자적 수단(전자우편·문자·카카오톡 메시지 등)을 통한 개별 통지 절차를 신설 (기존 (4)~(7)항은 내용 변경 없이 (5)~(8)항으로 번호만 이동)"],
-  ["제6조의2 신설", "신규 서비스 상용화 전 테스트 목적의 베타 서비스 제공 근거 및 회사의 책임 범위를 신설"],
-  ["제20조(1) 개정", "회원에 대한 통지 수단인 '기타 전자적 전송매체'에 카카오메시지가 포함됨을 명시 (기존 문구는 위에 그대로 남겨두고 개정 문구를 아래에 추가 표기)"],
+const CHANGE_ROWS: [string, ReactNode][] = [
+  [
+    "제3조(4)\n신설",
+    <>
+      {"• 약관 변경 시 회원에게 전자적 수단을 통한 공지 명시"}<br />
+      <span style={{ color: "var(--text-muted)" }}></span>
+    </>,
+  ],
+  [
+    "제6조의2\n신설",
+    <>
+      {"• 정식 출시 전 테스트용 베타 서비스 제공 근거 마련"}
+    </>,
+  ],
+  [
+    "제20조(1)\n개정",
+    <>
+      {"• 회원 통지 수단인 '기타 전자적 전송매체'에 카카오메시지 포함 명시"}
+    </>,
+  ],
 ];
 
 /* ────────────────────────────────────────────────────────
@@ -413,6 +430,20 @@ const CHANGE_ROWS: [string, string][] = [
 ──────────────────────────────────────────────────────── */
 const BiztingTermsDocument = () => {
   const [changeModalOpen, setChangeModalOpen] = React.useState(false);
+  // [임시] 팝업 노출 확인용 하드코딩 (공고일 9/28 이전에도 팝업이 뜨도록 고정)
+  const now = new Date("2026-10-01T00:00:00+09:00");
+  /* [원래 코드] 배포 시 위 하드코딩 줄을 지우고 아래 줄의 주석을 해제하세요.
+  const now = new Date();
+  */
+  const isTermsNoticeStarted = now >= TERMS_V12_NOTICE_START_AT;
+  const isTermsEffective = now >= TERMS_V12_EFFECTIVE_AT;
+
+  // 고지 시작 이후 ~ 시행 전 기간에만 페이지 로딩 시 자동으로 모달 오픈
+  useEffect(() => {
+    if (isTermsNoticeStarted && !isTermsEffective) {
+      setChangeModalOpen(true);
+    }
+  }, [isTermsNoticeStarted, isTermsEffective]);
 
   return (
     <ClauseStaticDocument styles={styles}>
@@ -1036,10 +1067,9 @@ const BiztingTermsDocument = () => {
         <Article id="abuchik" num="부칙" title="부칙">
           <ParenList
             items={[
-              "공고일자: 2026.3.31 시행일자: 2026.5.1",
-              "본 '약관'은 2026년 05월 01일부터 시행됩니다.",
-              "이전 약관(2024년 8월 시행)은 본 약관 시행과 동시에 폐지합니다.",
-              "제2조 (11)·(12), 제3조 (4), 제2장의2, 제6조의2, 제18조 (17), 제31조 (3) ⑬, 제32조 (5), 제33조 (7)은 이번 개정으로 신설된 조항이며, 제3조 (4)의 신설에 따라 종전 (4)~(7)항은 (5)~(8)항으로 번호가 이동했습니다. 제20조 (1)은 통지 수단에 관한 문구가 개정되었습니다.",
+              "공고일자: 2026.9.28 시행일자: 2026.10.18",
+              "본 '약관'은 2026년 10월 18일부터 시행됩니다.",
+             
             ]}
           />
         </Article>
@@ -1060,7 +1090,7 @@ const BiztingTermsDocument = () => {
             <thead><tr><th>{"조항"}</th><th>{"내용"}</th></tr></thead>
             <tbody>
               {CHANGE_ROWS.map(([tag, text], i) => (
-                <tr key={i}><td style={{ fontWeight: 600 }}>{tag}</td><td>{text}</td></tr>
+                <tr key={i}><td style={{ fontWeight: 600, whiteSpace: "pre-line" }}>{tag}</td><td>{text}</td></tr>
               ))}
             </tbody>
           </table>
