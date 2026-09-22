@@ -1140,7 +1140,7 @@ const PrivacyV12Document = ({ modal, mode = "scheduled" }: PrivacyV12DocumentPro
             </span>
             <span>
               <span className="label">{"시행일자"}</span>
-              {" 2026.09.26."}
+              {" 2026.09.28."}
             </span>
           </div>
           <div style={{ marginTop: "16px" }}>
