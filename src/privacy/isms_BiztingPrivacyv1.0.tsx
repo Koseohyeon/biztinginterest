@@ -721,6 +721,13 @@ const CHANGE_ROWS: [string, string][] = [
   ["제3자 제공 항목 수정", "제공 목적(관심 고객 정보 전달, 이벤트 안내) 및 법적 근거(제17조 제1항 제1호) 수정"],
 ];
 
+/** 이번 개정분(최근 추가·수정) 표시용 — 위 CHANGE_ROWS 중 노란 음영으로 강조할 항목명 */
+const CHANGE_ROWS_HIGHLIGHTED = new Set([
+  "관심고객 정보 전달 항목 추가",
+  "광고성 정보 수신(선택) 추가",
+  "제3자 제공 항목 수정",
+]);
+
 type PrivacyV12DocumentProps = {
   modal?: React.ComponentProps<typeof ClauseStaticDocument>["modal"];
   mode?: "scheduled" | "current";
@@ -1164,8 +1171,8 @@ const PrivacyV12Document = ({ modal, mode = "scheduled" }: PrivacyV12DocumentPro
             <tbody>
               {CHANGE_ROWS.map(([tag, text], i) => (
                 <tr key={i}>
-                  <td style={{ fontWeight: 600 }}>{tag.startsWith("[NEW]") ? <Hl>{tag}</Hl> : tag}</td>
-                  <td>{tag.startsWith("[NEW]") ? <Hl>{text}</Hl> : text}</td>
+                  <td style={{ fontWeight: 600 }}>{CHANGE_ROWS_HIGHLIGHTED.has(tag) ? <Hl>{tag}</Hl> : tag}</td>
+                  <td>{CHANGE_ROWS_HIGHLIGHTED.has(tag) ? <Hl>{text}</Hl> : text}</td>
                 </tr>
               ))}
             </tbody>
