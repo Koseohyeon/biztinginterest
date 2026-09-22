@@ -1073,9 +1073,8 @@ const BiztingTermsDocument = () => {
         <Article id="abuchik" num="부칙" title="부칙">
           <ParenList
             items={[
-              "공고일자: 2026.9.28 시행일자: 2026.10.28",
-              "본 '약관'은 2026년 10월 28일부터 시행됩니다.",
-              "제20조 및 제34조(1)은 통지 수단 및 공지 절차에 관한 문구가 개정되었습니다.",
+              <mark className="hl-add">{"공고일자: 2026.9.28 시행일자: 2026.10.28"}</mark>,
+              <mark className="hl-add">{"본 '약관'은 2026년 10월 28일부터 시행됩니다."}</mark>,
             ]}
           />
         </Article>
@@ -1085,7 +1084,7 @@ const BiztingTermsDocument = () => {
       <ClauseVersionModal
         open={changeModalOpen}
         title="이번 개정 사항 요약"
-        subtitle="약관 변경 통지 절차, 베타 서비스 제공 근거, 회원 통지 방법을 보완했습니다."
+        subtitle="공고일자: 2026.9.28 · 시행일자: 2026.10.28"
         ctaLabel="확인"
         onClose={() => setChangeModalOpen(false)}
         onConfirm={() => setChangeModalOpen(false)}
