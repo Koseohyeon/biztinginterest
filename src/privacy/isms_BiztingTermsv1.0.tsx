@@ -405,22 +405,22 @@ const TOC_ITEMS: { id: string; num: string; label: string }[] = [
 ──────────────────────────────────────────────────────── */
 const CHANGE_ROWS: [string, ReactNode][] = [
   [
-    "제3조(4)\n신설",
-    <>
-      {"• 약관 변경 시 회원에게 전자적 수단을 통한 공지 명시"}<br />
-      <span style={{ color: "var(--text-muted)" }}></span>
-    </>,
-  ],
-  [
     "제6조의2\n신설",
     <>
       {"• 정식 출시 전 테스트용 베타 서비스 제공 근거 마련"}
     </>,
   ],
   [
-    "제20조(1)\n개정",
+    "제20조\n개정",
     <>
-      {"• 회원 통지 수단인 '기타 전자적 전송매체'에 카카오메시지 포함 명시"}
+      {"• 통지 수단에 문자메시지, 카카오 알림톡 등 추가"}<br />
+      {"• 약관·정책 변경, 신규 서비스 안내 등 공지 범위 명확화"}<br />
+    </>,
+  ],
+  [
+    "제34조(1)\n개정",
+    <>
+      {"• 이용고객과의 통신 수단에 문자메시지, 카카오 알림톡 추가"}
     </>,
   ],
 ];
@@ -517,27 +517,18 @@ const BiztingTermsDocument = () => {
             </div>
             <div className="item-row">
               <span className="item-circle">{"(4)"}</span>
-              <span>
-                <span className="badge-added" style={{ marginLeft: 0, marginRight: 8 }}>{"추가"}</span>
-                <mark className="hl-add">
-                  {"회사는 서비스 운영상 필요에 따라 본 약관의 내용을 변경할 수 있으며 변경된 약관, 변경 사유 및 시행일을 사전 공지하고, 회원에게 별도의 전자적 수단(전자우편, 문자 메시지, 카카오톡 메시지, 서비스 계정 내 알림 메시지 등)으로 개별 통지합니다."}
-                </mark>
-              </span>
-            </div>
-            <div className="item-row">
-              <span className="item-circle">{"(5)"}</span>
               <span>{"회사가 제3항에 따라 개정 약관을 공지 또는 통지하면서 30일 기간 내에 의사표시를 하지 않으면 의사표시가 표명된 것으로 본다는 뜻을 회원에게 명확하게 공지 또는 통지하였음에도 회원이 명시적으로 거부의 의사표시를 하지 아니한 경우 회원이 개정 약관에 동의한 것으로 봅니다."}</span>
             </div>
             <div className="item-row">
-              <span className="item-circle">{"(6)"}</span>
+              <span className="item-circle">{"(5)"}</span>
               <span>{"회원이 개정 약관의 적용에 동의하지 않는 경우 회사는 개정 약관의 내용을 적용할 수 없으며, 이 경우 회원은 계약을 해지할 수 있습니다. 다만, 기존 '약관'을 적용할 수 없는 특별한 사정이 있는 경우에는 회사는 이용계약을 해지할 수 있습니다."}</span>
             </div>
             <div className="item-row">
-              <span className="item-circle">{"(7)"}</span>
+              <span className="item-circle">{"(6)"}</span>
               <span>{"새로운 서비스가 개설될 경우 별도의 명시된 설명이 없는 한 본 '약관'에 따라 제공합니다."}</span>
             </div>
             <div className="item-row">
-              <span className="item-circle">{"(8)"}</span>
+              <span className="item-circle">{"(7)"}</span>
               <span>{"회사는 서비스에 부수하여 타 서비스와 연계한 통합서비스 또는 별도의 서비스 등을 제공할 수 있으며 이용조건 등은 별도로 공지하는 바에 따릅니다."}</span>
             </div>
           </div>
@@ -574,10 +565,10 @@ const BiztingTermsDocument = () => {
           />
         </Article>
 
-        <Article id="a6-2" num="6의2" title="베타 서비스의 제공" badge="신설">
+        <Article id="a6-2" num="6의2" title="베타 서비스의 제공">
           <ParenList
             items={[
-              <mark className="hl-add">{"회사는 신규 서비스를 상용화하기 전 회원을 대상으로 테스트 목적의 베타 서비스를 일정한 기간 동안 제공할 수 있습니다. 베타 서비스를 시작하는 경우 회사는 회원들에게 베타 서비스의 내용, 제공 기간 등을 공지합니다."}</mark>,
+              <mark className="hl-add">{"회사는 신규 서비스를 상용화하기 전 회원을 대상으로 테스트 목적의 베타 서비스(이하 '베타 서비스')를 일정한 기간 동안 제공할 수 있습니다. 베타 서비스를 시작하는 경우 회사는 회원들에게 베타 서비스의 내용, 제공 기간 등을 공지합니다."}</mark>,
               <mark className="hl-add">{"베타 서비스는 정식 서비스가 아니므로, 베타 서비스 제공 기간 동안 서비스 내용의 변경, 추가, 수정될 수 있습니다. 회사는 베타 서비스를 제공하는 도중 예상치 못한 손해나 문제가 발생하였을 경우에 회원에게 사전 공지없이 베타 서비스를 종료할 수 있습니다."}</mark>,
             ]}
           />
@@ -791,23 +782,34 @@ const BiztingTermsDocument = () => {
           />
         </Article>
 
-        <Article id="a20" num="20" title="회원에 대한 통지">
+        <Article id="a20" num="20" title="회원에 대한 통지 및 공지" >
           <div className="item-list">
             <div className="item-row">
               <span className="item-circle">{"(1)"}</span>
-              <span>{"(현재)회원에 대한 통지를 하는 경우 회사는 회원이 등록한 E-mail 주소 또는 SMS, 기타 전자적 전송매체를 통해 할 수 있습니다."}</span>
-            </div>
-            <div className="item-row">
-              <span className="item-circle">{"(1)"}</span>
               <span>
-   
                 <mark className="hl-add">
-                  {"(수정)회원에 대한 통지를 하는 경우 회사는 회원이 등록한 E-mail 주소 또는 SMS, 기타 전자적 전송매체(카카오메시지 등)를 통해 할 수 있습니다."}
+                  {"회사는 회원이 가입 시 등록한 이메일, 휴대전화번호(문자메시지, 카카오 알림톡 등) 또는 서비스 내 공지사항을 활용하여 회원에게 각종 공지나 통지(서비스 운영에 관한 공지, 약관 등 정책 변경 안내, 신규 서비스·기능 출시 안내 등을 포함)를 할 수 있습니다."}
                 </mark>
               </span>
             </div>
             <div className="item-row">
               <span className="item-circle">{"(2)"}</span>
+              <span>
+                <mark className="hl-add">
+                  {"회사는 회원에게 이용약관, 개인정보 처리방침 등 일체의 약관이나 서비스 이용과 관련한 사항을 알리거나 안내할 목적으로 사이트 등의 게시판이나 서비스 화면에 그 내용을 게시하거나 제1항에 기재된 수단을 활용하여 공지할 수 있습니다."}
+                </mark>
+              </span>
+            </div>
+            <div className="item-row">
+              <span className="item-circle">{"(3)"}</span>
+              <span>
+                <mark className="hl-add">
+                  {"회원 전체에게 공통적으로 적용되는 내용을 통지할 경우, 회사는 1주일 이상 사이트 등의 게시판이나 화면에 일정한 사항을 게시함으로써 각 회원에 대한 개별 통지를 갈음할 수 있습니다. 다만, 회원의 권리·의무에 중대한 영향을 미치는 사항에 대해서는 게시기간을 연장하여 공지합니다."}
+                </mark>
+              </span>
+            </div>
+            <div className="item-row">
+              <span className="item-circle">{"(4)"}</span>
               <span>{"회사는 불특정 다수 회원에 대한 통지의 경우 서비스 공지사항 등에 게시함으로써 개별 통지에 갈음할 수 있습니다."}</span>
             </div>
           </div>
@@ -1056,7 +1058,11 @@ const BiztingTermsDocument = () => {
         <Article id="a34" num="34" title="분쟁 해결">
           <ParenList
             items={[
-              "회사와 이용고객간의 통신은 서면, 전자우편, 팩스 등으로 합니다.",
+              <>
+                {"회사와 이용고객간의 통신은 서면, 전자우편, 팩스"}
+                <mark className="hl-add">{", 문자메시지, 카카오 메시지"}</mark>
+                {" 등으로 합니다."}
+              </>,
               "분쟁으로 소송이 제기될 경우, 대한민국 서울지방법원을 관할법원으로 합니다.",
             ]}
           />
@@ -1069,7 +1075,7 @@ const BiztingTermsDocument = () => {
             items={[
               "공고일자: 2026.9.28 시행일자: 2026.10.28",
               "본 '약관'은 2026년 10월 28일부터 시행됩니다.",
-             
+              "제20조 및 제34조(1)은 통지 수단 및 공지 절차에 관한 문구가 개정되었습니다.",
             ]}
           />
         </Article>
