@@ -1073,6 +1073,9 @@ const BiztingTermsV12Document = () => {
               ))}
             </tbody>
           </table>
+          <p style={{ fontSize: "12.5px", color: "var(--text-muted)", marginTop: "10px" }}>
+            {"* 본 안내 일부터 1개월 이내에 이의제의가 없을 경우, 개정 내용에 동의하신 것으로 판단됩니다."}
+          </p>
         </div>
       </ClauseVersionModal>
     </ClauseStaticDocument>

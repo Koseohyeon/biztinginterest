@@ -1117,11 +1117,11 @@ const BiztingPrivacyV11Document = ({ modal, mode = "current" }: BiztingPrivacyV1
           <div className="effective-strip">
             <span>
               <span className="label">{"공고일자"}</span>
-              {" 2026.08.26."}
+              {" 2026.09.28."}
             </span>
             <span>
               <span className="label">{"시행일자"}</span>
-              {" 2026.09.28."}
+              {" 2026.10.28."}
             </span>
           </div>
           <div style={{ marginTop: "16px" }}>
@@ -1140,7 +1140,7 @@ const BiztingPrivacyV11Document = ({ modal, mode = "current" }: BiztingPrivacyV1
       <ClauseVersionModal
         open={changeModalOpen}
         title="이전 버전 대비 변경사항 요약"
-        subtitle="시행 전 참고용이며, 법적 효력은 시행일 이후 발생합니다."
+        subtitle="공고일자: 2026.09.28 · 시행일자: 2026.10.28"
         ctaLabel="확인"
         onClose={() => setChangeModalOpen(false)}
         onConfirm={() => setChangeModalOpen(false)}
@@ -1155,6 +1155,9 @@ const BiztingPrivacyV11Document = ({ modal, mode = "current" }: BiztingPrivacyV1
               ))}
             </tbody>
           </table>
+          <p style={{ fontSize: "12.5px", color: "var(--text-muted)", marginTop: "10px" }}>
+            {"* 본 안내 일부터 1개월 이내에 이의제의가 없을 경우, 개정 내용에 동의하신 것으로 판단됩니다."}
+          </p>
         </div>
       </ClauseVersionModal>
     </ClauseStaticDocument>
