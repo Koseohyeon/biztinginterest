@@ -194,16 +194,6 @@ const styles = `
       padding: 22px 26px;
     }
 
-    /* ── 형광펜 하이라이트: 이번에 새로 추가된 문구 ── */
-    mark.hl-add {
-      background: #fff3a3;
-      color: inherit;
-      padding: 1px 2px;
-      border-radius: 2px;
-      box-decoration-break: clone;
-      -webkit-box-decoration-break: clone;
-    }
-
     /* ── Typography inside sections ── */
     .section-body p {
       font-size: 14.5px;
@@ -428,11 +418,11 @@ const CHANGE_ROWS: [string, ReactNode][] = [
 /* ────────────────────────────────────────────────────────
    본문
 ──────────────────────────────────────────────────────── */
-const BiztingTermsDocument = () => {
+const BiztingTermsV12Document = () => {
   const [changeModalOpen, setChangeModalOpen] = React.useState(false);
-  // [임시] 팝업 노출 확인용 하드코딩 (공고일 9/28 이전에도 팝업이 뜨도록 고정)
+  // [임시] 팝업 미리보기용 하드코딩 (공고일 9/28 이전에도 팝업이 뜨도록 고정)
   const now = new Date("2026-10-01T00:00:00+09:00");
-  /* [원래 코드] 배포 시 위 하드코딩 줄을 지우고 아래 줄의 주석을 해제하세요.
+  /* [원래 코드] 확인이 끝나면 위 하드코딩 줄을 지우고 아래 줄의 주석을 해제하세요.
   const now = new Date();
   */
   const isTermsNoticeStarted = now >= TERMS_V12_NOTICE_START_AT;
@@ -568,8 +558,8 @@ const BiztingTermsDocument = () => {
         <Article id="a6-2" num="6의2" title="베타 서비스의 제공">
           <ParenList
             items={[
-              <mark className="hl-add">{"회사는 신규 서비스를 상용화하기 전 회원을 대상으로 테스트 목적의 베타 서비스(이하 '베타 서비스')를 일정한 기간 동안 제공할 수 있습니다. 베타 서비스를 시작하는 경우 회사는 회원들에게 베타 서비스의 내용, 제공 기간 등을 공지합니다."}</mark>,
-              <mark className="hl-add">{"베타 서비스는 정식 서비스가 아니므로, 베타 서비스 제공 기간 동안 서비스 내용의 변경, 추가, 수정될 수 있습니다. 회사는 베타 서비스를 제공하는 도중 예상치 못한 손해나 문제가 발생하였을 경우에 회원에게 사전 공지없이 베타 서비스를 종료할 수 있습니다."}</mark>,
+              "회사는 신규 서비스를 상용화하기 전 회원을 대상으로 테스트 목적의 베타 서비스(이하 '베타 서비스')를 일정한 기간 동안 제공할 수 있습니다. 베타 서비스를 시작하는 경우 회사는 회원들에게 베타 서비스의 내용, 제공 기간 등을 공지합니다.",
+              "베타 서비스는 정식 서비스가 아니므로, 베타 서비스 제공 기간 동안 서비스 내용의 변경, 추가, 수정될 수 있습니다. 회사는 베타 서비스를 제공하는 도중 예상치 못한 손해나 문제가 발생하였을 경우에 회원에게 사전 공지없이 베타 서비스를 종료할 수 있습니다.",
             ]}
           />
         </Article>
@@ -782,31 +772,19 @@ const BiztingTermsDocument = () => {
           />
         </Article>
 
-        <Article id="a20" num="20" title="회원에 대한 통지 및 공지" >
+        <Article id="a20" num="20" title="회원에 대한 통지 및 공지">
           <div className="item-list">
             <div className="item-row">
               <span className="item-circle">{"(1)"}</span>
-              <span>
-                <mark className="hl-add">
-                  {"회사는 회원이 가입 시 등록한 이메일, 휴대전화번호(문자메시지, 카카오 알림톡 등) 또는 서비스 내 공지사항을 활용하여 회원에게 각종 공지나 통지(서비스 운영에 관한 공지, 약관 등 정책 변경 안내, 신규 서비스·기능 출시 안내 등을 포함)를 할 수 있습니다."}
-                </mark>
-              </span>
+              <span>{"회사는 회원이 가입 시 등록한 이메일, 휴대전화번호(문자메시지, 카카오 알림톡 등) 또는 서비스 내 공지사항을 활용하여 회원에게 각종 공지나 통지(서비스 운영에 관한 공지, 약관 등 정책 변경 안내, 신규 서비스·기능 출시 안내 등을 포함)를 할 수 있습니다."}</span>
             </div>
             <div className="item-row">
               <span className="item-circle">{"(2)"}</span>
-              <span>
-                <mark className="hl-add">
-                  {"회사는 회원에게 이용약관, 개인정보 처리방침 등 일체의 약관이나 서비스 이용과 관련한 사항을 알리거나 안내할 목적으로 사이트 등의 게시판이나 서비스 화면에 그 내용을 게시하거나 제1항에 기재된 수단을 활용하여 공지할 수 있습니다."}
-                </mark>
-              </span>
+              <span>{"회사는 회원에게 이용약관, 개인정보 처리방침 등 일체의 약관이나 서비스 이용과 관련한 사항을 알리거나 안내할 목적으로 사이트 등의 게시판이나 서비스 화면에 그 내용을 게시하거나 제1항에 기재된 수단을 활용하여 공지할 수 있습니다."}</span>
             </div>
             <div className="item-row">
               <span className="item-circle">{"(3)"}</span>
-              <span>
-                <mark className="hl-add">
-                  {"회원 전체에게 공통적으로 적용되는 내용을 통지할 경우, 회사는 1주일 이상 사이트 등의 게시판이나 화면에 일정한 사항을 게시함으로써 각 회원에 대한 개별 통지를 갈음할 수 있습니다. 다만, 회원의 권리·의무에 중대한 영향을 미치는 사항에 대해서는 게시기간을 연장하여 공지합니다."}
-                </mark>
-              </span>
+              <span>{"회원 전체에게 공통적으로 적용되는 내용을 통지할 경우, 회사는 1주일 이상 사이트 등의 게시판이나 화면에 일정한 사항을 게시함으로써 각 회원에 대한 개별 통지를 갈음할 수 있습니다. 다만, 회원의 권리·의무에 중대한 영향을 미치는 사항에 대해서는 게시기간을 연장하여 공지합니다."}</span>
             </div>
             <div className="item-row">
               <span className="item-circle">{"(4)"}</span>
@@ -1058,11 +1036,7 @@ const BiztingTermsDocument = () => {
         <Article id="a34" num="34" title="분쟁 해결">
           <ParenList
             items={[
-              <>
-                {"회사와 이용고객간의 통신은 서면, 전자우편, 팩스"}
-                <mark className="hl-add">{", 문자메시지, 카카오 메시지"}</mark>
-                {" 등으로 합니다."}
-              </>,
+              "회사와 이용고객간의 통신은 서면, 전자우편, 팩스, 문자메시지, 카카오 메시지 등으로 합니다.",
               "분쟁으로 소송이 제기될 경우, 대한민국 서울지방법원을 관할법원으로 합니다.",
             ]}
           />
@@ -1073,8 +1047,8 @@ const BiztingTermsDocument = () => {
         <Article id="abuchik" num="부칙" title="부칙">
           <ParenList
             items={[
-              <mark className="hl-add">{"공고일자: 2026.9.28 시행일자: 2026.10.28"}</mark>,
-              <mark className="hl-add">{"본 '약관'은 2026년 10월 28일부터 시행됩니다."}</mark>,
+              "공고일자: 2026.9.28 시행일자: 2026.10.28",
+              "본 '약관'은 2026년 10월 28일부터 시행됩니다.",
             ]}
           />
         </Article>
@@ -1105,4 +1079,4 @@ const BiztingTermsDocument = () => {
   );
 };
 
-export default BiztingTermsDocument;
+export default BiztingTermsV12Document;

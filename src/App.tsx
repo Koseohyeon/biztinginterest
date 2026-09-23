@@ -21,8 +21,10 @@ import NPassPrivacyPolicy2 from "./privacy/NPassPrivacyPolicy1.1";
 import PrivacyV11Document2 from "./privacy/PrivacyV11Document1.1";
 import ClauseStaticDocument from "./privacy/ClauseStaticDocument";
 import Isms_BiztingPrivacy from "./privacy/isms_BiztingPrivacyv1.0";
+import BiztingPrivacyV11 from "./privacy/isms_BiztingPrivacyv1.1";
 import Isms_NpassPrivacy from "./privacy/isms_N-PassPrivacyv1.0";
 import Isms_BiztingTerms from "./privacy/isms_BiztingTermsv1.0";
+import BiztingTermsV12 from "./privacy/BiztingTermsv1.2";
 import SignUp from "./pages/client/SignUp_v1.0";
 
 //Latte
@@ -91,8 +93,10 @@ export default function App() {
         <Route path="/pricacy/PrivacyV11Document2" element={<PrivacyV11Document2 />} />
         <Route path="/pricacy/ClauseStaticDocument" element={<ClauseStaticDocument />} />
         <Route path="/privacy/isms_BiztingPrivacy" element={<Isms_BiztingPrivacy/>} />
+        <Route path="/privacy/isms_BiztingPrivacyv1.1" element={<BiztingPrivacyV11/>} />
         <Route path="/privacy/isms_NpassPrivacy" element={<Isms_NpassPrivacy />} />
         <Route path="/privacy/BiztingTerms" element={<Isms_BiztingTerms />} />
+        <Route path="/privacy/BiztingTermsv1.2" element={<BiztingTermsV12 />} />
         <Route path="/client/SignUp_v1.0" element={<SignUp />} />
 
         {/* 정관장 */}
