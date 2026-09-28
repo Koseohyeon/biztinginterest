@@ -531,7 +531,7 @@ const S1_NO_CONSENT_ROWS: ReactNode[][] = [
 const S1_CONSENT_ROWS: ReactNode[][] = [
   [
     <HlBlue>{"N-Pass 솔루션을 통한 관심 고객 모집, 이벤트 혜택 안내 및 타겟 마케팅 서비스 제공"}</HlBlue>,
-    "",
+    <HlBlue>{" "}</HlBlue>,
     "개인정보 수집·이용 동의일로부터 서비스 이용 기간 동안 보유·이용하며, 회원 탈퇴 시 파기",
     "개인정보 보호법 제15조 (정보주체의 동의) 제1항 제1호",
   ],
