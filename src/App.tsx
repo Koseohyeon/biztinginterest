@@ -62,10 +62,18 @@ import PersonalEventPagev2 from "./pages/eventpage/PersonalEventPagev1.1"
 import EDMS_page from "./pages/edms/EDMS_page";
 
 
+import DBPromyEventPage from "./pages/eventpage/DBPromyEventPage";
+
+import DBBabyFairEventPage from "./pages/eventpage/DBBabyFairEventPage";
+import DBPetFairEventPage from "./pages/eventpage/DBPetFairEventPage";
+
 export default function App() {
   return (
     <HashRouter>
       <Routes>
+        <Route path="/eventpage/DBBabyFairEventPage" element={<DBBabyFairEventPage />} />
+        <Route path="/eventpage/DBPetFairEventPage" element={<DBPetFairEventPage />} />
+        <Route path="/eventpage/DBPromyEventPage" element={<DBPromyEventPage />} />
 
         <Route path="*" element={<MainPage />} />
 

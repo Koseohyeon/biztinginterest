@@ -179,7 +179,7 @@ const MoonGauge: React.FC<{ fill: number; size?: number; children?: ReactNode }>
     children,
 }) => (
     <div
-        className="tw-relative tw-shrink-0 tw-rounded-full tw-overflow-hidden"
+            className="tw-relative tw-shrink-0 tw-rounded-full tw-overflow-hidden"
         style={{
             width: size,
             height: size,
