@@ -464,14 +464,14 @@ function ExampleTag() {
 }
 
 /* ---------------- 섹션 머리말 ---------------- */
-function SectionHead({ no, label, title, desc, dark, oneLine, titleOneLine }: { no: string; label: string; title: ReactNode; desc?: string; dark?: boolean; oneLine?: boolean; titleOneLine?: boolean }) {
+function SectionHead({ no, label, title, desc, dark, oneLine, titleOneLine, wide }: { no: string; label: string; title: ReactNode; desc?: string; dark?: boolean; oneLine?: boolean; titleOneLine?: boolean; wide?: boolean }) {
   return (
     <Reveal className="tw-mb-12 tw-grid tw-grid-cols-12 tw-items-end tw-gap-x-6 tw-gap-y-4 lg:tw-mb-14">
-      <div className={`tw-col-span-12 ${desc ? "lg:tw-col-span-6" : ""}`}>
+      <div className={`tw-col-span-12 ${desc ? (wide ? "lg:tw-col-span-4" : "lg:tw-col-span-6") : ""}`}>
         <div className="tw-mb-4 tw-flex tw-items-center tw-gap-2.5 tw-text-[14px] tw-font-semibold tw-text-brand-600"><b className={`tw-font-bold ${dark ? "tw-text-white" : "tw-text-ink"}`}>{no}</b><span className="tw-h-px tw-w-6 tw-bg-line-2" />{label}</div>
         <h2 className={`tw-text-[length:clamp(28px,3.4vw,40px)] tw-font-bold tw-leading-[1.25] tw-tracking-[-.03em] ${titleOneLine ? "lg:tw-whitespace-nowrap" : ""}`}>{title}</h2>
       </div>
-      {desc && <Para text={desc} className={`tw-col-span-12 tw-text-[17px] tw-text-ink-2 lg:tw-self-center ${oneLine ? "lg:tw-col-span-6 lg:tw-col-start-7 lg:tw-whitespace-nowrap" : "lg:tw-col-span-5 lg:tw-col-start-8"}`} />}
+      {desc && <Para text={desc} className={`tw-col-span-12 tw-text-[17px] tw-text-ink-2 ${oneLine ? "lg:tw-self-end lg:tw-pb-1" : "lg:tw-self-center"} ${oneLine ? (wide ? "lg:tw-col-span-8 lg:tw-col-start-5 lg:tw-whitespace-nowrap lg:tw-text-right" : "lg:tw-col-span-6 lg:tw-col-start-7 lg:tw-whitespace-nowrap lg:tw-text-right") : "lg:tw-col-span-5 lg:tw-col-start-8"}`} />}
     </Reveal>
   );
 }
@@ -897,7 +897,7 @@ export default function BiztalkBizting() {
         {/* ---------- 04 단가 ---------- */}
         <section id="pricing" className={SECTION_PAD}>
           <div className={WRAP}>
-            <SectionHead no="04" label="구좌별 단가" title={<>구좌 위치에 따라<br />단가가 달라집니다</>} desc="슬라이드형은 맨 앞장의 노출이 가장 많아 단가가 가장 높게 책정됩니다. 표의 단가는 예시이며, 확정 단가는 문의 시 안내드립니다." />
+            <SectionHead no="04" label="구좌별 단가" title={<>위치별 단가 안내</>} titleOneLine oneLine wide desc="슬라이드형은 맨 앞 구좌가 가장 많이 노출됩니다." />
 
             {edit && (
               <div className="tw-mb-6 tw-flex tw-items-center tw-justify-between tw-gap-4 tw-rounded-xl tw-border tw-border-dashed tw-border-brand-500 tw-bg-brand-50 tw-px-4 tw-py-3.5 tw-text-[14px]">
