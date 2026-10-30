@@ -68,6 +68,9 @@ import DBPromyEventPage from "./pages/eventpage/DBPromyEventPage";
 import DBBabyFairEventPage from "./pages/eventpage/DBBabyFairEventPage";
 import DBPetFairEventPage from "./pages/eventpage/DBPetFairEventPage";
 
+//비즈톡 · 비즈팅 소개 페이지
+import BiztalkBizting from "./pages/biztalk/BiztalkBizting";
+
 export default function App() {
   return (
     <HashRouter>
@@ -76,6 +79,9 @@ export default function App() {
         <Route path="/eventpage/DBBabyFairEventPage" element={<DBBabyFairEventPage />} />
         <Route path="/eventpage/DBPetFairEventPage" element={<DBPetFairEventPage />} />
         <Route path="/eventpage/DBPromyEventPage" element={<DBPromyEventPage />} />
+
+        {/* 비즈톡 · 비즈팅 소개 */}
+        <Route path="/Biztalk/Bizting" element={<BiztalkBizting />} />
 
         <Route path="*" element={<MainPage />} />
 
