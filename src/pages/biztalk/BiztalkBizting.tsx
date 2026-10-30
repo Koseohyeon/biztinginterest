@@ -591,7 +591,6 @@ function Calculator({ prices }: { prices: Prices }) {
               <li>· 정가는 건당 {base}원, 구좌 집행은 선택한 구좌의 단가를 적용합니다.</li>
               <li>· 할인율 = (정가 − 구좌 단가) ÷ 정가</li>
               <li>· 모든 금액은 <b className="tw-text-ink-2">VAT 별도</b>입니다.</li>
-              {sample && <li>· 구좌 단가는 계산을 위한 예시이며, 확정 단가는 문의 시 안내드립니다.</li>}
             </ul>
           </div>
         </div>
@@ -950,7 +949,7 @@ export default function BiztalkBizting() {
               ))}
             </div>
 
-            {PRICE_IS_SAMPLE && <p className="tw-mt-6 tw-text-[13px] tw-text-mute">※ 위 단가는 예시이며, 확정 단가는 문의 시 안내드립니다. (건당, VAT 별도)</p>}
+            {PRICE_IS_SAMPLE && <p className="tw-mt-6 tw-text-[13px] tw-text-mute">※ 건당, VAT 별도</p>}
 
             <Reveal className="tw-mt-8 tw-grid tw-grid-cols-1 tw-items-center tw-gap-4 tw-rounded-2xl tw-border tw-border-line tw-bg-white tw-px-6 tw-py-6 md:tw-grid-cols-[auto_1fr_auto] md:tw-gap-8 md:tw-px-7">
               <div><div className="tw-text-[17px] tw-font-bold">비즈팅 정가 (기본 단가)</div><div className="tw-text-[14px] tw-text-mute">건당 · VAT 별도</div></div>
