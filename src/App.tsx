@@ -1,4 +1,6 @@
 import { HashRouter, Routes, Route } from "react-router-dom";
+import { lazy, Suspense } from "react";
+import { ReportLoading, ReportLoadError } from "./pages/실시간통계/ReportLoadState";
 import Dashboard from "./pages/client/Dashboard";
 import DashboardLogin from "./pages/client/DashboardLogin";
 import AttentionIndex from "./pages/client/AttentionIndex";
@@ -71,6 +73,8 @@ import DBPetFairEventPage from "./pages/eventpage/DBPetFairEventPage";
 //비즈톡 · 비즈팅 소개 페이지
 import BiztalkBizting from "./pages/biztalk/BiztalkBizting";
 
+const BiztingReport = lazy(() => import("./pages/실시간통계/BiztingReport").catch(() => ({ default: ReportLoadError })));
+
 export default function App() {
   return (
     <HashRouter>
@@ -82,6 +86,7 @@ export default function App() {
 
         {/* 비즈톡 · 비즈팅 소개 */}
         <Route path="/Biztalk/Bizting" element={<BiztalkBizting />} />
+        <Route path="/real-time-statistics/*" element={<Suspense fallback={<ReportLoading />}><BiztingReport /></Suspense>} />
 
         <Route path="*" element={<MainPage />} />
 
