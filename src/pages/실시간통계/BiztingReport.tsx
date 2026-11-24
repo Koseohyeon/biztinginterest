@@ -1,6 +1,6 @@
-import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import type { ComponentType, FormEvent } from 'react';
-import { NavLink, useMatch } from 'react-router-dom';
+import { lazy, startTransition, Suspense, useEffect, useRef, useState } from 'react';
+import type { FormEvent } from 'react';
+import { NavLink, useMatch, useNavigate } from 'react-router-dom';
 import {
   Activity, ArrowUpRight, BarChart3, CalendarDays, ChartNoAxesCombined, ChevronRight,
   Clock3, Eye, FileChartColumn, Info, LockKeyhole, Mail, MapPinned, MousePointerClick, RefreshCw,
@@ -9,61 +9,40 @@ import logo from './bizting-logo.png';
 import authArtwork from './auth-analytics-glass.webp';
 import InfoTip from './InfoTip';
 import { ReportLoading, ReportLoadError } from './ReportLoadState';
-import type { ReportChartProps } from './ReportCharts';
 import {
-  BIZTING_URL, CONTACT, DAILY_SCHEDULE_NOTE, DAYS, DEMO_CODE, IPHONE_RCS_READ_NOTE, REPORT_PATH, ReportError,
-  dailyReleaseAt, dateAt, formatCount, formatDay, formatRate, getDays, isDemo, koreaDay, openReport, ratio, refreshReport,
+  BIZTING_URL, COLLECTING_LABEL, CONTACT, DAILY_SCHEDULE_NOTE, DAYS, DEMO_CODE, IPHONE_RCS_READ_NOTE, REPORT_PATH,
+  createPreviewReport, dailyReleaseAt, dateAt, formatCount, formatDay, formatRate, getDays, ratio, validatePreviewCode,
 } from './reportData';
-import type { Report, ReportIssue } from './reportData';
+import type { Report } from './reportData';
 import './report.css';
 
 const title = '비즈팅 실시간 통계리포트';
 const dailyPath = REPORT_PATH + '/daily';
 const residencePath = REPORT_PATH + '/residence';
-const ReportCharts = lazy<ComponentType<ReportChartProps>>(() =>
-  import('./ReportCharts').catch(() => ({ default: ReportLoadError })),
-);
+const ReportCharts = lazy(() => import('./ReportCharts').catch(() => ({ default: ReportLoadError })));
+const EstimatedResidence = lazy(() => import('./EstimatedResidence').catch(() => ({ default: ReportLoadError })));
 const updatedTime = new Intl.DateTimeFormat('ko-KR', {
   timeZone: 'Asia/Seoul', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false,
 });
-const issueMessage: Record<ReportIssue, string> = {
-  incorrect: '인증번호가 맞지 않아요. 받은 메시지에서 번호를 다시 확인해 주세요.',
-  expired: '인증이 만료됐어요. 최신 메시지의 인증번호로 다시 확인해 주세요.',
-  limited: isDemo ? '여러 번 잘못 입력하셨어요. 30초 후 다시 시도해 주세요.' : '요청이 많아요. 잠시 후 다시 시도해 주세요.',
-  unavailable: '리포트를 불러오지 못했어요. 연결 상태를 확인하고 다시 시도해 주세요.',
-  invalid: '리포트 데이터를 표시할 수 없어요. 잠시 후 다시 시도해 주세요.',
-  missing: '해당 리포트를 찾을 수 없어요. 받은 메시지의 링크를 다시 확인해 주세요.',
-};
-const getIssue = (error: unknown) => error instanceof ReportError ? error.issue : 'unavailable';
 
 function BiztingLink() {
   return <a className="tw-report-outlink" href={BIZTING_URL} target="_blank" rel="noopener noreferrer">비즈팅 바로가기 <ArrowUpRight size={16} aria-hidden="true" /></a>;
 }
 
-function Verification({ onOpen, notice }: { onOpen: (report: Report) => void; notice: string }) {
+function Verification({ onOpen }: { onOpen: (report: Report) => void }) {
   const [code, setCode] = useState('');
-  const [pending, setPending] = useState(false);
   const [error, setError] = useState('');
   const input = useRef<HTMLInputElement>(null);
-  const feedback = error || notice;
 
-  async function submit(event: FormEvent<HTMLFormElement>) {
+  function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (pending) return;
-    if (!/^\d{6}$/.test(code)) {
-      setError('인증번호 숫자 6자리를 입력해 주세요.');
+    const message = validatePreviewCode(code);
+    if (message) {
+      setError(message);
       input.current?.focus();
       return;
     }
-    setPending(true);
-    setError('');
-    try {
-      onOpen(await openReport(code));
-    } catch (problem) {
-      setError(issueMessage[getIssue(problem)]);
-    } finally {
-      setPending(false);
-    }
+    onOpen(createPreviewReport());
   }
 
   return (
@@ -87,8 +66,7 @@ function Verification({ onOpen, notice }: { onOpen: (report: Report) => void; no
             <div className="tw-report-otp">
               <input ref={input} id="tw-report-code" type="text" inputMode="numeric" autoComplete="one-time-code"
                 value={code} aria-invalid={!!error} aria-required="true"
-                aria-describedby={feedback ? 'tw-report-code-error' : isDemo ? 'tw-report-demo-code' : undefined}
-                readOnly={pending}
+                aria-describedby={error ? 'tw-report-code-error' : 'tw-report-demo-code'}
                 onChange={(event) => {
                   setCode(event.target.value.replace(/\D/g, '').slice(0, 6));
                   setError('');
@@ -99,10 +77,10 @@ function Verification({ onOpen, notice }: { onOpen: (report: Report) => void; no
                 ))}
               </div>
             </div>
-            {feedback && <p className="tw-report-error" id="tw-report-code-error" role="alert">{feedback}</p>}
-            {isDemo && <p className="tw-report-demo-code" id="tw-report-demo-code">미리보기 인증번호 <strong>{DEMO_CODE}</strong></p>}
-            <button className="tw-report-primary" type="submit" disabled={pending}>
-              {pending ? '인증 확인 중…' : '인증하고 리포트 보기'} <ChevronRight size={18} aria-hidden="true" />
+            {error && <p className="tw-report-error" id="tw-report-code-error" role="alert">{error}</p>}
+            <p className="tw-report-demo-code" id="tw-report-demo-code">미리보기 인증번호 <strong>{DEMO_CODE}</strong></p>
+            <button className="tw-report-primary" type="submit">
+              인증하고 리포트 보기 <ChevronRight size={18} aria-hidden="true" />
             </button>
           </form>
           <div className="tw-report-auth-help"><Info size={17} aria-hidden="true" /><p>비즈팅에 로그인한 뒤 <strong>[발송메시지 확인]</strong>에서도 발송일부터 7일간의 성과를 확인할 수 있어요.</p></div>
@@ -140,9 +118,11 @@ function MetricCards({ report }: { report: Report }) {
               <h3>{label}</h3>
               <InfoTip label={label} note={read && isIntegrated ? IPHONE_RCS_READ_NOTE : undefined}>{hint}</InfoTip>
             </div>
-            <div className="tw-report-metric-value">{value}{meter === null && label.endsWith('수') && value !== '—' && <small>건</small>}</div>
+            <div className="tw-report-metric-value" data-collecting={value === COLLECTING_LABEL}>
+              {value}{label.endsWith('수') && value !== COLLECTING_LABEL && <small>건</small>}
+            </div>
             {meter !== null && <div className="tw-report-meter" aria-hidden="true"><i style={{ width: Math.min(meter, 100) + '%' }} /></div>}
-            <p>{value === '—' ? '집계 가능한 데이터 없음' : detail}</p>
+            {value !== COLLECTING_LABEL && <p>{detail}</p>}
           </article>
         ))}
       </div>
@@ -167,19 +147,15 @@ function ReportNotes({ report, daily }: { report: Report; daily: boolean }) {
 }
 
 export default function BiztingReport() {
+  const navigate = useNavigate();
   const daily = !!useMatch(dailyPath);
   const residence = !!useMatch(residencePath);
   const [report, setReport] = useState<Report | null>(null);
-  const [notice, setNotice] = useState('');
-  const [refreshing, setRefreshing] = useState(false);
-  const updateInProgress = useRef(false);
-  const requestVersion = useRef(0);
-  const lastDailyAttempt = useRef<{ batch: number; retryAt: number } | null>(null);
   const batchAsOf = Date.parse(report?.updatedAt ?? '');
   const lastDay = report ? dateAt(report.sentOn, DAYS - 1) : '';
   const firstDailyDay = report ? dateAt(report.sentOn, 1) : '';
   const lastDailyDay = lastDay ? dateAt(lastDay, 1) : '';
-  const liveComplete = !!lastDay && koreaDay() > lastDay;
+  const firstBatch = dailyReleaseAt(firstDailyDay);
 
   useEffect(() => {
     const previous = document.title;
@@ -191,91 +167,13 @@ export default function BiztingReport() {
     window.scrollTo(0, 0);
   }, [daily, residence]);
 
-  const refresh = useCallback(async () => {
-    if (updateInProgress.current) return;
-    updateInProgress.current = true;
-    const version = requestVersion.current;
-    setRefreshing(true);
-    setNotice('');
-    try {
-      const updated = await refreshReport();
-      if (version === requestVersion.current) setReport(updated);
-    } catch (problem) {
-      if (version !== requestVersion.current) return;
-      const issue = getIssue(problem);
-      if (issue === 'expired') setReport(null);
-      setNotice(issueMessage[issue]);
-    } finally {
-      if (version === requestVersion.current) {
-        updateInProgress.current = false;
-        setRefreshing(false);
-      }
-    }
-  }, []);
-
-  const days = useMemo(() => report ? getDays(report) : [], [report]);
-  const verified = !!report;
-  useEffect(() => {
-    if (isDemo || daily || !verified || liveComplete) return;
-    const timer = window.setInterval(() => {
-      if (document.visibilityState === 'visible') void refresh();
-    }, 60_000);
-    return () => window.clearInterval(timer);
-  }, [daily, liveComplete, refresh, verified]);
-
-  useEffect(() => {
-    if (!daily || !firstDailyDay || !lastDailyDay) return;
-    let timer: number | undefined;
-
-    function schedule() {
-      window.clearTimeout(timer);
-      const now = Date.now();
-      const today = koreaDay(new Date(now));
-      const todayBatch = dailyReleaseAt(today);
-      const lastBatch = dailyReleaseAt(lastDailyDay);
-      const released = Math.min(lastBatch, now >= todayBatch ? todayBatch : dailyReleaseAt(dateAt(today, -1)));
-      const firstBatch = dailyReleaseAt(firstDailyDay);
-      const nextBatch = Math.max(firstBatch, now < todayBatch ? todayBatch : dailyReleaseAt(dateAt(today, 1)));
-      let wakeAt = nextBatch <= lastBatch ? nextBatch : Infinity;
-
-      if (document.visibilityState === 'visible' && released >= firstBatch && released > batchAsOf) {
-        const previous = lastDailyAttempt.current;
-        const alreadyRequested = previous?.batch === released;
-        const retryAt = alreadyRequested ? previous.retryAt : now;
-        if (retryAt <= now) {
-          lastDailyAttempt.current = { batch: released, retryAt: alreadyRequested ? Infinity : now + 60_000 };
-          void refresh();
-        }
-        wakeAt = Math.min(wakeAt, lastDailyAttempt.current?.retryAt ?? Infinity);
-      }
-      if (Number.isFinite(wakeAt)) timer = window.setTimeout(schedule, Math.min(wakeAt - now, 86_400_000));
-    }
-
-    schedule();
-    document.addEventListener('visibilitychange', schedule);
-    return () => {
-      window.clearTimeout(timer);
-      document.removeEventListener('visibilitychange', schedule);
-    };
-  }, [batchAsOf, daily, firstDailyDay, lastDailyDay, refresh]);
-
-  function closeReport() {
-    requestVersion.current += 1;
-    lastDailyAttempt.current = null;
-    updateInProgress.current = false;
-    setRefreshing(false);
-    setReport(null);
-    setNotice('');
-    window.scrollTo(0, 0);
-  }
-
+  const days = daily && report ? getDays(report) : [];
   const updatedLabel = report ? updatedTime.format(new Date(report.updatedAt)) : '';
 
-  const latestDaily = daily ? days.filter((day) => day.state === 'available').at(-1) : undefined;
-  const dailyUpdatedLabel = latestDaily
-    ? formatDay(latestDaily.aggregationDate) + ' 04:30 기준'
-    : batchAsOf < dailyReleaseAt(firstDailyDay) ? '첫 집계 예정' : '집계 데이터 대기';
-  const timestampLabel = daily ? dailyUpdatedLabel : updatedLabel + ' 기준';
+  const latestDaily = days.filter((day) => day.hasDailyData).at(-1);
+  const timestampLabel = daily
+    ? latestDaily ? formatDay(latestDaily.aggregationDate) + ' 04:30 기준' : COLLECTING_LABEL
+    : updatedLabel + ' 기준';
 
   return (
     <div className="tw-report tw-font-sans">
@@ -285,10 +183,11 @@ export default function BiztingReport() {
           <BiztingLink />
         </div>
       </header>}
-      {!report ? <Verification notice={notice} onOpen={(value) => {
-        lastDailyAttempt.current = null;
-        setNotice('');
-        setReport(value);
+      {!report ? <Verification onOpen={(value) => {
+        startTransition(() => {
+          navigate(REPORT_PATH, { replace: true });
+          setReport(value);
+        });
         window.scrollTo(0, 0);
       }} /> : (
         <div className="tw-report-dashboard">
@@ -305,7 +204,6 @@ export default function BiztingReport() {
             <div className="tw-report-sidebar-links">
               <BiztingLink />
               <a href={'mailto:' + CONTACT}><Mail size={17} aria-hidden="true" /> 리포트 문의</a>
-              <button className="tw-report-close" type="button" onClick={closeReport}><LockKeyhole size={16} aria-hidden="true" /> 리포트 닫기</button>
             </div>
           </aside>
           <main className="tw-report-main">
@@ -321,19 +219,24 @@ export default function BiztingReport() {
               </dl>
             </section>
             <div className="tw-report-timestamp-row">
-              {daily && <span className="tw-report-daily-schedule"><CalendarDays size={15} aria-hidden="true" /> 다음 날부터 매일 오전 4시 30분 갱신</span>}
+              {!residence && (
+                <p className="tw-report-schedule-note">
+                  <Info size={16} aria-hidden="true" />
+                  <span>{daily ? '발송일 다음 날부터 확인 가능합니다.' : '정확한 통계는 발송일 다음 날부터 집계돼요.'}</span>
+                </p>
+              )}
               <div className="tw-report-updated">
-                <span role="status"><Clock3 size={14} aria-hidden="true" /> {refreshing ? '갱신 중…' : timestampLabel}</span>
-                <button type="button" disabled={refreshing} aria-label="통계 새로고침" onClick={() => void refresh()}><RefreshCw size={16} aria-hidden="true" /></button>
+                <span role="status"><Clock3 size={14} aria-hidden="true" /> {timestampLabel}</span>
+                <button type="button" aria-label="통계 새로고침" onClick={() => setReport({ ...report, updatedAt: new Date().toISOString() })}>
+                  <RefreshCw size={16} aria-hidden="true" />
+                </button>
               </div>
             </div>
-            {notice && <p className="tw-report-error tw-report-refresh-error" role="alert">{notice}</p>}
-            {!daily && !residence && <MetricCards report={report} />}
             <Suspense fallback={<ReportLoading />}>
-              <ReportCharts report={report} days={days} view={daily ? 'daily' : residence ? 'region' : 'live'} />
+              {daily ? <ReportCharts report={report} days={days} dailyStarted={batchAsOf >= firstBatch} />
+                : residence ? <EstimatedResidence report={report} /> : <MetricCards report={report} />}
             </Suspense>
             <ReportNotes report={report} daily={daily} />
-            <button className="tw-report-close tw-report-mobile-close" type="button" onClick={closeReport}><LockKeyhole size={16} aria-hidden="true" /> 리포트 닫기</button>
           </main>
         </div>
       )}

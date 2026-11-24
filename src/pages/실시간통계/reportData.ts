@@ -2,15 +2,13 @@ import demoDemographics from './demo-demographics.json';
 import demoResidence from './demo-residence.json';
 
 export const DAYS = 7;
+export const COLLECTING_LABEL = '집계 중';
 export const IPHONE_RCS_READ_NOTE = '통합유형의 경우 아이폰 RCS는 읽음 확인 설정이 기본적으로 꺼져 있어, 메시지를 읽어도 읽음으로 집계되지 않을 수 있어요. 표시된 읽음률은 실제와 다를 수 있습니다.';
 export const DAILY_SCHEDULE_NOTE = '발송일 다음 날부터 매일 오전 4시 30분(한국시간)에 전날 성과를 집계해요.';
 export const DEMO_CODE = '246810';
 export const REPORT_PATH = '/real-time-statistics';
 export const BIZTING_URL = 'https://www.bizting.co.kr';
 export const CONTACT = 'tf@biztalk.co.kr';
-
-const apiRoot = import.meta.env.VITE_BIZTING_REPORT_API?.trim().replace(/\/+$/, '');
-export const isDemo = !apiRoot;
 
 type Snapshot = {
   date: string;
@@ -96,8 +94,8 @@ export function ratio(part: number | null, total: number | null) {
 
 const rates = new Intl.NumberFormat('ko-KR', { minimumFractionDigits: 1, maximumFractionDigits: 2 });
 const counts = new Intl.NumberFormat('ko-KR');
-export const formatRate = (value: number | null) => value === null ? '—' : rates.format(value) + '%';
-export const formatCount = (value: number | null) => value === null ? '—' : counts.format(value);
+export const formatRate = (value: number | null) => value === null ? COLLECTING_LABEL : rates.format(value) + '%';
+export const formatCount = (value: number | null) => value === null ? COLLECTING_LABEL : counts.format(value);
 export const formatDay = (value: string) => value.replaceAll('-', '.');
 export const shortDay = (value: string) => value.slice(5).replace('-', '/');
 
@@ -140,10 +138,13 @@ function parseAreas(value: unknown): Area[] {
 
 function total<T>(items: T[], select: (item: T) => number | null) {
   if (!items.length) return null;
-  return items.reduce<number | null>((sum, item) => {
+  let sum = 0;
+  for (const item of items) {
     const value = select(item);
-    return sum === null || value === null ? null : sum + value;
-  }, 0);
+    if (value === null) return null;
+    sum += value;
+  }
+  return sum;
 }
 
 export function parseReport(input: unknown): Report {
@@ -151,7 +152,7 @@ export function parseReport(input: unknown): Report {
   if (typeof campaignName !== 'string' || !campaignName.trim() || !isoDay(sendDate)
     || typeof sendType !== 'string' || !sendType.trim()
     || typeof updatedAt !== 'string' || !Number.isFinite(Date.parse(updatedAt))) {
-    throw new ReportError('invalid');
+    throw new Error('리포트 기본 정보가 올바르지 않아요.');
   }
   const segments = parseSegments(list);
   const summaryRecord = record(summary);
@@ -183,26 +184,19 @@ export function parseReport(input: unknown): Report {
 export function getDays(report: Report) {
   const snapshots = new Map(report.daily.map((snapshot) => [snapshot.date, snapshot]));
   const asOf = Date.parse(report.updatedAt);
-  let cumulativeRead: number | null = 0;
-  let cumulativeReaction: number | null = 0;
 
   return Array.from({ length: DAYS }, (_, index) => {
     const date = dateAt(report.sentOn, index);
-    const snapshot = snapshots.get(date);
     const aggregationDate = dateAt(date, 1);
-    const dailyAvailable = asOf >= dailyReleaseAt(aggregationDate);
-    const read = snapshot?.readCount ?? null;
-    const reaction = snapshot?.reactionCount ?? null;
-    cumulativeRead = read === null || cumulativeRead === null ? null : cumulativeRead + read;
-    cumulativeReaction = reaction === null || cumulativeReaction === null ? null : cumulativeReaction + reaction;
+    const snapshot = asOf >= dailyReleaseAt(aggregationDate) ? snapshots.get(date) : undefined;
+    const dailyRead = snapshot?.readCount ?? null;
+    const dailyReaction = snapshot?.reactionCount ?? null;
     return {
       date,
       aggregationDate,
-      dailyRead: dailyAvailable ? read : null,
-      dailyReaction: dailyAvailable ? reaction : null,
-      cumulativeRead,
-      cumulativeReaction,
-      state: !dailyAvailable ? 'upcoming' : read !== null || reaction !== null ? 'available' : 'missing',
+      dailyRead,
+      dailyReaction,
+      hasDailyData: dailyRead !== null || dailyReaction !== null,
     };
   });
 }
@@ -228,21 +222,46 @@ export function getDemographics(segments: Segment[]) {
     countsByAge.set(age, (countsByAge.get(age) ?? 0) + delivered);
     countsBySex.set(sex, (countsBySex.get(sex) ?? 0) + delivered);
   }
-  const ages = Array.from(countsByAge.keys()).sort((left, right) => {
-    const lowerBound = (age: string) => age.startsWith('~') ? 0 : Number(age.match(/\d+/)?.[0] ?? Infinity);
-    return lowerBound(left) - lowerBound(right) || left.localeCompare(right, 'ko');
-  });
+  const ages = Array.from(countsByAge.keys(), (label) => ({
+    label,
+    lowerBound: label.startsWith('~') ? 0 : Number(label.match(/\d+/)?.[0] ?? Infinity),
+  })).sort((left, right) => left.lowerBound - right.lowerBound || left.label.localeCompare(right.label, 'ko'));
   const sexes = ['남성', '여성', '미분류'].filter((sex) => countsBySex.has(sex));
   return {
-    ageShares: ages.map((age) => ({
-      label: age,
-      share: ratio(countsByAge.get(age) ?? null, classified),
+    ageShares: ages.map(({ label }) => ({
+      label,
+      share: ratio(countsByAge.get(label) ?? null, classified),
     })),
     sexShares: sexes.map((sex) => ({
       label: sex,
       share: ratio(countsBySex.get(sex) ?? null, classified),
     })),
   };
+}
+
+export function getTopDemographicReaction(segments: Segment[]) {
+  const cohorts = new Map<string, Segment[]>();
+  for (const segment of segments) {
+    if (segment.sex === '미분류' || segment.delivered === 0) continue;
+    const label = segment.age + ' ' + segment.sex;
+    const rows = cohorts.get(label) ?? [];
+    rows.push(segment);
+    cohorts.set(label, rows);
+  }
+
+  let topRate: number | null = null;
+  let groups: string[] = [];
+  for (const [label, rows] of cohorts) {
+    const rate = ratio(total(rows, (row) => row.reactions), total(rows, (row) => row.delivered));
+    if (rate === null) continue;
+    if (topRate === null || rate > topRate) {
+      topRate = rate;
+      groups = [label];
+    } else if (rate === topRate) {
+      groups.push(label);
+    }
+  }
+  return topRate === null ? null : { rate: topRate, groups };
 }
 
 export function getResidence(areas: Area[]): ResidenceRow[] {
@@ -260,75 +279,25 @@ export function getResidence(areas: Area[]): ResidenceRow[] {
   }));
 }
 
-export type ReportIssue = 'incorrect' | 'expired' | 'limited' | 'unavailable' | 'invalid' | 'missing';
-
-export class ReportError extends Error {
-  readonly issue: ReportIssue;
-
-  constructor(issue: ReportIssue) {
-    super(issue);
-    this.issue = issue;
-  }
+export function validatePreviewCode(code: string) {
+  if (!/^\d{6}$/.test(code)) return '인증번호 숫자 6자리를 입력해 주세요.';
+  return code === DEMO_CODE ? '' : '인증번호가 맞지 않아요. 미리보기 인증번호를 다시 확인해 주세요.';
 }
 
-async function apiRequest(path: string, init?: RequestInit) {
-  const response = await fetch(apiRoot + path, {
-    ...init, credentials: 'include', cache: 'no-store', signal: AbortSignal.timeout(12000),
-  });
-  if (response.status === 401 || response.status === 403) {
-    throw new ReportError(path === '/verify' ? 'incorrect' : 'expired');
-  }
-  if (response.status === 429) throw new ReportError('limited');
-  if (response.status === 404) throw new ReportError('missing');
-  if (response.status === 410) throw new ReportError('expired');
-  if (!response.ok) throw new ReportError('unavailable');
-  const payload: unknown = await response.json().catch(() => { throw new ReportError('invalid'); });
-  return parseReport(payload);
-}
-
-const demoDate = dateAt(koreaDay(), -2);
-
-function sampleReport() {
-  const [readCount, reactionCount] = [1638, 154];
+export function createPreviewReport(now = new Date()) {
+  const sendDate = dateAt(koreaDay(now), -2);
   return parseReport({
     campaignName: '11월 고객 감사 혜택 안내',
     sendType: '통합유형',
-    sendDate: demoDate,
-    updatedAt: new Date().toISOString(),
-    summary: { readCount, reactionCount },
+    sendDate,
+    updatedAt: now.toISOString(),
+    summary: { readCount: 1638, reactionCount: 154 },
     daily: [
-      { date: demoDate, readCount: 730, reactionCount: 46 },
-      { date: dateAt(demoDate, 1), readCount: 560, reactionCount: 65 },
-      { date: dateAt(demoDate, 2), readCount: 348, reactionCount: 43 },
+      { date: sendDate, readCount: 730, reactionCount: 46 },
+      { date: dateAt(sendDate, 1), readCount: 560, reactionCount: 65 },
+      { date: dateAt(sendDate, 2), readCount: 348, reactionCount: 43 },
     ],
     list: demoDemographics.list,
     areaStats: demoResidence,
   });
-}
-
-let demoFailures = 0;
-let demoLockedUntil = 0;
-
-export async function openReport(code: string) {
-  if (!isDemo) {
-    return apiRequest('/verify', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ code }),
-    });
-  }
-  if (Date.now() < demoLockedUntil) throw new ReportError('limited');
-  if (code === DEMO_CODE) {
-    demoFailures = 0;
-    return sampleReport();
-  }
-  demoFailures += 1;
-  if (demoFailures < 5) throw new ReportError('incorrect');
-  demoFailures = 0;
-  demoLockedUntil = Date.now() + 30_000;
-  throw new ReportError('limited');
-}
-
-export async function refreshReport() {
-  return isDemo ? sampleReport() : apiRequest('/report');
 }

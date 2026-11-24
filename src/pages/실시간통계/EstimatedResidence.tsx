@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { MapPin, MapPinned, TrendingUp } from 'lucide-react';
 import boundaries from './korea-boundaries.json';
-import { formatRate, getResidence } from './reportData';
+import { COLLECTING_LABEL, formatRate, getResidence } from './reportData';
 import type { Report } from './reportData';
 
 type Metric = 'reactionRate' | 'share';
@@ -39,7 +39,7 @@ export default function EstimatedResidence({ report }: { report: Report }) {
         </div>
       </div>
       {!areas.length ? (
-        <div className="tw-report-empty"><MapPinned size={26} aria-hidden="true" /><p>선택한 지표로 표시할 지역 데이터가 아직 없어요.</p></div>
+        <div className="tw-report-empty"><MapPinned size={26} aria-hidden="true" /><p>{COLLECTING_LABEL}</p></div>
       ) : (
         <div className="tw-report-area-grid">
           <section className="tw-report-area-map" aria-labelledby="tw-report-map-title">
