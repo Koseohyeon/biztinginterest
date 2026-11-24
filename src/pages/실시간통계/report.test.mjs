@@ -9,8 +9,8 @@ const server = await createServer({
 after(() => server.close());
 
 const {
-  COLLECTING_LABEL, DEMO_CODE, createPreviewReport, formatCount, formatRate, getDays,
-  getDemographics, getResidence, getTopDemographicReaction, parseReport, ratio, validatePreviewCode,
+  COLLECTING_LABEL, DEMO_CODE, createPreviewReport, dateAt, formatCount, formatRate, getDays,
+  getDemographics, getResidence, getTopDemographicReaction, parseReport, ratio, readRate, validatePreviewCode,
 } = await server.ssrLoadModule('/src/pages/실시간통계/reportData.ts');
 
 const campaign = {
@@ -64,10 +64,48 @@ test('first daily result releases at 04:30 KST, preserving partial data and zero
   const [released, next] = at('2026-11-22T19:30:00Z');
   assert.deepEqual(before, {
     date: '2026-11-22', aggregationDate: '2026-11-23',
-    dailyRead: null, dailyReaction: null, hasDailyData: false,
+    cumulativeRead: null, cumulativeReaction: null, hasDailyData: false,
   });
-  assert.deepEqual(released, { ...before, dailyRead: 0, hasDailyData: true });
+  assert.deepEqual(released, { ...before, cumulativeRead: 0, hasDailyData: true });
   assert.equal(next.hasDailyData, false);
+});
+
+test('uses the seven cumulative totals as provided and matches the RCS and total send denominators', () => {
+  const rows = [
+    [4261, 797], [4689, 866], [4971, 903], [5075, 921], [5138, 926], [5174, 930], [5206, 933],
+  ];
+  const report = parseReport({
+    ...campaign,
+    updatedAt: '2026-11-29T04:30:00+09:00',
+    summary: { rcsDeliveredCount: 9423, deliveredCount: 10003, readCount: 5206, reactionCount: 933 },
+    daily: rows.map(([readCount, reactionCount], index) => ({
+      date: dateAt(campaign.sendDate, index), readCount, reactionCount,
+    })),
+  });
+  const days = getDays(report);
+  assert.deepEqual(days.map(({ cumulativeRead, cumulativeReaction }) => [cumulativeRead, cumulativeReaction]), rows);
+  assert.equal(formatRate(readRate(report, days[0].cumulativeRead)), '45.22%');
+  assert.equal(formatRate(readRate(report)), '55.25%');
+  assert.equal(formatRate(ratio(days[0].cumulativeReaction, report.delivered)), '7.97%');
+  assert.equal(formatRate(ratio(days[6].cumulativeReaction, report.delivered)), '9.33%');
+});
+
+test('keeps zero RCS deliveries distinct from a missing denominator', () => {
+  const report = parseReport({ ...campaign, summary: { deliveredCount: 10, readCount: 5 } });
+  assert.equal(readRate(report), 50);
+  assert.equal(readRate({ ...report, rcsDelivered: 0 }), null);
+});
+
+test('resumes after missing cumulative snapshots and suppresses a decrease in either metric', () => {
+  const report = parseReport({ ...campaign, updatedAt: '2026-11-26T04:30:00+09:00', daily: [
+    { date: '2026-11-22', readCount: 30, reactionCount: 10 },
+    { date: '2026-11-23', reactionCount: 5 },
+    { date: '2026-11-24', readCount: 40, reactionCount: 10 },
+    { date: '2026-11-25', readCount: 39, reactionCount: 12 },
+  ] });
+  assert.deepEqual(getDays(report).slice(0, 5).map(({ cumulativeRead, cumulativeReaction }) => [
+    cumulativeRead, cumulativeReaction,
+  ]), [[30, 10], [null, null], [40, 10], [null, 12], [null, null]]);
 });
 
 test('keeps seven days and ignores invalid, future, and out-of-period rows', () => {
@@ -160,6 +198,9 @@ test('preview loads the sample audience and shows collected and pending dates to
   const days = getDays(report);
   assert.equal(report.sentOn, '2026-11-22');
   assert.equal(days.filter((day) => day.hasDailyData).length, 2);
+  assert.deepEqual(days.slice(0, 2).map(({ cumulativeRead, cumulativeReaction }) => [
+    cumulativeRead, cumulativeReaction,
+  ]), [[730, 46], [1290, 111]]);
   assert.equal(days.length, 7);
   assert.ok(report.delivered > 0 && report.segments.length > 0 && report.areas.length > 0);
   const insight = getTopDemographicReaction(report.segments);

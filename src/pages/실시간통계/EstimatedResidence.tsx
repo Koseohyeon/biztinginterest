@@ -105,7 +105,7 @@ export default function EstimatedResidence({ report }: { report: Report }) {
                 );
               })}
             </svg>
-            <p className="tw-report-chart-note">시·도 위치를 간략히 표현한 지도예요. 막대 높이는 {label}에 비례하고, 값이 없는 지역은 회색으로 표시해요.</p>
+            <p className="tw-report-chart-note">막대 높이는 {label}에 비례하고, 값이 없는 지역은 회색으로 표시해요.</p>
           </section>
           <section className="tw-report-area-rank" aria-labelledby="tw-report-rank-title" onMouseLeave={() => setHoveredArea('')}>
             <h3 id="tw-report-rank-title">지역별 {label}</h3>

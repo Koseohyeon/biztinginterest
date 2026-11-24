@@ -4,7 +4,6 @@ import demoResidence from './demo-residence.json';
 export const DAYS = 7;
 export const COLLECTING_LABEL = '집계 중';
 export const IPHONE_RCS_READ_NOTE = '통합유형의 경우 아이폰 RCS는 읽음 확인 설정이 기본적으로 꺼져 있어, 메시지를 읽어도 읽음으로 집계되지 않을 수 있어요. 표시된 읽음률은 실제와 다를 수 있습니다.';
-export const DAILY_SCHEDULE_NOTE = '발송일 다음 날부터 매일 오전 4시 30분(한국시간)에 전날 성과를 집계해요.';
 export const DEMO_CODE = '246810';
 export const REPORT_PATH = '/real-time-statistics';
 export const BIZTING_URL = 'https://www.bizting.co.kr';
@@ -43,6 +42,7 @@ export type Report = {
   sendType: string;
   updatedAt: string;
   delivered: number | null;
+  rcsDelivered: number | null;
   readCount: number | null;
   reactionCount: number | null;
   daily: Snapshot[];
@@ -90,6 +90,10 @@ export function dailyReleaseAt(aggregationDay: string) {
 
 export function ratio(part: number | null, total: number | null) {
   return part !== null && total !== null && total > 0 ? part / total * 100 : null;
+}
+
+export function readRate(report: Report, reads = report.readCount) {
+  return ratio(reads, report.rcsDelivered ?? report.delivered);
 }
 
 const rates = new Intl.NumberFormat('ko-KR', { minimumFractionDigits: 1, maximumFractionDigits: 2 });
@@ -173,6 +177,7 @@ export function parseReport(input: unknown): Report {
     sendType: sendType.trim(),
     updatedAt,
     delivered: count(summaryRecord.deliveredCount) ?? total(segments, (row) => row.delivered),
+    rcsDelivered: count(summaryRecord.rcsDeliveredCount),
     readCount: count(summaryRecord.readCount),
     reactionCount: count(summaryRecord.reactionCount) ?? total(segments, (row) => row.reactions),
     daily: Array.from(snapshots.values()).sort((left, right) => left.date.localeCompare(right.date)),
@@ -184,19 +189,27 @@ export function parseReport(input: unknown): Report {
 export function getDays(report: Report) {
   const snapshots = new Map(report.daily.map((snapshot) => [snapshot.date, snapshot]));
   const asOf = Date.parse(report.updatedAt);
+  let latestRead = 0;
+  let latestReaction = 0;
 
   return Array.from({ length: DAYS }, (_, index) => {
     const date = dateAt(report.sentOn, index);
     const aggregationDate = dateAt(date, 1);
     const snapshot = asOf >= dailyReleaseAt(aggregationDate) ? snapshots.get(date) : undefined;
-    const dailyRead = snapshot?.readCount ?? null;
-    const dailyReaction = snapshot?.reactionCount ?? null;
+    const read = snapshot?.readCount ?? null;
+    const reaction = snapshot?.reactionCount ?? null;
+    const cumulativeRead = read !== null && read >= latestRead ? read : null;
+    const cumulativeReaction = reaction !== null && reaction >= latestReaction ? reaction : null;
+
+    // Later snapshots already cover intervening days, including any missing snapshots.
+    latestRead = cumulativeRead ?? latestRead;
+    latestReaction = cumulativeReaction ?? latestReaction;
     return {
       date,
       aggregationDate,
-      dailyRead,
-      dailyReaction,
-      hasDailyData: dailyRead !== null || dailyReaction !== null,
+      cumulativeRead,
+      cumulativeReaction,
+      hasDailyData: cumulativeRead !== null || cumulativeReaction !== null,
     };
   });
 }
@@ -294,8 +307,8 @@ export function createPreviewReport(now = new Date()) {
     summary: { readCount: 1638, reactionCount: 154 },
     daily: [
       { date: sendDate, readCount: 730, reactionCount: 46 },
-      { date: dateAt(sendDate, 1), readCount: 560, reactionCount: 65 },
-      { date: dateAt(sendDate, 2), readCount: 348, reactionCount: 43 },
+      { date: dateAt(sendDate, 1), readCount: 1290, reactionCount: 111 },
+      { date: dateAt(sendDate, 2), readCount: 1638, reactionCount: 154 },
     ],
     list: demoDemographics.list,
     areaStats: demoResidence,

@@ -5,7 +5,7 @@ import {
 import { ChartNoAxesCombined, TrendingUp } from 'lucide-react';
 import InfoTip from './InfoTip';
 import {
-  COLLECTING_LABEL, DAILY_SCHEDULE_NOTE, DAYS, IPHONE_RCS_READ_NOTE, formatCount, formatDay, formatRate, getDemographics, getTopDemographicReaction, ratio, shortDay,
+  COLLECTING_LABEL, DAYS, IPHONE_RCS_READ_NOTE, formatCount, formatDay, formatRate, getDemographics, getTopDemographicReaction, ratio, readRate, shortDay,
 } from './reportData';
 import type { Report, ReportDays } from './reportData';
 
@@ -18,12 +18,13 @@ function DailyPerformanceChart({ report, days }: { report: Report; days: ReportD
   const [unit, setUnit] = useState<'rate' | 'count'>('rate');
   const useRate = unit === 'rate';
   const display = useRate ? formatRate : formatCount;
-  const data = days.map(({ aggregationDate, date, dailyRead, dailyReaction }) => ({
+  const data = days.map(({ aggregationDate, date, cumulativeRead, cumulativeReaction }) => ({
     day: shortDay(aggregationDate),
     date: shortDay(date),
-    read: useRate ? ratio(dailyRead, report.delivered) : dailyRead,
-    reaction: useRate ? ratio(dailyReaction, report.delivered) : dailyReaction,
+    read: useRate ? readRate(report, cumulativeRead) : cumulativeRead,
+    reaction: useRate ? ratio(cumulativeReaction, report.delivered) : cumulativeReaction,
   }));
+  const readBasis = report.rcsDelivered === null ? '전체 발송 성공 건' : 'RCS 발송 성공 건';
   const readLabel = useRate ? '읽음률' : '읽음수';
   const reactionLabel = useRate ? '반응률' : '반응수';
   const havePoints = data.some((day) => day.read !== null || day.reaction !== null);
@@ -35,8 +36,8 @@ function DailyPerformanceChart({ report, days }: { report: Report; days: ReportD
     <section className="tw-report-card tw-report-trend" aria-labelledby="tw-report-trend-title">
       <div className="tw-report-section-top">
         <div>
-          <h2 id="tw-report-trend-title">일자별 성과</h2>
-          <p>{DAILY_SCHEDULE_NOTE}</p>
+          <h2 id="tw-report-trend-title">일자별 누적 성과</h2>
+          <p>매일 오전 4시 30분(한국시간)에 전날까지의 누적 성과를 반영해요.</p>
         </div>
         <div className="tw-report-switch" role="group" aria-label="그래프 표시 단위">
           <button type="button" onClick={() => setUnit('rate')} aria-pressed={useRate}>비율</button>
@@ -48,7 +49,7 @@ function DailyPerformanceChart({ report, days }: { report: Report; days: ReportD
           <i style={{ background: READ }} />{readLabel}
           {useRate && (
             <InfoTip label={readLabel} note={report.sendType.includes('통합') ? IPHONE_RCS_READ_NOTE : undefined}>
-              발송 성공 건 중 메시지를 열어본 비율이에요.
+              {readBasis} 중 메시지를 열어본 비율이에요.
             </InfoTip>
           )}
         </div>
@@ -73,7 +74,7 @@ function DailyPerformanceChart({ report, days }: { report: Report; days: ReportD
               <YAxis width={45} allowDecimals={useRate} axisLine={false} tickLine={false}
                 tick={{ fill: '#5a6d90', fontSize: 11 }} tickFormatter={(value) => useRate ? value + '%' : formatCount(value)} />
               <Tooltip
-                labelFormatter={(label, payload) => String(label) + (payload[0]?.payload.date ? ' · ' + payload[0].payload.date + ' 성과' : '')}
+                labelFormatter={(label, payload) => String(label) + (payload[0]?.payload.date ? ' · ' + payload[0].payload.date + '까지 누적' : '')}
                 formatter={(value) => typeof value === 'number' ? display(value) + (useRate ? '' : '건') : COLLECTING_LABEL}
                 contentStyle={{ border: '1px solid #e3eaf6', borderRadius: 14, padding: '9px 12px', fontSize: 12, boxShadow: '0 8px 22px #2b46821a' }}
                 cursor={{ fill: '#edf2ff' }}
@@ -92,7 +93,7 @@ function DailyPerformanceChart({ report, days }: { report: Report; days: ReportD
         </div>
       )}
       <p className="tw-report-chart-note">
-        일간 비율은 날짜별 집계 수를 캠페인 전체 발송 성공 수로 나눈 값이에요.
+        읽음률은 {readBasis}을, 반응률은 전체 발송 성공 건을 기준으로 계산해요.
       </p>
     </section>
   );
@@ -165,13 +166,13 @@ function Demographics({ segments }: { segments: Report['segments'] }) {
   );
 }
 
-function DailyTable({ days, delivered }: { days: ReportDays; delivered: Report['delivered'] }) {
+function DailyTable({ days, report }: { days: ReportDays; report: Report }) {
   return (
     <section className="tw-report-card" aria-labelledby="tw-report-daily-title">
       <div className="tw-report-section-top">
         <div>
-          <h2 id="tw-report-daily-title">일자별 통계 표</h2>
-          <p>첫 집계일부터 {DAYS}일간의 집계 결과를 확인할 수 있어요.</p>
+          <h2 id="tw-report-daily-title">일자별 누적 통계 표</h2>
+          <p>발송일부터 {DAYS}일간의 누적 성과를 확인할 수 있어요. 아직 집계되지 않은 값은 ‘집계 중’으로 표시돼요.</p>
         </div>
       </div>
       <div className="tw-report-table-wrap">
@@ -181,14 +182,14 @@ function DailyTable({ days, delivered }: { days: ReportDays; delivered: Report['
             <tr key={day.date}>
               <th scope="row">
                 <span>{formatDay(day.aggregationDate)}</span>
-                <small>{shortDay(day.date)} 성과</small>
+                <small>{shortDay(day.date)}까지 누적</small>
               </th>
               {day.hasDailyData ? (
                 <>
-                  <td>{formatRate(ratio(day.dailyRead, delivered))}</td>
-                  <td>{formatRate(ratio(day.dailyReaction, delivered))}</td>
-                  <td>{formatCount(day.dailyRead)}</td>
-                  <td>{formatCount(day.dailyReaction)}</td>
+                  <td>{formatRate(readRate(report, day.cumulativeRead))}</td>
+                  <td>{formatRate(ratio(day.cumulativeReaction, report.delivered))}</td>
+                  <td>{formatCount(day.cumulativeRead)}</td>
+                  <td>{formatCount(day.cumulativeReaction)}</td>
                 </>
               ) : (
                 <td className="tw-report-daily-collecting" colSpan={4}>{COLLECTING_LABEL}</td>
@@ -211,7 +212,7 @@ export default function ReportCharts({ report, days, dailyStarted }: ReportChart
   return (
     <>
       <DailyPerformanceChart report={report} days={days} />
-      <DailyTable days={days} delivered={report.delivered} />
+      <DailyTable days={days} report={report} />
       <Demographics segments={dailyStarted ? report.segments : []} />
     </>
   );

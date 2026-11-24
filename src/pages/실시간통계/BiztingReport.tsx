@@ -10,8 +10,8 @@ import authArtwork from './auth-analytics-glass.webp';
 import InfoTip from './InfoTip';
 import { ReportLoading, ReportLoadError } from './ReportLoadState';
 import {
-  BIZTING_URL, COLLECTING_LABEL, CONTACT, DAILY_SCHEDULE_NOTE, DAYS, DEMO_CODE, IPHONE_RCS_READ_NOTE, REPORT_PATH,
-  createPreviewReport, dailyReleaseAt, dateAt, formatCount, formatDay, formatRate, getDays, ratio, validatePreviewCode,
+  BIZTING_URL, COLLECTING_LABEL, CONTACT, DAYS, DEMO_CODE, IPHONE_RCS_READ_NOTE, REPORT_PATH,
+  createPreviewReport, dailyReleaseAt, dateAt, formatCount, formatDay, formatRate, getDays, ratio, readRate, validatePreviewCode,
 } from './reportData';
 import type { Report } from './reportData';
 import './report.css';
@@ -92,11 +92,12 @@ function Verification({ onOpen }: { onOpen: (report: Report) => void }) {
 
 function MetricCards({ report }: { report: Report }) {
   const isIntegrated = report.sendType.includes('통합');
-  const reads = ratio(report.readCount, report.delivered);
+  const readBasis = report.rcsDelivered === null ? '발송 성공 건' : 'RCS 발송 성공 건';
+  const reads = readRate(report);
   const responses = ratio(report.reactionCount, report.delivered);
   const metrics = [
     { label: '읽음률', icon: Eye, tone: 'blue', value: formatRate(reads), meter: reads,
-      hint: '발송 성공 건 중 메시지를 열어본 비율이에요.', detail: '발송 성공 건 기준', read: true },
+      hint: readBasis + ' 중 메시지를 열어본 비율이에요.', detail: readBasis + ' 기준', read: true },
     { label: '반응률', icon: MousePointerClick, tone: 'purple', value: formatRate(responses), meter: responses,
       hint: '발송 성공 건 중 메시지 본문의 URL이나 버튼을 클릭한 비율이에요.', detail: '발송 성공 건 기준', read: false },
     { label: '읽음수', icon: FileChartColumn, tone: 'blue', value: formatCount(report.readCount), meter: null,
@@ -137,7 +138,10 @@ function ReportNotes({ report, daily }: { report: Report; daily: boolean }) {
       <div>
         <h2 id="tw-report-notice-title">통계 확인 전 참고해 주세요</h2>
         <ul>
-          <li>{daily ? DAILY_SCHEDULE_NOTE : '실시간 통계는 발송 당일부터 7일간 수집돼요.'} 최종 성과는 7일차 집계가 끝난 뒤 확인해 주세요.</li>
+          <li>
+            {daily ? '발송일부터 7일간의 데이터가 모두 집계되면 최종 누적 성과를 확인할 수 있어요.'
+              : '실시간 통계는 발송 당일부터 7일간 수집돼요. 최종 성과는 7일차 집계가 끝난 뒤 확인해 주세요.'}
+          </li>
           {report.sendType.includes('통합') && <li>{IPHONE_RCS_READ_NOTE}</li>}
           <li>비즈팅에 로그인한 뒤 <strong>[발송메시지 확인]</strong>에서도 7일간의 통계를 볼 수 있어요.</li>
         </ul>
@@ -210,7 +214,7 @@ export default function BiztingReport() {
             <section className="tw-report-hero" aria-labelledby="tw-report-main-title">
               <span className="tw-report-hero-icon"><ChartNoAxesCombined size={23} aria-hidden="true" /></span>
               <h1 id="tw-report-main-title">{title}</h1>
-              <p>{daily ? '날짜별로 집계된 캠페인 성과를 확인하세요.' : residence ? '추정거주지 기준으로 지역별 성과를 확인하세요.' : '캠페인의 발송 성과를 7일 동안 살펴보세요.'}</p>
+              <p>{daily ? '발송일부터 쌓인 읽음과 반응을 날짜별로 확인하세요.' : residence ? '추정거주지 기준으로 지역별 성과를 확인하세요.' : '캠페인의 발송 성과를 7일 동안 살펴보세요.'}</p>
               <dl className="tw-report-campaign">
                 <div><dt>발송일자</dt><dd>{formatDay(report.sentOn)}</dd></div>
                 <div><dt>캠페인명</dt><dd>{report.name}</dd></div>
@@ -222,7 +226,7 @@ export default function BiztingReport() {
               {!residence && (
                 <p className="tw-report-schedule-note">
                   <Info size={16} aria-hidden="true" />
-                  <span>{daily ? '발송일 다음 날부터 확인 가능합니다.' : '정확한 통계는 발송일 다음 날부터 집계돼요.'}</span>
+                  <span>{daily ? '발송일 다음 날부터 누적 성과를 확인할 수 있어요.' : '정확한 통계는 발송일 다음 날부터 집계돼요.'}</span>
                 </p>
               )}
               <div className="tw-report-updated">
