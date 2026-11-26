@@ -1,13 +1,14 @@
 import { lazy, startTransition, Suspense, useEffect, useRef, useState } from 'react';
 import type { FormEvent } from 'react';
-import { Link, Navigate, NavLink, useMatch, useNavigate, useSearchParams } from 'react-router-dom';
+import { Navigate, NavLink, useMatch, useNavigate, useSearchParams } from 'react-router-dom';
 import {
-  Activity, ArrowLeft, ArrowUpRight, BarChart3, CalendarDays, ChartNoAxesCombined, ChevronRight, Clock3, Eye, FileChartColumn,
+  Activity, ArrowUpRight, BarChart3, CalendarDays, ChartNoAxesCombined, ChevronRight, Clock3, Eye, FileChartColumn,
   Info, LockKeyhole, Mail, MapPinned, MousePointerClick, RefreshCw, Send, Target, TimerOff, Users,
 } from 'lucide-react';
 import logo from '../실시간통계/bizting-logo.png';
 import authArtwork from '../실시간통계/auth-analytics-glass.webp';
 import InfoTip from '../실시간통계/InfoTip';
+import CampaignPicker from './CampaignPicker';
 import { ReportLoading, ReportLoadError } from '../실시간통계/ReportLoadState';
 import {
   AUDIENCE_HOURS, BIZTING_URL, COLLECTING_LABEL, CONTACT, DEMO_CODE, LINK_VALID_DAYS, LOCK_MINUTES,
@@ -194,27 +195,6 @@ function Expired() {
   );
 }
 
-function CampaignList({ campaigns }: { campaigns: Report[] }) {
-  return (
-    <section aria-labelledby="tw-report-list-title">
-      <div className="tw-report-overview-heading">
-        <h2 id="tw-report-list-title">금일 발송 캠페인 목록 <strong>{campaigns.length}건</strong></h2>
-      </div>
-      <ul className="tw-report-campaign-list">
-        {campaigns.map((campaign) => (
-          <li key={campaign.id}>
-            <Link className="tw-report-card tw-report-campaign-item" to={REPORT_PATH + '/c/' + campaign.id}>
-              <p className="tw-report-campaign-time"><strong>{campaign.sendTime}</strong> 발송</p>
-              <h3>{campaign.name}</h3>
-              <ChevronRight size={20} aria-hidden="true" />
-            </Link>
-          </li>
-        ))}
-      </ul>
-    </section>
-  );
-}
-
 function ReportNotes({ sentOn }: { sentOn: string }) {
   return (
     <aside className="tw-report-notice" aria-labelledby="tw-report-notice-title">
@@ -241,12 +221,11 @@ export default function BiztingReport() {
 
   const first = campaigns?.[0];
   const multiple = (campaigns?.length ?? 0) > 1;
-  const report = detail ? campaigns?.find(({ id }) => id === detail.params.id) : multiple ? undefined : first;
+  const report = campaigns?.find(({ id }) => id === detail?.params.id);
   const tab = detail?.params['*'] ?? '';
   const daily = tab === 'daily';
   const residence = tab === 'residence';
   const demographics = tab === 'demographics';
-  const reportPath = report ? REPORT_PATH + '/c/' + report.id : REPORT_PATH;
   const final = !!first && isFinal(first);
   const demographicsReady = !!report && Date.parse(report.updatedAt) >= dailyReleaseAt(dateAt(report.sentOn, 1));
   const pathname = detail?.pathname;
@@ -296,31 +275,23 @@ export default function BiztingReport() {
       </header>}
       {expired ? <Expired /> : !campaigns || !first ? <Verification onOpen={(value) => {
         startTransition(() => {
-          // 1건이면 상세 주소로 바로 가야 ‘실시간통계’ 탭이 선택돼 보여요.
-          navigate(value.length > 1 ? REPORT_PATH : REPORT_PATH + '/c/' + value[0].id, { replace: true });
+          navigate(REPORT_PATH + '/c/' + value[0].id, { replace: true });
           setCampaigns(value);
         });
         window.scrollTo(0, 0);
-      }} /> : detail && !report ? <Navigate to={REPORT_PATH} replace /> : (
+      }} /> : !report ? <Navigate to={REPORT_PATH + '/c/' + first.id} replace /> : (
         <div className="tw-report-dashboard">
           <aside className="tw-report-sidebar">
             <div className="tw-report-sidebar-brand">
               <img src={logo} alt="비즈팅" width={105} height={32} />
               <div className="tw-report-sidebar-mobile-link"><BiztingLink /></div>
             </div>
-            {multiple && (
-              <Link className="tw-report-back" to={REPORT_PATH} aria-current={report ? undefined : 'page'}>
-                {report && <ArrowLeft size={17} aria-hidden="true" />} 금일 발송 캠페인 목록
-              </Link>
-            )}
-            {report && (
-              <nav className="tw-report-nav" aria-label="통계 보기">
-                <NavLink to={reportPath} end><Activity size={19} aria-hidden="true" /> 실시간통계</NavLink>
-                <NavLink to={reportPath + '/daily'}><CalendarDays size={19} aria-hidden="true" /> 일간통계</NavLink>
-                <NavLink to={reportPath + '/residence'}><MapPinned size={19} aria-hidden="true" /> 지역 통계</NavLink>
-                <NavLink to={reportPath + '/demographics'}><Users size={19} aria-hidden="true" /> 연령·성별 분석</NavLink>
-              </nav>
-            )}
+            <nav className="tw-report-nav" aria-label="통계 보기">
+              <NavLink to={REPORT_PATH + '/c/' + report.id} end><Activity size={19} aria-hidden="true" /> 실시간통계</NavLink>
+              <NavLink to={REPORT_PATH + '/c/' + report.id + '/daily'}><CalendarDays size={19} aria-hidden="true" /> 일간통계</NavLink>
+              <NavLink to={REPORT_PATH + '/c/' + report.id + '/residence'}><MapPinned size={19} aria-hidden="true" /> 지역 통계</NavLink>
+              <NavLink to={REPORT_PATH + '/c/' + report.id + '/demographics'}><Users size={19} aria-hidden="true" /> 연령·성별 분석</NavLink>
+            </nav>
             <div className="tw-report-sidebar-links">
               <BiztingLink />
               <a href={'mailto:' + CONTACT}><Mail size={17} aria-hidden="true" /> 리포트 문의</a>
@@ -330,10 +301,14 @@ export default function BiztingReport() {
             <section className="tw-report-hero" aria-labelledby="tw-report-main-title">
               <span className="tw-report-hero-icon"><ChartNoAxesCombined size={23} aria-hidden="true" /></span>
               <h1 id="tw-report-main-title">{title}</h1>
-              <p>{!report ? '캠페인을 선택하면 상세 성과를 볼 수 있어요.' : daily ? '발송일부터 날짜별 읽음과 반응을 확인하세요.' : residence ? '지역별 발송 성과를 확인하세요.' : demographics ? '연령과 성별에 따른 수신자 구성을 확인하세요.' : '캠페인의 발송 성과를 7일 동안 살펴보세요.'}</p>
+              <p>{daily ? '발송일부터 날짜별 읽음과 반응을 확인하세요.' : residence ? '지역별 발송 성과를 확인하세요.' : demographics ? '연령과 성별에 따른 수신자 구성을 확인하세요.' : '캠페인의 발송 성과를 7일 동안 살펴보세요.'}</p>
+              {multiple && (
+                <CampaignPicker campaigns={campaigns} selected={report}
+                  onSelect={(id) => navigate(REPORT_PATH + '/c/' + id + (tab && '/' + tab), { replace: true })} />
+              )}
               <dl className="tw-report-campaign">
-                <div><dt>발송일자</dt><dd><time dateTime={first.sentOn}>{formatDateWithWeekday(first.sentOn)}{report && ' ' + report.sendTime}</time></dd></div>
-                {report && <div><dt>캠페인명</dt><dd>{report.name}</dd></div>}
+                <div><dt>발송일자</dt><dd><time dateTime={report.sentOn}>{formatDateWithWeekday(report.sentOn)} {report.sendTime}</time></dd></div>
+                {!multiple && <div><dt>캠페인명</dt><dd>{report.name}</dd></div>}
                 <div><dt>열람 가능 기간</dt><dd>{formatDateWithWeekday(linkExpiresOn(first.sentOn))}까지</dd></div>
               </dl>
             </section>
@@ -348,8 +323,7 @@ export default function BiztingReport() {
               </div>
             </div>
             <Suspense fallback={<ReportLoading />}>
-              {!report ? <CampaignList campaigns={campaigns} />
-                : daily ? <DailyStats report={report} />
+              {daily ? <DailyStats report={report} />
                 : residence ? <EstimatedResidence key={report.id} report={report} />
                   : demographics ? <Demographics segments={demographicsReady ? report.segments : []} pending={!demographicsReady} />
                     : <MetricCards report={report} final={final} />}
