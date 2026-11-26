@@ -74,6 +74,8 @@ import DBPetFairEventPage from "./pages/eventpage/DBPetFairEventPage";
 import BiztalkBizting from "./pages/biztalk/BiztalkBizting";
 
 const BiztingReport = lazy(() => import("./pages/실시간통계/BiztingReport").catch(() => ({ default: ReportLoadError })));
+const BiztingReportV11 = lazy(() => import("./pages/실시간통계-v1.1/BiztingReport").catch(() => ({ default: ReportLoadError })));
+const MessageStatsDetail = lazy(() => import("./pages/발송통계-v1.1/MessageStatsDetail").catch(() => ({ default: ReportLoadError })));
 
 export default function App() {
   return (
@@ -87,6 +89,8 @@ export default function App() {
         {/* 비즈톡 · 비즈팅 소개 */}
         <Route path="/Biztalk/Bizting" element={<BiztalkBizting />} />
         <Route path="/real-time-statistics/*" element={<Suspense fallback={<ReportLoading />}><BiztingReport /></Suspense>} />
+        <Route path="/real-time-statistics-v1.1/*" element={<Suspense fallback={<ReportLoading />}><BiztingReportV11 /></Suspense>} />
+        <Route path="/message-statistics-v1.1" element={<Suspense fallback={<ReportLoading />}><MessageStatsDetail /></Suspense>} />
 
         <Route path="*" element={<MainPage />} />
 
