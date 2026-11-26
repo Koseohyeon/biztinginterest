@@ -22,6 +22,8 @@ const koreaClock = new Intl.DateTimeFormat('ko-KR', {
   timeZone: 'Asia/Seoul', hour: '2-digit', minute: '2-digit', hourCycle: 'h23',
 });
 
+export type { ReportDays } from '../실시간통계/reportData';
+
 export type Report = BaseReport & {
   id: string;
   sendTime: string;
